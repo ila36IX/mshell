@@ -3,5 +3,6 @@
 
 int main(void)
 {
+        ft_isdigit('a');
         return EXIT_SUCCESS;
 }

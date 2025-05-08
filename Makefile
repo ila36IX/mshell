@@ -1,24 +1,33 @@
 CC = cc
+CFLAGS = -Wall -Wextra -Werror -ggdb3 -g3
+
 SRC_FILES= $(wildcard *.c)
 SRC_OBJ= $(SRC_FILES:%.c=%.o)
-CFLAGS= -Wall -Wextra -Werror -g -ggdb3
+
+
+LIBFT_DIR = libft
+LIBFT = $(LIBFT_DIR)/libft.a
 NAME=mshell
 
-all: $(NAME)
+all: libft_rule $(NAME)
 
-$(NAME): $(SRC_OBJ)
-	$(CC) $(CFLAGS) $(SRC_OBJ) -o $(NAME)
+libft_rule:
+	@$(MAKE) -C $(LIBFT_DIR)
 
-run: all
-	./$(NAME)
+$(NAME): $(SRC_OBJ) $(LIBFT)
+	$(CC) $(CFLAGS) $(SRC_OBJ) -L$(LIBFT_DIR) -lft -o $(NAME)
+
 clean: 
-	@$(RM) $(SRC_OBJ)
+	@$(RM) $(SRC_OBJ) $(OBJ_BONUS)
+	@$(MAKE) -C $(LIBFT_DIR) clean
 
-fclean: clean
+fclean:
+	@$(RM) $(SRC_OBJ) $(OBJ_BONUS)
 	@$(RM) $(NAME)
+	@$(MAKE) -C $(LIBFT_DIR) fclean
 
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all libft_rule clean fclean re
 .SECONDARY: $(SRC_OBJ)

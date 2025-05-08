@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "libft/libft.h"
 #define MAX_REDIRECTIONS 200
 
 typedef enum {
@@ -39,5 +40,5 @@ typedef struct s_command {
         t_redirect *redirects;
         struct s_command* next;
         struct s_command* prev;
-        t_operators next_op;  // Operator following this command.         
+        t_operators next_op;  // Operator following this command
 } t_command;
