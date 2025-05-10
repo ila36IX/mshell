@@ -1,6 +1,19 @@
-#include <stdio.h>
 #include "libft/libft.h"
+#include <stdio.h>
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
 #define MAX_REDIRECTIONS 200
+#define TRUE 1
+#define FALSE 0
+#define RED     "\033[1;31m"
+#define GREEN   "\033[1;32m"
+#define YELLOW  "\033[1;33m"
+#define BLUE    "\033[1;34m"
+#define MAGENTA "\033[1;35m"
+#define CYAN    "\033[1;36m"
+#define RESET   "\033[0m"
 
 typedef enum {
         TYPE_PIPE,
@@ -42,3 +55,14 @@ typedef struct s_command {
         struct s_command* prev;
         t_operators next_op;  // Operator following this command
 } t_command;
+
+typedef struct s_token {
+        char *token;
+        int size;
+        struct s_token *next;
+} t_token;
+
+void *ft_malloc(size_t num, size_t size);
+void print_token_list(t_token *lst);
+void	token_lst_add_back(t_token **lst, char *token, int size);
+void	token_lst_print(t_token *lst);
