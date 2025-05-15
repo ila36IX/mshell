@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   prompt.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/15 13:36:59 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/05/15 13:41:32 by sboukiou         ###   ########.fr       */
+/*   Created: 2025/05/15 13:38:52 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/05/15 13:41:04 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./main.h"
 
-int	main(void)
+void	prompt(const char *name)
 {
-	ft_isdigit('a');
-	prompt("[minishell] ~ ");
-	return (EXIT_SUCCESS);
+	write(STDOUT_FILENO, BBLUE, ft_strlen(BBLUE));
+	write(STDOUT_FILENO, name, ft_strlen(name));
+	write(STDOUT_FILENO, RESET, ft_strlen(RESET));
 }
