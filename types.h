@@ -14,47 +14,73 @@
 # define TYPES_H
 # include "./includes.h"
 
-typedef enum e_operators
-{
-	TYPE_PIPE,
-	TYPE_AND,
-	TYPE_OR
-}	t_operators;
+typedef enum {
+    FALSE = 0,
+    TRUE = 1,
+} t_bool;
+
+typedef enum {
+    OP_AND,
+    OP_OR
+} t_op_type;
+
+typedef enum {
+    REDIR_TYPE_IN,
+    REDIR_TYPE_OUT,
+    REDIR_TYPE_APPEND,
+    REDIR_TYPE_HEREDOC
+} t_redirect_type;
 
 /**
- * t_redirect - Structure describing a redirections of command
- *
- * @input: chain of filenames that provided after the '<' operator
- * @output: chain of filenames that provided after the '>' operator
- * @last_input_type: integer represeting the type of writting to the last file
- * in @output array, 0 to overwrite, 1 to append
+ * t_redirect - Linked list describing a redirections of command
+ * 
+ * @type: Integer represinting redirection type see t_redirect_type
+ * @target: Filename for <, >, >> Delimiter for <<
+ * @next: next user redirection or NULL if no any exist
  */
-typedef struct redirect
-{
-	char	*inputs[MAX_REDIRECTIONS];
-	int		last_input_type; /* >> or > */
-	char	**outputs[MAX_REDIRECTIONS];
-	char	**her_doc_eof[MAX_REDIRECTIONS];
-}	t_redirect;
+typedef struct s_redirect {
+    t_redirect_type type;
+    char *target;       // Filename for <, >, >> Delimiter for <<.
+    struct s_redirect *next; // Linked list for multiple redirections
+} t_redirect;
 
 /**
- * t_command - is linked list node that will represent a chain of commands
+ * t_cmd - is linked list node that will represent a chain of commands
  * conncted by operators
  *
- * @cmd_and_args: array of strings first string is the cmd itself, and 1+ are
+ * @args: array of strings first string is the cmd itself, and 1+ are
  * arguments
+ * @arg: Number of arguments including the cmd
  * @redirects: What a redirection descriptor looks like
- * @next: next command ofter the operator, or NULL
- * @prev: previous command before the operator
- * next_op: the operator the follows this command
+ * @next: next command ofter the pipe operator, or NULL
+ * @prev: previous command before the pipe operator
  */
-typedef struct s_command
+typedef struct s_cmd
 {
-	struct	s_command	(*next);
-	struct	s_command	(*prev);
-	char				(**cmd_and_args);
-	t_redirect		(*redirects);
-	t_operators		(next_op); /* Operator following this command*/
-}	t_command;
+	char	**argv;
+	int	argc;
+	t_redirect	*redir;
+	struct s_cmd *next;
+}	t_cmd;
+
+/*
+ * t_node: is node that represent a single command with its following sibling
+ * command or sub-expression
+ *
+ * @next_op: which operator (|| or &&) connects this node to the next node
+ * @next: pointer to the next node at the same level (the sibling)
+ * @child_op: which operator connects this node down to its child sub-expression (inside parentheses)
+ * @child:sub‐pointer to the first node in that sub-expression
+ * @cmd: the actual command
+ * Follow next (using next_op) to see siblings joined by || or &&
+ * Follow child (using child_op) into any grouped sub-expression
+ */
+typedef struct s_node {
+    t_op_type *next_op;
+    s_node *next;
+    t_op_type *child_op;
+    s_node *child;
+    t_cmd *cmd;
+} t_node;
 
 #endif
