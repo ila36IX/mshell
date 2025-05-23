@@ -77,10 +77,11 @@ typedef struct s_cmd
  */
 typedef struct s_node {
     t_op_type *next_op;
-    s_node *next;
+    struct s_node *next;
     t_op_type *child_op;
-    s_node *child;
+    struct s_node *child;
     t_cmd *cmd;
 } t_node;
+
 
 #endif

@@ -8,7 +8,7 @@ SRC_OBJ= $(SRC_FILES:%.c=%.o)
 
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
-NAME=mshell
+NAME=minishell
 
 all: libft_rule $(NAME)
 

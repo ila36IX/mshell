@@ -17,5 +17,6 @@
 # include "./libft/libft.h"
 
 void	prompt(const char *name);
+void todo(char *msg, char *arg);
 
 #endif
