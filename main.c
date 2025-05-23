@@ -14,7 +14,6 @@
 
 int	main(void)
 {
-	ft_isdigit('a');
-	prompt("[minishell] ~ ");
+	TODO("A valid fucntion goes here");
 	return (EXIT_SUCCESS);
 }

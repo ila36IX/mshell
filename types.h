@@ -31,6 +31,7 @@ typedef enum {
     REDIR_TYPE_HEREDOC
 } t_redirect_type;
 
+
 /**
  * t_redirect - Linked list describing a redirections of command
  * 
@@ -64,24 +65,25 @@ typedef struct s_cmd
 }	t_cmd;
 
 /*
- * t_node: is node that represent a single command with its following sibling
- * command or sub-expression
+ * t_ast: is the abstract syntax tree that represent a single command with its
+ * following sibling command or its following commdns inside the parentheses
  *
  * @next_op: which operator (|| or &&) connects this node to the next node
  * @next: pointer to the next node at the same level (the sibling)
- * @child_op: which operator connects this node down to its child sub-expression (inside parentheses)
+ * @child_op: which operator connects this node down to its child sub-expression
+ * (inside parentheses)
  * @child:sub‐pointer to the first node in that sub-expression
  * @cmd: the actual command
  * Follow next (using next_op) to see siblings joined by || or &&
  * Follow child (using child_op) into any grouped sub-expression
  */
-typedef struct s_node {
+typedef struct s_ast {
     t_op_type *next_op;
     struct s_node *next;
     t_op_type *child_op;
     struct s_node *child;
     t_cmd *cmd;
-} t_node;
+} t_ast;
 
 
 #endif
