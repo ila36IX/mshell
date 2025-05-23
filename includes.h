@@ -19,6 +19,7 @@
 # include <signal.h>
 # include <fcntl.h>
 # include <string.h>
+# include <stdbool.h>
 
 # define MAX_REDIRECTIONS 200
 # define RESET "\033[0m"

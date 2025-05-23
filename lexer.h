@@ -3,15 +3,17 @@
 #include "includes.h"
 
 typedef enum {
-    TOKEN_TYPE_IN,
-    TOKEN_TYPE_OUT,
-    TOKEN_TYPE_APPEND,
-    TOKEN_TYPE_HEREDOC,
-    TOKEN_TYPE_OR,
-    TOKEN_TYPE_AND,
-    TOKEN_TYPE_PIPE,
-    TOKEN_TYPE_SQ,
-    TOKEN_TYPE_DQ,
+    TOKEN_IN,
+    TOKEN_OUT,
+    TOKEN_APPEND,
+    TOKEN_HEREDOC,
+    TOKEN_OR,
+    TOKEN_AND,
+    TOKEN_PIPE,
+    TOKEN_SQ,
+    TOKEN_DQ,
+    TOKEN_WORD,
+    TOKEN_INVALID,
 } t_token_kind;
 
 typedef struct s_lexer {
@@ -20,9 +22,24 @@ typedef struct s_lexer {
     size_t cursor;
 } t_lexer;
 
+/**
+ * t_token - a slice of the user input that represent a valid token
+ *
+ * @kind: type of this token
+ * @text: Pointer of the beginning of the token
+ * @text_len: size of this token, do not expect null charachter in the end, this is only a slice
+ * @ws-after: Is this token followed by a white space?
+ */
+typedef struct s_token {
+    t_token_kind kind;
+    const char *text;
+    size_t text_len;
+    bool ws_after; /* white space after */
+} t_token;
+
 t_lexer lexer_new(const char *content);
-t_token_kind lexer_next_token(t_lexer *l);
+t_token lexer_next_token(t_lexer *l);
 const char *token_kind_name(t_token_kind kind);
-void	print_token(t_token_kind kind);
+void	print_token(t_token kind);
 
 #endif /*_LEXER_H_ */

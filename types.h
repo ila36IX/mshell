@@ -15,11 +15,6 @@
 # include "./includes.h"
 
 typedef enum {
-    FALSE = 0,
-    TRUE = 1,
-} t_bool;
-
-typedef enum {
     OP_AND,
     OP_OR
 } t_op_type;
@@ -77,13 +72,13 @@ typedef struct s_cmd
  * Follow next (using next_op) to see siblings joined by || or &&
  * Follow child (using child_op) into any grouped sub-expression
  */
-typedef struct s_ast {
-    t_op_type *next_op;
-    struct s_node *next;
-    t_op_type *child_op;
-    struct s_node *child;
-    t_cmd *cmd;
-} t_ast;
-
+// typedef struct s_ast {
+//     t_op_type *next_op;
+//     struct s_node *next;
+//     t_op_type *child_op;
+//     struct s_node *child;
+//     t_cmd *cmd;
+// } t_ast;
+//
 
 #endif
