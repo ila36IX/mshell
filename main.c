@@ -10,10 +10,27 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./main.h"
+#include "main.h"
 
 int	main(void)
 {
-	TODO("A valid fucntion goes here");
+	char *cmd;
+	t_lexer lexer;
+	t_token token;
+
+	while (1) {
+		cmd = readline("$ ");
+
+		if (!cmd || ft_strcmp(cmd, "exit") == 0)
+			break;
+		lexer = lexer_new(cmd, ft_strlen(cmd));
+		token = lexer_next_token(&lexer);
+		while (token.kind)
+		{
+			print_token(token);
+			token = lexer_next_token(&lexer);
+		}
+		free(cmd);
+	}
 	return (EXIT_SUCCESS);
 }
