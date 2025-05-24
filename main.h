@@ -32,4 +32,5 @@
 
 #define UNUSED(x) (void)(x)
 
+void	construct_cmd(t_lexer *lexer, t_cmd *cmd);
 #endif
