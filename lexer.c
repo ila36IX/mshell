@@ -1,4 +1,7 @@
 #include "main.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdio.h>
 
 int ft_iswspace(char c) {
         return (c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' ||
@@ -38,6 +41,22 @@ void log_error(char *msg)
 	printf("msh: %s\n", msg);
 }
 
+bool	lexer_starts_with(t_lexer *l, const char *prefix)
+{
+	size_t	i;
+
+	i = 0;
+	while (prefix[i])
+	{
+		if ((l->cursor + i) >= l->content_len)
+			return (false);
+		if (l->content[l->cursor + i] != prefix[i])
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
 t_token lexer_next_token(t_lexer *l)
 {
 	t_token token;
@@ -46,6 +65,34 @@ t_token lexer_next_token(t_lexer *l)
 	token.whitespace_before = lexer_trim_left(l);
 	if (l->cursor >= l->content_len)
 		return (token);
+	else if (lexer_starts_with(l, ">>"))
+	{
+		token.kind = TOKEN_APPEND;
+		token.text = &l->content[l->cursor];
+		token.text_len = 2;
+		l->cursor += 2;
+	}
+	else if (lexer_starts_with(l, "<<"))
+	{
+		token.kind = TOKEN_HEREDOC;
+		token.text = &l->content[l->cursor];
+		token.text_len = 2;
+		l->cursor += 2;
+	}
+	else if (lexer_starts_with(l, "&&"))
+	{
+		token.kind = TOKEN_AND;
+		token.text = &l->content[l->cursor];
+		token.text_len = 2;
+		l->cursor += 2;
+	}
+	else if (lexer_starts_with(l, "||"))
+	{
+		token.kind = TOKEN_OR;
+		token.text = &l->content[l->cursor];
+		token.text_len = 2;
+		l->cursor += 2;
+	}
 	else if (l->content[l->cursor] == '|')
 	{
 		token.kind = TOKEN_PIPE;
@@ -118,6 +165,7 @@ t_token lexer_next_token(t_lexer *l)
 
 const char *token_kind_name(t_token_kind kind)
 {
+
 	if (kind == TOKEN_INVALID)
 		return ("invalid token");
 	else if (kind == TOKEN_PIPE)
@@ -126,12 +174,20 @@ const char *token_kind_name(t_token_kind kind)
 		return ("input redirect");
 	else if (kind == TOKEN_OUT)
 		return ("ouptut redirect");
+	else if (kind == TOKEN_APPEND)
+		return ("append redirect");
+	else if (kind == TOKEN_HEREDOC)
+		return ("herdoc redirect");
 	else if (kind == TOKEN_WORD)
 		return ("word");
 	else if (kind == TOKEN_DQ)
 		return ("d-qoute str");
 	else if (kind == TOKEN_SQ)
 		return ("s-qoute str");
+	else if (kind == TOKEN_AND)
+		return ("and operator");
+	else if (kind == TOKEN_OR)
+		return ("or operator");
 	UNREACHABLE("All the cases must have its case handled");
 }
 
