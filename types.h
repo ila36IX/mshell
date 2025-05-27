@@ -37,17 +37,18 @@ typedef enum e_redirect_type
 }						t_redirect_type;
 
 /**
- * t_redirect - Linked list describing a redirections of command
+ * t_redirect - Mimics the behavior of dynamic array
+ * to avoid the overhead caused when using linked-lists
  *
  * @type: Integer represinting redirection type see t_redirect_type
  * @target: Filename for <, >, >> Delimiter for <<
- * @next: next user redirection or NULL if no any exist
+ * @redirect_size: Current size of the array.
  */
 typedef struct s_redirect
 {
 	t_redirect_type		type;
 	char				*target;
-	struct s_redirect	*next;
+	size_t				redirec_size;
 }						t_redirect;
 
 /**
