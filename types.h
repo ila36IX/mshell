@@ -19,14 +19,14 @@ typedef enum e_connector
 	OP_AND,
 	OP_PIPE,
 	OP_OR
-}							t_connector;
+}						t_connector;
 
 typedef enum e_ast_type
 {
 	AST_SUBSHELL,
 	AST_SIMPLE_COMMAND,
 	AST_CONNECTOR,
-}							t_ast_type;
+}						t_ast_type;
 
 typedef enum e_redirect_type
 {
@@ -34,7 +34,7 @@ typedef enum e_redirect_type
 	REDIR_TYPE_OUT,
 	REDIR_TYPE_APPEND,
 	REDIR_TYPE_HEREDOC
-}							t_redirect_type;
+}						t_redirect_type;
 
 /**
  * t_redirect - Linked list describing a redirections of command
@@ -45,46 +45,35 @@ typedef enum e_redirect_type
  */
 typedef struct s_redirect
 {
-	t_redirect_type			type;
-	char					*target;
-	struct s_redirect		*next;
-}							t_redirect;
+	t_redirect_type		type;
+	char				*target;
+	struct s_redirect	*next;
+}						t_redirect;
 
 /**
- * t_cmd - is linked list node that will represent a chain of commands
- * conncted by operators
- *
- * @args: array of strings first string is the cmd itself, and 1+ are
- * arguments
- * @arg: Number of arguments including the cmd
- * @redirects: What a redirection descriptor looks like
- * @next: next command ofter the pipe operator, or NULL
- * @prev: previous command before the pipe operator
+ * NOTE: ADD docs here
+ * 
  */
 typedef struct s_simple_cmd
 {
-	char					**argv;
-	int						argc;
-}							t_simple_cmd;
+	char				**argv;
+	int					argc;
+}						t_simple_cmd;
 
-typedef struct s_subshell	t_subshell;
-
+/*
+ * NOTE: add docs here....
+ */
 typedef struct s_ast
 {
-	t_ast_type				type;
+	t_ast_type			type;
 	union
 	{
-		t_connector			connecter;
-		t_simple_cmd		*simple_cmd;
-		t_subshell			*subshell;
+		t_connector		connecter;
+		t_simple_cmd	*simple_cmd;
+		struct s_ast	*subshell;
 	};
-	t_redirect				*redir;
-	struct s_ast			*next;
-}							t_ast;
-
-typedef struct s_subshell
-{
-	t_ast					*subcmd;
-}							t_subshell;
+	t_redirect			*redir;
+	struct s_ast		*next;
+}						t_ast;
 
 #endif /* TYPES_H */
