@@ -14,31 +14,41 @@
 # define TYPES_H
 # include "./includes.h"
 
-typedef enum {
-    OP_AND,
-    OP_OR
-} t_op_type;
+typedef enum e_connector
+{
+	OP_AND,
+	OP_PIPE,
+	OP_OR
+}							t_connector;
 
-typedef enum {
-    REDIR_TYPE_IN,
-    REDIR_TYPE_OUT,
-    REDIR_TYPE_APPEND,
-    REDIR_TYPE_HEREDOC
-} t_redirect_type;
+typedef enum e_ast_type
+{
+	AST_SUBSHELL,
+	AST_SIMPLE_COMMAND,
+	AST_CONNECTOR,
+}							t_ast_type;
 
+typedef enum e_redirect_type
+{
+	REDIR_TYPE_IN,
+	REDIR_TYPE_OUT,
+	REDIR_TYPE_APPEND,
+	REDIR_TYPE_HEREDOC
+}							t_redirect_type;
 
 /**
  * t_redirect - Linked list describing a redirections of command
- * 
+ *
  * @type: Integer represinting redirection type see t_redirect_type
  * @target: Filename for <, >, >> Delimiter for <<
  * @next: next user redirection or NULL if no any exist
  */
-typedef struct s_redirect {
-    t_redirect_type type;
-    char *target;       // Filename for <, >, >> Delimiter for <<.
-    struct s_redirect *next; // Linked list for multiple redirections
-} t_redirect;
+typedef struct s_redirect
+{
+	t_redirect_type			type;
+	char					*target;
+	struct s_redirect		*next;
+}							t_redirect;
 
 /**
  * t_cmd - is linked list node that will represent a chain of commands
@@ -51,34 +61,30 @@ typedef struct s_redirect {
  * @next: next command ofter the pipe operator, or NULL
  * @prev: previous command before the pipe operator
  */
-typedef struct s_cmd
+typedef struct s_simple_cmd
 {
-	char	**argv;
-	int	argc;
-	t_redirect	*redir;
-	struct s_cmd *next;
-}	t_cmd;
+	char					**argv;
+	int						argc;
+}							t_simple_cmd;
 
-/*
- * t_ast: is the abstract syntax tree that represent a single command with its
- * following sibling command or its following commdns inside the parentheses
- *
- * @next_op: which operator (|| or &&) connects this node to the next node
- * @next: pointer to the next node at the same level (the sibling)
- * @child_op: which operator connects this node down to its child sub-expression
- * (inside parentheses)
- * @child:sub‐pointer to the first node in that sub-expression
- * @cmd: the actual command
- * Follow next (using next_op) to see siblings joined by || or &&
- * Follow child (using child_op) into any grouped sub-expression
- */
-// typedef struct s_ast {
-//     t_op_type *next_op;
-//     struct s_node *next;
-//     t_op_type *child_op;
-//     struct s_node *child;
-//     t_cmd *cmd;
-// } t_ast;
-//
+typedef struct s_subshell	t_subshell;
 
-#endif
+typedef struct s_ast
+{
+	t_ast_type				type;
+	union
+	{
+		t_connector			connecter;
+		t_simple_cmd		*simple_cmd;
+		t_subshell			*subshell;
+	};
+	t_redirect				*redir;
+	struct s_ast			*next;
+}							t_ast;
+
+typedef struct s_subshell
+{
+	t_ast					*subcmd;
+}							t_subshell;
+
+#endif /* TYPES_H */
