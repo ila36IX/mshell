@@ -277,6 +277,6 @@ const char	*token_kind_name(t_token_kind kind)
  */
 void	print_token(t_token token)
 {
-	printf("%.*s (" BRED "%s" RESET ", %ld)\n", (int)token.text_len, token.text,
+	printf("%.*s (" TEXT_BRED "%s" TEXT_RESET ", %ld)\n", (int)token.text_len, token.text,
 		token_kind_name(token.kind), token.text_len);
 }

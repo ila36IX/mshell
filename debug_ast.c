@@ -11,8 +11,9 @@ const char	*ast_type_to_str(t_ast_type type)
 		return ("SUBSHELL");
 	else if (type == AST_SIMPLE_COMMAND)
 		return ("SIMPLE COMMAND");
-	else
+	else {
 		UNREACHABLE("ast type string represenation needed!");
+	}
 }
 
 const char *connector_type_to_str(t_connector type)
@@ -23,8 +24,9 @@ const char *connector_type_to_str(t_connector type)
 		return ("OE");
 	else if (type == CONNECTOR_PIPE)
 		return ("PIPE");
-	else 
+	else {
 		UNREACHABLE("Unknown connector type!");
+	}
 
 }
 
@@ -62,9 +64,6 @@ void	print_tree_last_line(int indent)
 
 void	print_ast_type(int indenet_level, t_ast *ast)
 {
-	int i = 0;
-
-	i = 0;
 	tree_line_prefix(indenet_level, false);
 	printf("%s", TEXT_BGREEN);
 	if (ast->type == AST_CONNECTOR)
@@ -84,8 +83,9 @@ const char *redir_type_to_str(t_redirect_type type)
 		return (">>");
 	else if (type == REDIR_TYPE_APPEND)
 		return (">>");
-	else
+	else {
 		UNREACHABLE("Unknown redirect type!");
+	}
 }
 
 
@@ -119,9 +119,6 @@ void	print_simple_cmd(int indent, t_ast *ast)
 
 void	print_ast_connector(int indent, t_ast *ast)
 {
-	size_t i;
-
-	i = 0;
 	print_ast_type(indent++, ast);
 	tree_line_prefix(indent, true);
 }
@@ -129,9 +126,7 @@ void	print_ast_connector(int indent, t_ast *ast)
 void	debug_ast(t_ast *ast)
 {
 	int indent;
-	char *text[2];
 
-	text[1] = NULL;
 	indent = 0;
 	while (ast)
 	{
