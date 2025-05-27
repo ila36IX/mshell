@@ -17,6 +17,7 @@
 # include "./types.h"
 # include "./prototypes.h"
 # include "./lexer.h"
+#include "./execution/builtins/builtins.h"
 
 #define UNIMPLEMENTED(...)                                                      \
         printf("%s:%d: UNIMPLEMENTED: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
