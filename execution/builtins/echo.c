@@ -9,10 +9,10 @@
 	* Return: Number of bytes written or EXIT_FAILURE (1) instead
 */
 
-size_t	echo(const char *text, bool newline)
+int	echo(const char *text, bool newline)
 {
-	size_t	written;
-	size_t	text_len;
+	int	written;
+	int	text_len;
 
 	if (text == NULL)
 		return (EXIT_FAILURE);
