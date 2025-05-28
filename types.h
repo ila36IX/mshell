@@ -47,7 +47,6 @@ typedef struct s_redirect
 {
 	t_redirect_type		type;
 	char				*target;
-	struct s_redirect	*next;
 }						t_redirect;
 
 /**
@@ -73,6 +72,7 @@ typedef struct s_ast
 		struct s_ast	*subshell;
 	};
 	t_redirect			*redir;
+	size_t			redir_size;
 	struct s_ast		*next;
 }						t_ast;
 
