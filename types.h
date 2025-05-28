@@ -51,13 +51,17 @@ typedef struct s_redirect
 }						t_redirect;
 
 /**
- * NOTE: ADD docs here
- * 
+	* t_simple_cmd - Represents a simple command with its positional args
+	* && the env variables.
+ 	* @argv: Positional args
+	* @argc: Number of p-args
+	* @: envp: (Key/Value) env variables
  */
 typedef struct s_simple_cmd
 {
 	char				**argv;
 	int					argc;
+	char				**envp;
 }						t_simple_cmd;
 
 /*
