@@ -17,6 +17,7 @@ typedef enum e_builtin_type
 	INVALID
 }	t_builtin_type;
 
-size_t	echo(const char *text, bool newline);
+int	echo(const char *text, bool newline);
+int	pwd(void);
 
 #endif
