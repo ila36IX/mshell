@@ -4,7 +4,7 @@
 
 int	pwd(void)
 {
-	char	*current_working_dir;
+	char	current_working_dir[MAX_BUFF_SIZE];
 	int	status;
 
 	status = EXIT_SUCCESS;
