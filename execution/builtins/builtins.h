@@ -19,5 +19,6 @@ typedef enum e_builtin_type
 
 int	echo(const char *text, bool newline);
 int	pwd(void);
+int	cd(int ac, char **av);
 
 #endif
