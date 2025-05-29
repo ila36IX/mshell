@@ -30,7 +30,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	j;
 	char	*buff;
 
-	buff = malloc(sizeof(char) * (ft_calc_sz(s1, s2)));
+	buff = ft_malloc(ft_calc_sz(s1, s2), sizeof(char));
 	if (!buff)
 		return (NULL);
 	i = 0;
