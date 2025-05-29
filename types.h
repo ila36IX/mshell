@@ -16,9 +16,9 @@
 
 typedef enum e_connector
 {
-	OP_AND,
-	OP_PIPE,
-	OP_OR
+	CONNECTOR_AND,
+	CONNECTOR_PIPE,
+	CONNECTOR_OR
 }						t_connector;
 
 typedef enum e_ast_type
@@ -67,7 +67,7 @@ typedef struct s_ast
 	t_ast_type			type;
 	union
 	{
-		t_connector		connecter;
+		t_connector		connector;
 		t_simple_cmd	*simple_cmd;
 		struct s_ast	*subshell;
 	};
