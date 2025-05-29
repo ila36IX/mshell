@@ -4,7 +4,7 @@ static void	ft_gc_print(t_list *gc)
 {
 	while (gc)
 	{
-		printf("\t[%p] --> [%s]\n", gc->content, (char *)gc->content);
+		printf("\t[%p] --> [%lu]\n", gc->content, sizeof(gc->content));
 		gc = gc->next;
 	}
 }
@@ -21,7 +21,6 @@ void	ft_gcadd_back(void *addr)
 
 	if (!addr)
 	{
-		ft_gc_print(g_collector);
 		ft_gc_clear(g_collector);
 		return ;
 	}
