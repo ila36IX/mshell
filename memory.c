@@ -9,25 +9,36 @@ static void	ft_gc_print(t_list *gc)
 	}
 }
 
-static void	ft_gc_clear(t_list *gc)
+typedef enum s_act
 {
-	ft_lstclear(&gc, free);
+	CLEAR,
+	INSERT
+}	t_act;
+
+static void	ft_gc_act(void *addr, t_act action)
+{
+	static t_list	*gc;
+	t_list	*gc_node;
+	if (action == CLEAR)
+		ft_lstclear(&gc, free);
+	else if (action == INSERT)
+	{
+		gc_node = ft_lstnew(addr);
+		ft_lstadd_back(&gc, gc_node);
+	}
+	/*ft_gc_print(gc);*/
 }
 
 void	ft_gcadd_back(void *addr)
 {
-	static t_list	*g_collector;
-	t_list	*gc_node;
-
-	if (!addr)
-	{
-		ft_gc_clear(g_collector);
-		return ;
-	}
-	gc_node = ft_lstnew(addr);
-	ft_lstadd_back(&g_collector, gc_node);
+	if (addr)
+		ft_gc_act(addr, INSERT);
 }
 
+void	ft_gc_clear(void)
+{
+	ft_gc_act(NULL, CLEAR);
+}
 
 void	*ft_malloc(size_t	size, size_t unit)
 {
