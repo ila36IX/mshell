@@ -52,7 +52,7 @@ char	*ft_itoa(int n)
 	int				i;
 	unsigned int	nb;
 
-	buff = malloc(sizeof(char) * num_size(n));
+	buff = ft_malloc(num_size(n), sizeof(char));
 	if (!buff)
 		return (NULL);
 	i = 0;

@@ -71,7 +71,7 @@ char	*ft_strtrim(char const *s1, char const *set)
 	size = alloc_size(s1, set);
 	if (!size)
 		return (ft_strdup(""));
-	buff = malloc(sizeof(char) * size + 1);
+	buff = ft_malloc(size + 1, sizeof(char));
 	if (!buff)
 		return (NULL);
 	fill_size(s1, buff, set);
