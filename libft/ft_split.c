@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "libft.h"
+#include "../memory.h"
 
 static int	count_words(char const *s, char c)
 {
@@ -48,7 +49,7 @@ static char	*fill_buff(char **tokens, char const *s, char c, int i)
 	char	*buff;
 	int		j;
 
-	buff = malloc(sizeof(char) * len_helper(s, c));
+	buff = ft_malloc(len_helper(s, c), sizeof(char));
 	if (!buff)
 		return (NULL);
 	j = 0;
@@ -81,7 +82,7 @@ char	**ft_split(char const *s, char c)
 
 	if (!s)
 		return (NULL);
-	tokens = malloc(sizeof(char *) * (count_words(s, c) + 1));
+	tokens = ft_malloc((count_words(s, c) + 1), sizeof(char **));
 	if (!tokens)
 		return (NULL);
 	i = 0;

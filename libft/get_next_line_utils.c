@@ -21,7 +21,7 @@ char	*ft_substr_ptr(char const *start, char const *end)
 	if (!start || !end || end < start)
 		return (NULL);
 	len = end - start + 1;
-	str = malloc(len + 1);
+	str = ft_malloc(len + 1, sizeof(char));
 	if (!str)
 		return (NULL);
 	i = 0;

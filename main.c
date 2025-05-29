@@ -12,25 +12,13 @@
 
 #include "main.h"
 
-int	main(void)
+int	main(int ac, char **av)
 {
-	char *cmd;
-	t_lexer lexer;
-	t_token token;
+	(void)(ac);
 
-	while (1) {
-		cmd = readline("$ ");
+	char **list = ft_split(av[1], ' ');
+	ft_gc_clear();
 
-		if (!cmd || ft_strcmp(cmd, "exit") == 0)
-			break;
-		lexer = lexer_new(cmd, ft_strlen(cmd));
-		token = lexer_next_token(&lexer);
-		while (token.kind)
-		{
-			print_token(token);
-			token = lexer_next_token(&lexer);
-		}
-		free(cmd);
-	}
+	(void)list;
 	return (EXIT_SUCCESS);
 }
