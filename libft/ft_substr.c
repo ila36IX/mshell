@@ -38,7 +38,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	alloc_s = alloc_size(s, start, len);
 	if (alloc_s <= 0)
 		return (ft_strdup(""));
-	buff = malloc(sizeof(char) * (alloc_s + 1));
+	buff = ft_malloc((alloc_s + 1), sizeof(char));
 	if (!buff)
 		return (NULL);
 	i = 0;
