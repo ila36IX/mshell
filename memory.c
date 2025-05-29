@@ -27,8 +27,6 @@ void	ft_gcadd_back(void *addr)
 	}
 	gc_node = ft_lstnew(addr);
 	ft_lstadd_back(&g_collector, gc_node);
-	printf("[ New node inserted ]\n");
-	ft_gc_print(g_collector);
 }
 
 
