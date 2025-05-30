@@ -20,8 +20,8 @@
 # include <fcntl.h>
 # include <string.h>
 # include <stdbool.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+# include <readline/readline.h>
+# include <readline/history.h>
 
 # define TEXT_RESET "\033[0m"
 
@@ -66,4 +66,5 @@
 # define TEXT_BG_CYAN "\033[46m"
 # define TEXT_BG_WHITE "\033[47m"
 
+# define UNSET(var) (void)(var);
 #endif
