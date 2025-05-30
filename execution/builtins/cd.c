@@ -1,5 +1,11 @@
 #include "./builtins.h"
 
+/*
+ * cd - changes the current working directory
+ * @ac: Number of positional given arguments
+ * @av: Argumenst (target directory)
+ * Return: EXIT_SUCCESS if succeeded or EXIT_FAILURE otherwise
+ */
 int	cd(int ac, char **av)
 {
 	int	status;

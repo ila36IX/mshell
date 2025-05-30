@@ -1,5 +1,13 @@
 # include "./builtins.h"
 
+/*
+ * env_init - Initialized a linked list of env-variables
+ * from a key.val array
+ * @head: Head of the linked list
+ * @env: Array containing the env variables with the format:
+ * ["key=val"]
+ */
+
 static void	env_init(t_list **head, char **env)
 {
 	int	i;
@@ -24,6 +32,12 @@ static void	env_init(t_list **head, char **env)
 	}
 }
 
+/*
+ * env_insert - Inserts a new dict(key,val) into the env-list
+ * @head: Head of the linked list
+ * @key: Key, Ex: PWD
+ * @value: value, Ex: /home/sboukiou
+ */
 static void	env_insert(t_list **head, char *key, char *value)
 {
 	t_env_dict	*new_dict;
@@ -39,6 +53,11 @@ static void	env_insert(t_list **head, char *key, char *value)
 	ft_lstadd_back(head, node);
 }
 
+/*
+ * env_remove - Removes a key/val node from the env (Used by unset)
+ * @head: Head of the linked list
+ * @key: Key, Ex: PWD
+ */
 static void	env_remove(t_list *head, char *key)
 {
 	t_list	*temp;
@@ -54,6 +73,14 @@ static void	env_remove(t_list *head, char *key)
 		head = head->next;
 	}
 }
+
+
+/*
+ * env - Prints all environment variables with the format ("%s=%s", key, val)
+ * to STDOUT
+ * @envp: Array of strs containing the key-val for each variable
+ * Return: 0 if succeeded or EXIT_FAILURE otherwise
+ */
 
 int	env(char **envp)
 {
