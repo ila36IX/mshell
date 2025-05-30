@@ -5,20 +5,15 @@
 # include "../../types.h"
 # include "../../libft/libft.h"
 
-typedef enum e_builtin_type
+typedef struct s_env_dict
 {
-	ECHO,
-	CD,
-	EXIT,
-	UNSET,
-	PWD,
-	EXPORT,
-	ENV,
-	INVALID
-}	t_builtin_type;
+	char	*key;
+	char	*val;
+}	t_env_dict;
 
 int	echo(const char *text, bool newline);
 int	pwd(void);
 int	cd(int ac, char **av);
+int	env(char **envp);
 
 #endif
