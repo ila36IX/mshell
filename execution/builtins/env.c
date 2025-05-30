@@ -38,7 +38,7 @@ static void	env_init(t_list **head, char **env)
  * @key: Key, Ex: PWD
  * @value: value, Ex: /home/sboukiou
  */
-static void	env_insert(t_list **head, char *key, char *value)
+void	env_insert(t_list **head, char *key, char *value)
 {
 	t_env_dict	*new_dict;
 	t_list		*node;
@@ -58,7 +58,7 @@ static void	env_insert(t_list **head, char *key, char *value)
  * @head: Head of the linked list
  * @key: Key, Ex: PWD
  */
-static void	env_remove(t_list *head, char *key)
+void	env_remove(t_list *head, char *key)
 {
 	t_list	*temp;
 	t_env_dict	*dict;
