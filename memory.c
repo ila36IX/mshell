@@ -1,14 +1,5 @@
 #include "./main.h"
 
-static void	ft_gc_print(t_list *gc)
-{
-	while (gc)
-	{
-		printf("\t[%p] --> [%lu]\n", gc->content, sizeof(gc->content));
-		gc = gc->next;
-	}
-}
-
 typedef enum s_act
 {
 	CLEAR,
