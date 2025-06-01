@@ -48,7 +48,7 @@
 
 /* Underline */
 #define TEXT_UBLACK "\033[4;30m"
-#define TEXT_URed "\033[4;31m"
+#define TEXT_URED "\033[4;31m"
 #define TEXT_UGREEN "\033[4;32m"
 #define TEXT_UYELLOW "\033[4;33m"
 #define TEXT_UBLUE "\033[4;34m"
