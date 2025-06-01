@@ -10,7 +10,7 @@ void	print_ast_simple_cmd(t_ast *ast, int indent)
 {
 	size_t	i;
 
-	if (ast->type != AST_SIMPLE_COMMAND || !ast)
+	if (!ast || ast->type != AST_SIMPLE_COMMAND)
 	{
 		UNREACHABLE("takes only none-null ast of simple command type!");
 	}
@@ -63,7 +63,7 @@ void	print_ast_type(t_ast *ast, int indent)
  */
 void	print_ast_subshell(t_ast *ast, int indent)
 {
-	if (ast->type != AST_SUBSHELL || !ast)
+	if (!ast || ast->type != AST_SUBSHELL)
 	{
 		UNREACHABLE("takes only none-null ast of subshell type!");
 	}
@@ -87,7 +87,7 @@ void	print_ast_redirection(t_ast *ast, int indent)
 {
 	size_t	i;
 
-	if (ast->type == AST_CONNECTOR || !ast)
+	if (!ast || ast->type == AST_CONNECTOR)
 	{
 		UNREACHABLE("None-null ast connector node doesn't have redirection!");
 	}
