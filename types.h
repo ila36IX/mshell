@@ -58,7 +58,8 @@ typedef struct s_redirect
 typedef struct s_simple_cmd
 {
 	char				**argv;
-	int					argc;
+	size_t					argc;
+	size_t _buff_size;
 }						t_simple_cmd;
 
 /*
@@ -70,11 +71,12 @@ typedef struct s_ast
 	union
 	{
 		t_connector		connector;
-		t_simple_cmd	*simple_cmd;
+		t_simple_cmd	simple_cmd;
 		struct s_ast	*subshell;
 	};
 	t_redirect			*redir;
 	size_t			redir_size;
+	size_t _buff_size;
 	struct s_ast		*next;
 }						t_ast;
 
