@@ -5,6 +5,9 @@
 #include "types.h"
 #include <stdbool.h>
 
+#define ARRAY_INIT_SIZE 16
+#define ERR_MSG_REDIRECT_TERGET "msh: syntax error near unexpected token `%s'\n"
+
 /**
  * lexer_peek_next_token - Get the next token without moving the cursor
  *
@@ -21,8 +24,6 @@ t_token lexer_peek_next_token(t_lexer *lexer)
 	lexer->cursor = cursor_location;
 	return (token);
 }
-
-#define DYNAMIC_ARRAY_INIT_SIZE 16
 
 bool next_token_is_joinable(t_lexer *lexer)
 {
@@ -55,6 +56,7 @@ bool token_is_redir_op(t_token token)
 	return (token.kind == TOKEN_OUT || token.kind == TOKEN_IN ||
 		token.kind == TOKEN_HEREDOC || token.kind == TOKEN_APPEND);
 }
+
 /**
  */
 char *lexer_next_zip_word(t_lexer *lexer)
@@ -90,70 +92,79 @@ t_redirect_type tok_kind_to_redir_type(t_token_kind kind)
 	}
 }
 
-#define ERR_MSG_REDIRECT_TERGET "msh: syntax error near unexpected token `%s'\n"
-
-
-void ast_simple_cmd_add_arg(t_ast *ast, t_lexer *lexer)
+void ast_simple_cmd_realloc(t_ast *ast)
 {
 	size_t buff_size;
 	char **buff;
-	size_t    i;
+	size_t i;
+
+	buff_size = ast->simple_cmd.argc * 2;
+	buff = ft_calloc(buff_size, sizeof(char *));
+	i = 0;
+	while (i < ast->simple_cmd.argc)
+	{
+		buff[i] = ast->simple_cmd.argv[i];
+		i++;
+	}
+	ast->simple_cmd.argv = buff;
+	ast->simple_cmd._buff_size = buff_size;
+}
+
+void ast_simple_cmd_add_arg(t_ast *ast, t_lexer *lexer)
+{
+	char *arg;
 
 	if (ast->type != AST_SIMPLE_COMMAND)
 	{
 		PANIC("Wrong ast type!");
 		return;
 	}
-	if (ast->simple_cmd->_buff_size - 1 == ast->simple_cmd->argc)
-	{
-		buff_size = ast->simple_cmd->argc * 2;
-		buff = ft_calloc(buff_size, sizeof(char *));
-		i = 0;
-		while (i < ast->simple_cmd->argc)
-		{
-			buff[i] = ast->simple_cmd->argv[i];
-			i++;
-		}
-		ast->simple_cmd->argv = buff;
-		ast->simple_cmd->_buff_size = buff_size;
-	}
-	ast->simple_cmd->argv[ast->simple_cmd->argc++] = lexer_next_zip_word(lexer);
+	if (ast->simple_cmd._buff_size - 1 == ast->simple_cmd.argc)
+		ast_simple_cmd_realloc(ast);
+	arg = lexer_next_zip_word(lexer);
+	ast->simple_cmd.argv[ast->simple_cmd.argc++] = arg;
 }
 
-void	init_ast_redirect(t_ast *ast)
+t_ast *init_ast_simple_cmd(void)
 {
+	t_ast *ast;
+
+	ast = ft_calloc(1, sizeof(t_ast));
+	ast->type = AST_SIMPLE_COMMAND;
+	ft_bzero(&ast->simple_cmd, sizeof(t_simple_cmd));
+	ast->simple_cmd.argv = ft_calloc(ARRAY_INIT_SIZE, sizeof(char *));
+	ast->simple_cmd._buff_size = ARRAY_INIT_SIZE;
 	ast->redir_size = 0;
-	ast->redir = ft_calloc(DYNAMIC_ARRAY_INIT_SIZE, sizeof(t_redirect));
-	ast->_buff_size = DYNAMIC_ARRAY_INIT_SIZE;
+	ast->redir = ft_calloc(ARRAY_INIT_SIZE, sizeof(t_redirect));
+	ast->_buff_size = ARRAY_INIT_SIZE;
+	return (ast);
 }
 
-void	init_ast_simple_cmd(t_ast *ast)
+void ast_redirct_realloc(t_ast *ast)
 {
-	ast->simple_cmd = ft_calloc(1, sizeof(t_simple_cmd));
-	ast->simple_cmd->argv = ft_calloc(DYNAMIC_ARRAY_INIT_SIZE, sizeof(char *));
-	ast->simple_cmd->_buff_size = DYNAMIC_ARRAY_INIT_SIZE;
+	size_t	    buff_size;
+	t_redirect *buff;
+	size_t	    i;
+
+	buff_size = ast->redir_size * 2;
+	buff = ft_calloc(buff_size, sizeof(t_redirect));
+	i = 0;
+	while (i < ast->redir_size)
+	{
+		buff[i] = ast->redir[i];
+		i++;
+	}
+	ast->redir = buff;
+	ast->_buff_size = buff_size;
 }
 
 void ast_add_redirct(t_ast *ast, t_lexer *lexer)
 {
-	size_t	    buff_size;
-	t_redirect *buff;
-	t_token	    token;
-	size_t	    i;
+	t_token token;
+	char   *target;
 
 	if (ast->_buff_size - 1 == ast->redir_size)
-	{
-		buff_size = ast->redir_size * 2;
-		buff = ft_calloc(buff_size, sizeof(t_redirect));
-		i = 0;
-		while (i < ast->redir_size)
-		{
-			buff[i] = ast->redir[i];
-			i++;
-		}
-		ast->redir = buff;
-		ast->_buff_size = buff_size;
-	}
+		ast_redirct_realloc(ast);
 	token = lexer_next_token(lexer);
 	ast->redir[ast->redir_size].type = tok_kind_to_redir_type(token.kind);
 	token = lexer_peek_next_token(lexer);
@@ -162,29 +173,16 @@ void ast_add_redirct(t_ast *ast, t_lexer *lexer)
 		printf(ERR_MSG_REDIRECT_TERGET, alloc_token_str(token));
 		TODO("hanlde redirection errors");
 	}
-	ast->redir[ast->redir_size++].target = lexer_next_zip_word(lexer);
+	target = lexer_next_zip_word(lexer);
+	ast->redir[ast->redir_size++].target = target;
 }
-// ast->redir[ast->redir_size].type = tok_kind_to_redir_type(lexer_next_token(lexer).kind);
-// if (token_is_word(lexer_peek_next_token(lexer)) == false)
-// {
-// 	token = lexer_next_token(lexer);
-// 	printf(ERR_MSG_REDIRECT_TERGET,
-// 	       token_to_str(token));
-// 	TODO("hanlde redirection errors");
-// }
-// ast->redir[ast->redir_size].target =
-//     lexer_next_zip_word(lexer);
-// ast->redir_size++;
 
 void parse_simple_cmd(t_lexer *lexer)
 {
 	t_ast  *ast;
 	t_token token;
 
-	ast = ft_calloc(1, sizeof(t_ast));
-	ast->type = AST_SIMPLE_COMMAND;
-	init_ast_redirect(ast);
-	init_ast_simple_cmd(ast);
+	ast = init_ast_simple_cmd();
 	token = lexer_peek_next_token(lexer);
 	while (token.kind)
 	{
@@ -195,7 +193,7 @@ void parse_simple_cmd(t_lexer *lexer)
 		else
 		{
 			token = lexer_next_token(lexer);
-			TODO("handle operators tokens (|, &&, ||)");
+			TODO("handle other tokens (|, &&, ||, (, ),INVALID)");
 		}
 		token = lexer_peek_next_token(lexer);
 	}
