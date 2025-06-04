@@ -14,7 +14,7 @@
 
 void	prompt(const char *name)
 {
-	write(STDOUT_FILENO, BBLUE, ft_strlen(BBLUE));
+	write(STDOUT_FILENO, TEXT_BBLUE, ft_strlen(TEXT_BBLUE));
 	write(STDOUT_FILENO, name, ft_strlen(name));
-	write(STDOUT_FILENO, RESET, ft_strlen(RESET));
+	write(STDOUT_FILENO, TEXT_RESET, ft_strlen(TEXT_RESET));
 }

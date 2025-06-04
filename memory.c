@@ -1,6 +1,6 @@
 #include "./main.h"
 
-static void	ft_gc_print(t_list *gc)
+ void	ft_gc_print(t_list *gc)
 {
 	while (gc)
 	{
