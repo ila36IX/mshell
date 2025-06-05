@@ -27,7 +27,7 @@ void _print_ast_helper(t_ast *ast, int indent)
  * used internally with the ast printer
  *
  * @indent: current indentation
- * @is_empty_line: is there something to be added before this line ended or not
+ * @is_empty_line: Print new line after the prefix
  * Return: Nothing
  */
 void	_tree_line_prefix(int indent, bool is_empty_line)

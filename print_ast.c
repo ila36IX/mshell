@@ -1,4 +1,5 @@
 #include "print_ast.h"
+#include "includes.h"
 
 /**
  * print_ast_simple_cmd - print ast simple command, with its I/O redirections
@@ -18,7 +19,7 @@ void	print_ast_simple_cmd(t_ast *ast, int indent)
 	print_ast_type(ast, indent++);
 	_tree_line_prefix(indent, true);
 	_tree_line_prefix(indent, false);
-	printf("────── %sARGC (%ld):%s ", TEXT_UWHITE, ast->simple_cmd.argc,
+	printf("────── %sARGS (%ld):%s ", TEXT_UWHITE, ast->simple_cmd.argc,
 		TEXT_RESET);
 	while (i < (size_t)ast->simple_cmd.argc)
 		printf("'%s' ", ast->simple_cmd.argv[i++]);
@@ -69,10 +70,19 @@ void	print_ast_subshell(t_ast *ast, int indent)
 	}
 	print_ast_type(ast, indent++);
 	_tree_line_prefix(indent, true);
-	_print_ast_helper(ast->subshell, indent);
-	_print_tree_end_root(indent);
+	if (ast->subshell)
+	{
+		_print_ast_helper(ast->subshell, indent);
+		_print_tree_end_root(indent);
+	}
+	else
+	{
+		_tree_line_prefix(indent, false);
+		printf("────── %s EMPTY_SUBSHELL%s\n", TEXT_BRED, TEXT_RESET);
+		_tree_line_prefix(indent, true);
+	}
 	_tree_line_prefix(indent, false);
-	printf("────── %sI/O (%zu):%s ", TEXT_UWHITE, ast->redir_size, TEXT_RESET);
+	printf("────── %sSUBSHELL I/O (%zu):%s ", TEXT_UWHITE, ast->redir_size, TEXT_RESET);
 	print_ast_redirection(ast, indent);
 }
 
@@ -92,6 +102,8 @@ void	print_ast_redirection(t_ast *ast, int indent)
 		UNREACHABLE("None-null ast connector node doesn't have redirection!");
 	}
 	i = 0;
+	if (ast->redir_size == 0)
+		printf("(nil)");
 	while (i < ast->redir_size)
 	{
 		if (i % 2)
