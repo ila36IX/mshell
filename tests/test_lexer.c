@@ -150,8 +150,9 @@ LexerTestCase_t test_cases[] = {
 	    {TOKEN_WORD, "wc", 2, true},
 	    {TOKEN_WORD, "-l", 2, true},
 	    {TOKEN_APPEND, ">>", 2, true},
-	    {TOKEN_SQ, "Ripjaws Log.txt", 15, true}
-	}, 7
+	    {TOKEN_SQ, "Ripjaws Log.txt", 15, true},
+	    {TOKEN_NULL, NULL, 0, false}
+	}, 8
     },
     {
 	"Operators touching words", "cat<file>out", {
@@ -212,8 +213,14 @@ LexerTestCase_t test_cases[] = {
 	    {TOKEN_APPEND, ">>", 2, false},
 	    {TOKEN_WORD, "outfile", 7, false},
 	    {TOKEN_HEREDOC, "<<", 2, false},
-	    {TOKEN_WORD, "infile", 6, false}
-	}, 4
+	    {TOKEN_WORD, "infile", 6, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	}, 9
     },
     {
 	"One double quote", "\"", {
@@ -286,8 +293,58 @@ LexerTestCase_t test_cases[] = {
 	    {TOKEN_APPEND, ">>", 2, false},
 	    {TOKEN_SQ, " c \n\t ", 6, true},
 	    {TOKEN_PIPE, "|", 1, true},
-	}, 23
-    }
+	    {TOKEN_NULL, NULL, 0, false},
+	}, 24
+    },
+    {
+	"Only parentheses", "()",
+	{
+	    {TOKEN_OPAREN, "(", 1, false},
+	    {TOKEN_CPAREN, ")", 1, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	}, 3
+    },
+    {
+	"Words and parentheses", "test(this)",
+	{
+	    {TOKEN_WORD, "test", 4, false},
+	    {TOKEN_OPAREN, "(", 1, false},
+	    {TOKEN_WORD, "this", 4, false},
+	    {TOKEN_CPAREN, ")", 1, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	}, 5
+    },
+    {
+	"Parentheses inside parentheses", "test((this))",
+	{
+	    {TOKEN_WORD, "test", 4, false},
+	    {TOKEN_OPAREN, "(", 1, false},
+	    {TOKEN_OPAREN, "(", 1, false},
+	    {TOKEN_WORD, "this", 4, false},
+	    {TOKEN_CPAREN, ")", 1, false},
+	    {TOKEN_CPAREN, ")", 1, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	}, 5
+    },
+    {
+	"parentheses with operators", "(true | (ls)) && (ls || false)",
+	{
+	    {TOKEN_OPAREN, "(", 1, false},
+	    {TOKEN_WORD, "true", 4, false},
+	    {TOKEN_PIPE, "|", 1, true},
+	    {TOKEN_OPAREN, "(", 1, true},
+	    {TOKEN_WORD, "ls", 2, false},
+	    {TOKEN_CPAREN, ")", 1, false},
+	    {TOKEN_CPAREN, ")", 1, false},
+	    {TOKEN_AND, "&&", 2, true},
+	    {TOKEN_OPAREN, "(", 1, true},
+	    {TOKEN_WORD, "ls", 2, false},
+	    {TOKEN_OR, "||", 2, true},
+	    {TOKEN_WORD, "false", 5, true},
+	    {TOKEN_CPAREN, ")", 1, false},
+	    {TOKEN_NULL, NULL, 0, false},
+	}, 14
+    },
 };
 
 int num_test_cases = sizeof(test_cases) / sizeof(test_cases[0]);
@@ -314,12 +371,6 @@ bool run_test(LexerTestCase_t test)
     for (int i = 0; i < test.num_expected_tokens; i++)
     {
 	token = lexer_next_token(&lexer);
-	if (token.kind == TOKEN_NULL && i + 1 < test.num_expected_tokens)
-	{
-	    printf("Error: %s\n", test.desc);
-	    printf("Number of tokens is invalid");
-	    return (false);
-	}
 	pass = pass && check_tokens_equality(test.desc, token, test.expected_tokens[i]);
     }
     if (test.num_expected_tokens == 0)
