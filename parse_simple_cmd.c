@@ -124,7 +124,7 @@ void ast_simple_cmd_add_arg(t_ast *ast, t_lexer *lexer)
 		PANIC("Wrong ast type!");
 		return;
 	}
-	if (ast->simple_cmd._buff_size - 1 == ast->simple_cmd.argc)
+	if (ast->simple_cmd._buff_size == ast->simple_cmd.argc)
 		ast_simple_cmd_realloc(ast);
 	arg = lexer_next_zip_word(lexer);
 	ast->simple_cmd.argv[ast->simple_cmd.argc++] = arg;
@@ -182,38 +182,6 @@ void ast_add_redirct(t_ast *ast, t_lexer *lexer)
 	ast->redir[ast->redir_size++].target = target;
 }
 
-t_ast *ast_add_connector(t_ast *ast, t_lexer *lexer)
-{
-	t_ast  *ast_node;
-	t_ast  *next_ast = init_ast_simple_cmd();
-	t_token token;
-
-	token = lexer_next_token(lexer);
-	if (!ast)
-	{
-		printf(ERR_UNEXPECTED_TOK, alloc_token_str(token));
-		TODO("hanlde redirection errors");
-	}
-	ast_node = ft_calloc(1, sizeof(t_ast));
-	ast_node->next = NULL;
-	ast_node->type = AST_CONNECTOR;
-	if (token.kind == TOKEN_OR)
-		ast_node->connector = CONNECTOR_OR;
-	else if (token.kind == TOKEN_AND)
-		ast_node->connector = CONNECTOR_AND;
-	else if (token.kind == TOKEN_PIPE)
-		ast_node->connector = CONNECTOR_PIPE;
-	else
-	{
-		UNREACHABLE("next token suppose to be one of the connecoters")
-	}
-	while (ast->next)
-		ast = ast->next;
-	ast->next = ast_node;
-	ast_node->next = next_ast;
-	return (next_ast);
-}
-
 size_t untill_close_paren(t_lexer *lexer)
 {
 	size_t	cursor_loc;
@@ -242,86 +210,121 @@ size_t untill_close_paren(t_lexer *lexer)
 		UNIMPLEMENTED("Between parentheses is empty\n");
 	}
 	in_between--;
-		
+
 	lexer->cursor = cursor_loc;
 	return (in_between);
 }
 
 t_ast *parse_simple_cmd(t_lexer *lexer);
 
-t_ast *parse_subshell(t_ast *ast, t_lexer *lexer)
+
+// if (token.kind == TOKEN_OPAREN)
+// {
+// 	size_t parent_size = untill_close_paren(lexer);
+// 	printf("There is %zu between parants\n", parent_size);
+// 	sub_lexer = lexer_new(&lexer->content[lexer->cursor], parent_size);
+// 	ast = parse_subshell(ast, &sub_lexer);
+// 	lexer->cursor += parent_size + 1;
+// }
+void ast_add_back(t_ast **head, t_ast *new)
 {
-	t_ast *_ast;
-
-
-	print_lexer_tokens(lexer);
-	_ast = ft_calloc(1, sizeof(t_ast));
-	_ast->type = AST_SUBSHELL;
-	_ast->subshell = parse_simple_cmd(lexer);
-	ast->next = _ast;
-	_ast->next = NULL;
-	return (_ast);
+	if (!head || !new)
+		return;
+	while (*head)
+		head = &(*head)->next;
+	*head = new;
 }
 
-t_ast *parse_simple_cmd(t_lexer *lexer)
+t_ast *ast_try_add_connector(t_ast **ast_head, t_lexer *lexer)
 {
 	t_ast  *ast;
-	t_ast  *ast_head;
-	t_lexer sub_lexer;
 	t_token token;
 
-	ast = init_ast_simple_cmd();
-	ast_head = ast;
 	token = lexer_peek_next_token(lexer);
+	if (token.kind != TOKEN_PIPE && token.kind != TOKEN_OR && token.kind != TOKEN_AND)
+		return (NULL);
+	token = lexer_next_token(lexer);
+	ast = ft_calloc(1, sizeof(t_ast));
+	ast->next = NULL;
+	ast->type = AST_CONNECTOR;
+	if (token.kind == TOKEN_OR)
+		ast->connector = CONNECTOR_OR;
+	else if (token.kind == TOKEN_AND)
+		ast->connector = CONNECTOR_AND;
+	else if (token.kind == TOKEN_PIPE)
+		ast->connector = CONNECTOR_PIPE;
+	ast_add_back(ast_head, ast);
+	return (ast);
+}
+
+t_ast	*ast_try_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
+{
+	t_ast  *ast;
+	t_token token;
+
+	token = lexer_peek_next_token(lexer);
+	if (!token_is_word(token) && !token_is_redir_op(token))
+		return (NULL);
+	ast = init_ast_simple_cmd();
+	ast_add_back(ast_head, ast);
 	while (token.kind)
 	{
-		if (token.kind == TOKEN_OPAREN)
-		{
-			size_t parent_size = untill_close_paren(lexer);
-			printf("There is %zu between parants\n",
-			       parent_size);
-			sub_lexer = lexer_new(&lexer->content[lexer->cursor],
-					      parent_size);
-			ast = parse_subshell(ast, &sub_lexer);
-			lexer->cursor += parent_size + 1;
-		}
-		else if (token_is_word(token))
+		if (token_is_word(token))
 			ast_simple_cmd_add_arg(ast, lexer);
 		else if (token_is_redir_op(token))
 			ast_add_redirct(ast, lexer);
-		else if (token_is_operator(token))
-			ast = ast_add_connector(ast, lexer);
 		else
-		{
-			TODO("handle other tokens (|, &&, ||, (, ),INVALID)");
-		}
+			break;
 		token = lexer_peek_next_token(lexer);
 	}
-	// print_ast(ast_head);
-	return (ast_head);
+	return (ast);
+}
+t_ast *parse(t_lexer *lexer);
+
+t_ast	*ast_try_add_subshell(t_ast **ast_head, t_lexer *lexer)
+{
+	t_ast  *ast;
+	t_token token;
+	t_lexer sub_lexer;
+	size_t parent_size;
+
+	token = lexer_peek_next_token(lexer);
+	if (token.kind != TOKEN_OPAREN)
+		return (NULL);
+	if (token.kind == TOKEN_CPAREN)
+	{
+		printf(ERR_UNEXPECTED_TOK, ")");
+		TODO("Handle errorrs\n");
+	}
+	ast = ft_calloc(1, sizeof(t_ast));
+	ast->type = AST_SUBSHELL;
+	parent_size = untill_close_paren(lexer);
+	if (parent_size == 0)
+	{
+		ast->subshell = NULL;
+		lexer->cursor += parent_size + 1;
+		ast_add_back(ast_head, ast);
+		return (ast);
+	}
+	printf("There is %zu between parants\n", parent_size);
+	sub_lexer = lexer_new(&lexer->content[lexer->cursor], parent_size);
+	ast->subshell = parse(&sub_lexer);
+	printf("Here??\n");
+	lexer->cursor += parent_size + 1;
+	ast_add_back(ast_head, ast);
+	return (ast);
 }
 
 t_ast *parse(t_lexer *lexer)
 {
 	t_ast  *ast;
-	t_token token;
 
-	ast = ft_calloc(1, sizeof(t_ast));
-	token = lexer_peek_next_token(lexer);
-	while (token.kind)
+	ast = NULL;
+	while (lexer_peek_next_token(lexer).kind)
 	{
-		if (token_is_redir_op(token))
-			ast_add_redirct(ast, lexer);
-		else if (token.kind == TOKEN_OPAREN)
-		{
-			size_t parent_size = untill_close_paren(lexer);
-			t_lexer sub_lexer;
-			sub_lexer = lexer_new(&lexer->content[lexer->cursor], parent_size);
-			ast = parse(&sub_lexer);
-			lexer->cursor += parent_size + 1;
-		}
-		else
-			token = lexer_next_token(lexer);
+		ast_try_add_connector(&ast, lexer);
+		ast_try_add_simple_cmd(&ast, lexer);
+		ast_try_add_subshell(&ast, lexer);
 	}
 	return (ast);
 }
