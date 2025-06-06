@@ -12,6 +12,13 @@
 #define ARRAY_INIT_SIZE 16
 #define ERR_UNEXPECTED_TOK "msh: syntax error near unexpected token `%s'\n"
 
+t_ast *last_ast(t_ast *ast)
+{
+	while (ast && ast->next)
+		ast = ast->next;
+	return (ast);
+}
+
 /**
  * lexer_peek_next_token - Get the next token without moving the cursor
  *
@@ -182,50 +189,6 @@ void ast_add_redirct(t_ast *ast, t_lexer *lexer)
 	ast->redir[ast->redir_size++].target = target;
 }
 
-size_t untill_close_paren(t_lexer *lexer)
-{
-	size_t	cursor_loc;
-	size_t	in_between;
-	t_token token;
-
-	lexer_next_token(lexer); /* skip open parent */
-	cursor_loc = lexer->cursor;
-	token = lexer_next_token(lexer);
-	while (token.kind && token.kind != TOKEN_CPAREN)
-	{
-		if (token.kind == TOKEN_OPAREN)
-		{
-			TODO("Handle recursive parentheses");
-		}
-		token = lexer_next_token(lexer);
-	}
-	if (!token.kind)
-	{
-		printf(ERR_UNEXPECTED_TOK, "(");
-		UNIMPLEMENTED("Handle unclosing parentheses errors");
-	}
-	in_between = lexer->cursor - cursor_loc;
-	if (lexer->cursor - cursor_loc == 0)
-	{
-		UNIMPLEMENTED("Between parentheses is empty\n");
-	}
-	in_between--;
-
-	lexer->cursor = cursor_loc;
-	return (in_between);
-}
-
-t_ast *parse_simple_cmd(t_lexer *lexer);
-
-
-// if (token.kind == TOKEN_OPAREN)
-// {
-// 	size_t parent_size = untill_close_paren(lexer);
-// 	printf("There is %zu between parants\n", parent_size);
-// 	sub_lexer = lexer_new(&lexer->content[lexer->cursor], parent_size);
-// 	ast = parse_subshell(ast, &sub_lexer);
-// 	lexer->cursor += parent_size + 1;
-// }
 void ast_add_back(t_ast **head, t_ast *new)
 {
 	if (!head || !new)
@@ -241,8 +204,19 @@ t_ast *ast_try_add_connector(t_ast **ast_head, t_lexer *lexer)
 	t_token token;
 
 	token = lexer_peek_next_token(lexer);
-	if (token.kind != TOKEN_PIPE && token.kind != TOKEN_OR && token.kind != TOKEN_AND)
+	if (token.kind != TOKEN_PIPE && token.kind != TOKEN_OR &&
+	    token.kind != TOKEN_AND)
 		return (NULL);
+	if (!last_ast(*ast_head))
+	{
+		printf(ERR_UNEXPECTED_TOK, alloc_token_str(token));
+		UNIMPLEMENTED("Handle errors");
+	}
+	if (last_ast(*ast_head)->type != AST_SIMPLE_COMMAND && last_ast(*ast_head)->type != AST_SUBSHELL)
+	{
+		printf(ERR_UNEXPECTED_TOK, alloc_token_str(token));
+		UNIMPLEMENTED("Handle errors");
+	}
 	token = lexer_next_token(lexer);
 	ast = ft_calloc(1, sizeof(t_ast));
 	ast->next = NULL;
@@ -257,7 +231,7 @@ t_ast *ast_try_add_connector(t_ast **ast_head, t_lexer *lexer)
 	return (ast);
 }
 
-t_ast	*ast_try_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
+t_ast *ast_try_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
 {
 	t_ast  *ast;
 	t_token token;
@@ -281,49 +255,108 @@ t_ast	*ast_try_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
 }
 t_ast *parse(t_lexer *lexer);
 
-t_ast	*ast_try_add_subshell(t_ast **ast_head, t_lexer *lexer)
+void skip_nested_parens(t_lexer *lexer)
+{
+	t_token token;
+	int	depth;
+
+	token = lexer_next_token(lexer);
+	depth = 1;
+	while (token.kind)
+	{
+		if (token.kind == TOKEN_OPAREN)
+			depth++;
+		else if (token.kind == TOKEN_CPAREN)
+			depth--;
+		if (token.kind == TOKEN_CPAREN && depth == 0)
+			break;
+		token = lexer_next_token(lexer);
+	}
+	if (depth > 0)
+	{
+		printf(ERR_UNEXPECTED_TOK, "(");
+		UNIMPLEMENTED("Handle unclosing parentheses errors");
+	}
+	else if (depth < 0)
+	{
+		printf(ERR_UNEXPECTED_TOK, ")");
+		UNIMPLEMENTED("Handle unclosing parentheses errors");
+	}
+}
+
+t_lexer subshell_new_lexer(t_lexer *lexer)
+{
+	size_t	cursor_loc;
+	t_lexer sub_lexer;
+	size_t lexer_size;
+
+	lexer_next_token(lexer); /* skip open parent */
+	cursor_loc = lexer->cursor;
+	skip_nested_parens(lexer);
+	lexer_size = lexer->cursor - cursor_loc - 1;
+	sub_lexer = lexer_new(&lexer->content[cursor_loc], lexer_size);
+	return (sub_lexer);
+}
+
+t_ast *init_ast_subshell(void)
+{
+	t_ast *ast;
+
+	ast = ft_calloc(1, sizeof(t_ast));
+	ast->type = AST_SUBSHELL;
+	ast->redir_size = 0;
+	ast->redir = ft_calloc(ARRAY_INIT_SIZE, sizeof(t_redirect));
+	ast->_buff_size = ARRAY_INIT_SIZE;
+	return (ast);
+}
+
+
+t_ast *ast_try_add_subshell(t_ast **ast_head, t_lexer *lexer)
 {
 	t_ast  *ast;
 	t_token token;
 	t_lexer sub_lexer;
-	size_t parent_size;
 
 	token = lexer_peek_next_token(lexer);
-	if (token.kind != TOKEN_OPAREN)
-		return (NULL);
 	if (token.kind == TOKEN_CPAREN)
 	{
 		printf(ERR_UNEXPECTED_TOK, ")");
-		TODO("Handle errorrs\n");
+		TODO("Handle Errors\n");
 	}
-	ast = ft_calloc(1, sizeof(t_ast));
-	ast->type = AST_SUBSHELL;
-	parent_size = untill_close_paren(lexer);
-	if (parent_size == 0)
+	if (token.kind != TOKEN_OPAREN)
+		return (NULL);
+	if (last_ast(*ast_head) && last_ast(*ast_head)->type != AST_CONNECTOR)
 	{
-		ast->subshell = NULL;
-		lexer->cursor += parent_size + 1;
-		ast_add_back(ast_head, ast);
-		return (ast);
+		printf(ERR_UNEXPECTED_TOK, ")");
+		UNIMPLEMENTED("Syntax error\n");
 	}
-	printf("There is %zu between parants\n", parent_size);
-	sub_lexer = lexer_new(&lexer->content[lexer->cursor], parent_size);
+	ast = init_ast_subshell();
+	sub_lexer = subshell_new_lexer(lexer);
 	ast->subshell = parse(&sub_lexer);
-	printf("Here??\n");
-	lexer->cursor += parent_size + 1;
+	if (ast->subshell == NULL)
+	{
+		printf(ERR_UNEXPECTED_TOK, ")");
+		UNIMPLEMENTED("Syntax error\n");
+	}
+	token = lexer_peek_next_token(lexer);
+	while (token_is_redir_op(token))
+	{
+		ast_add_redirct(ast, lexer);
+		token = lexer_peek_next_token(lexer);
+	}
 	ast_add_back(ast_head, ast);
 	return (ast);
 }
 
 t_ast *parse(t_lexer *lexer)
 {
-	t_ast  *ast;
+	t_ast *ast;
 
 	ast = NULL;
 	while (lexer_peek_next_token(lexer).kind)
 	{
-		ast_try_add_connector(&ast, lexer);
 		ast_try_add_simple_cmd(&ast, lexer);
+		ast_try_add_connector(&ast, lexer);
 		ast_try_add_subshell(&ast, lexer);
 	}
 	return (ast);
