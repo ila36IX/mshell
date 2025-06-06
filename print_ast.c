@@ -18,10 +18,10 @@ void	print_ast_simple_cmd(t_ast *ast, int indent)
 	print_ast_type(ast, indent++);
 	_tree_line_prefix(indent, true);
 	_tree_line_prefix(indent, false);
-	printf("────── %sARGC (%d):%s ", TEXT_UWHITE, ast->simple_cmd->argc,
+	printf("────── %sARGC (%d):%s ", TEXT_UWHITE, (int)ast->simple_cmd.argc,
 		TEXT_RESET);
-	while (i < (size_t)ast->simple_cmd->argc)
-		printf("%s ", ast->simple_cmd->argv[i++]);
+	while (i < (size_t)ast->simple_cmd.argc)
+		printf("%s ", ast->simple_cmd.argv[i++]);
 	printf("\n");
 	_tree_line_prefix(indent, false);
 	printf("────── %sI/O (%zu):%s ", TEXT_UWHITE, ast->redir_size, TEXT_RESET);
