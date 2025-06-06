@@ -1,6 +1,6 @@
 #ifndef _LEXER_H_
 # define _LEXER_H_
-# include "includes.h"
+# include "types.h"
 
 typedef enum
 {
@@ -49,5 +49,13 @@ t_token				lexer_next_token(t_lexer *l);
 const char			*token_kind_name(t_token_kind kind);
 void				print_token(t_token token);
 void	print_lexer_tokens(t_lexer *lexer);
+char *alloc_token_str(t_token token);
+bool token_is_word(t_token token);
+bool token_is_redir_op(t_token token);
+bool token_is_operator(t_token token);
+char *lexer_next_zip_word(t_lexer *lexer);
+bool next_token_is_joinable(t_lexer *lexer);
+t_redirect_type tok_kind_to_redir_type(t_token_kind kind);
+t_token lexer_peek_next_token(t_lexer *lexer);
 
 #endif /*_LEXER_H_ */

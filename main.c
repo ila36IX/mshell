@@ -11,14 +11,21 @@
 /* ************************************************************************** */
 
 #include "main.h"
+#include "types.h"
+#include "print_ast.h"
+#include "parser.h"
 
-int	main(int ac, char **av)
+int	main(void)
 {
-	(void)(ac);
+	t_ast *ast;
+	char *line;
+	t_lexer lexer;
 
-	char **list = ft_split(av[1], ' ');
-	ft_gc_clear();
+	while ((line = readline("$ ")))
+	{
+		lexer = lexer_new(line, ft_strlen(line));
+		ast = create_ast(&lexer);
+		print_ast(ast);
+	}
 
-	(void)list;
-	return (EXIT_SUCCESS);
 }
