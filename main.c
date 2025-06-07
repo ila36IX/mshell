@@ -15,6 +15,8 @@
 #include "print_ast.h"
 #include "parser.h"
 
+bool	ast_error_found(t_ast *ast);
+
 int	main(void)
 {
 	t_ast *ast;
@@ -25,7 +27,7 @@ int	main(void)
 	{
 		lexer = lexer_new(line, ft_strlen(line));
 		ast = create_ast(&lexer);
-		print_ast(ast);
+		if (ast_error_found(ast) == false)
+			print_ast(ast);
 	}
-
 }

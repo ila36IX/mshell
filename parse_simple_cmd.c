@@ -63,7 +63,10 @@ t_ast *ast_try_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
 		if (token_is_word(token))
 			ast_simple_cmd_add_arg(ast, lexer);
 		else if (token_is_redir_op(token))
-			ast_add_redirct(ast, lexer);
+		{
+			if (!ast_add_redirct(ast_head, ast, lexer))
+				return (ast);
+		}
 		else
 			break;
 		token = lexer_peek_next_token(lexer);

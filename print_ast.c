@@ -128,7 +128,8 @@ void	print_ast(t_ast *ast)
 {
 	if (!ast)
 	{
-		UNREACHABLE("None null ast only!");
+		printf("Empty ast\n");
+		return ;
 	}
 	_print_ast_helper(ast, 0);
 	_print_tree_end_root(0);

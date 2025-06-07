@@ -24,4 +24,8 @@ t_ast *create_ast(t_lexer *lexer);
 t_ast *last_ast(t_ast *ast);
 void ast_add_back(t_ast **head, t_ast *new);
 void ast_redirct_realloc(t_ast *ast);
-void ast_add_redirct(t_ast *ast, t_lexer *lexer);
+bool	ast_add_redirct(t_ast **ast_head, t_ast *ast, t_lexer *lexer);
+
+
+
+t_ast *ast_add_error(t_ast **ast_head, const char *format, const char *tok);

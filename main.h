@@ -30,4 +30,8 @@
         printf("%s:%d: TODO: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
         exit(1);
 
+#define PANIC(...)                                                      \
+        printf("%s:%d: PANIC: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
+        exit(1);
+
 #endif

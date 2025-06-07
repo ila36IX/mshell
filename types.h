@@ -26,6 +26,7 @@ typedef enum e_ast_type
 	AST_SUBSHELL,
 	AST_SIMPLE_COMMAND,
 	AST_CONNECTOR,
+	AST_INVALID,
 }						t_ast_type;
 
 typedef enum e_redirect_type
@@ -71,6 +72,7 @@ typedef struct s_ast
 	union
 	{
 		t_connector		connector;
+		const char *reason		[2];
 		t_simple_cmd	simple_cmd;
 		struct s_ast	*subshell;
 	};
