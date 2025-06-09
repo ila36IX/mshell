@@ -42,7 +42,7 @@ int	is_whitespace(char c)
 int	is_word_delim(char c)
 {
 	return (c == '"' || c == '\'' || c == '>' || c == '<' || is_whitespace(c)
-		|| c == '\0' || c == '|' || c == '(' || c == ')');
+		|| c == '\0' || c == '|' || c == '(' || c == ')' || c == '&');
 }
 
 /**
