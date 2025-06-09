@@ -75,6 +75,8 @@ bool	check_special_tokens(t_lexer *l, t_token *token)
 		return (true);
 	if (is_special_token(l, token, "&&", TOKEN_AND))
 		return (true);
+	if (is_special_token(l, token, "&", TOKEN_WORD))
+		return (true);
 	if (is_special_token(l, token, "||", TOKEN_OR))
 		return (true);
 	if (is_special_token(l, token, "|", TOKEN_PIPE))

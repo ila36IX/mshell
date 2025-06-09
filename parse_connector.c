@@ -20,7 +20,7 @@ bool connector_is_valid(t_ast **ast_head, t_lexer *lexer)
 	return (true);
 }
 
-t_ast *ast_try_add_connector(t_ast **ast_head, t_lexer *lexer)
+t_ast *ast_add_connector(t_ast **ast_head, t_lexer *lexer)
 {
 	t_ast  *ast;
 	t_token token;

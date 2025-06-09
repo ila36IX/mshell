@@ -7,15 +7,15 @@ t_ast *last_ast(t_ast *ast)
 	return (ast);
 }
 
-bool	ast_error_found(t_ast *ast)
+bool	ast_print_error(t_ast *ast)
 {
 	bool found;
 
 	found = false;
-	while (ast)
+	while (ast && !found)
 	{
 		if (ast->type == AST_SUBSHELL)
-			found = ast_error_found(ast->subshell);
+			found = ast_print_error(ast->subshell);
 		if (ast->type == AST_INVALID && !found)
 		{
 			printf(ast->reason[0], ast->reason[1]);
@@ -78,7 +78,6 @@ bool ast_add_redirct(t_ast **ast_head, t_ast *ast, t_lexer *lexer)
 			      alloc_token_str(token));
 		return (false);
 	}
-
 	target = lexer_next_zip_word(lexer);
 	ast->redir[ast->redir_size++].target = target;
 	return (true);
@@ -100,7 +99,7 @@ t_ast *ast_add_error(t_ast **ast_head, const char *format, const char *tok)
 	return (ast);
 }
 
-bool	ast_error_exits(t_ast *ast)
+bool	ast_error_found(t_ast *ast)
 {
 	bool found;
 
@@ -108,7 +107,7 @@ bool	ast_error_exits(t_ast *ast)
 	while (ast && !found)
 	{
 		if (ast->type == AST_SUBSHELL)
-			found = ast_error_exits(ast->subshell);
+			found = ast_error_found(ast->subshell);
 		if (ast->type == AST_INVALID)
 			return (true);
 		ast = ast->next;
@@ -126,14 +125,14 @@ t_ast *create_ast(t_lexer *lexer)
 	while (token.kind)
 	{
 		if (token_is_word(token) || token_is_redir_op(token))
-			ast_try_add_simple_cmd(&ast, lexer);
+			ast_add_simple_cmd(&ast, lexer);
 		else if (token_is_connector(token))
-			ast_try_add_connector(&ast, lexer);
+			ast_add_connector(&ast, lexer);
 		else if (token.kind == TOKEN_OPAREN)
-			ast_try_add_subshell(&ast, lexer);
+			ast_add_subshell(&ast, lexer);
 		else
 			ast_add_error(&ast, ERR_UNEXPECTED_TOK, alloc_token_str(token));
-		if (ast_error_exits(ast))
+		if (ast_error_found(ast))
 			break ;
 		token = lexer_peek_next_token(lexer);
 	}

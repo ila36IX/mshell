@@ -11,11 +11,12 @@
 /* ************************************************************************** */
 
 #include "main.h"
+#include "lexer.h"
 #include "types.h"
 #include "print_ast.h"
 #include "parser.h"
 
-bool	ast_error_found(t_ast *ast);
+bool	ast_print_error(t_ast *ast);
 
 int	main(void)
 {
@@ -27,7 +28,7 @@ int	main(void)
 	{
 		lexer = lexer_new(line, ft_strlen(line));
 		ast = create_ast(&lexer);
-		if (ast_error_found(ast) == false)
+		if (ast_print_error(ast) == false)
 			print_ast(ast);
 	}
 }

@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "types.h"
 
 void ast_simple_cmd_realloc(t_ast *ast)
 {
@@ -48,13 +49,29 @@ t_ast *init_ast_simple_cmd(void)
 	return (ast);
 }
 
-t_ast *ast_try_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
+bool is_valid_simple_cmd(t_ast **ast_head, t_lexer *lexer)
+{
+
+	char *token_str;
+
+	if (!last_ast(*ast_head))
+		return (true);
+	if (last_ast(*ast_head)->type != AST_CONNECTOR)
+	{
+		token_str = alloc_token_str(lexer_peek_next_token(lexer));
+		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, token_str);
+		return (false);
+	}
+	return (true);
+}
+
+t_ast *ast_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
 {
 	t_ast  *ast;
 	t_token token;
 
 	token = lexer_peek_next_token(lexer);
-	if (!token_is_word(token) && !token_is_redir_op(token))
+	if (!is_valid_simple_cmd(ast_head, lexer))
 		return (NULL);
 	ast = init_ast_simple_cmd();
 	ast_add_back(ast_head, ast);

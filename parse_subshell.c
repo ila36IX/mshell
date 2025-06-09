@@ -18,19 +18,9 @@ void skip_nested_parens(t_lexer *lexer)
 			break;
 		token = lexer_next_token(lexer);
 	}
-	if (depth > 0)
-	{
-		printf(ERR_UNEXPECTED_TOK, "(");
-		UNIMPLEMENTED("Handle unclosing parentheses errors");
-	}
-	else if (depth < 0)
-	{
-		printf(ERR_UNEXPECTED_TOK, ")");
-		UNIMPLEMENTED("Handle unclosing parentheses errors");
-	}
 }
 
-bool	closing_parent_exists(t_lexer *lexer)
+bool closing_parent_exists(t_lexer *lexer)
 {
 	t_token token;
 	int	depth;
@@ -53,12 +43,11 @@ bool	closing_parent_exists(t_lexer *lexer)
 	return (true);
 }
 
-
 t_lexer subshell_new_lexer(t_lexer *lexer)
 {
 	size_t	cursor_loc;
 	t_lexer sub_lexer;
-	size_t lexer_size;
+	size_t	lexer_size;
 
 	lexer_next_token(lexer); /* skip open parent */
 	cursor_loc = lexer->cursor;
@@ -82,7 +71,7 @@ t_ast *init_ast_subshell(void)
 
 bool is_valid_subshell(t_ast **ast_head, t_lexer *lexer)
 {
-	char  *token_str;
+	char *token_str;
 
 	if (!closing_parent_exists(lexer))
 	{
@@ -101,7 +90,7 @@ bool is_valid_subshell(t_ast **ast_head, t_lexer *lexer)
 	return (true);
 }
 
-t_ast *ast_try_add_subshell(t_ast **ast_head, t_lexer *lexer)
+t_ast *ast_add_subshell(t_ast **ast_head, t_lexer *lexer)
 {
 	t_ast  *ast;
 	t_token token;
