@@ -1,5 +1,5 @@
-#include "print_ast.h"
 #include "includes.h"
+#include "ast_print.h"
 
 /**
  * print_ast_simple_cmd - print ast simple command, with its I/O redirections
@@ -82,7 +82,8 @@ void	print_ast_subshell(t_ast *ast, int indent)
 		_tree_line_prefix(indent, true);
 	}
 	_tree_line_prefix(indent, false);
-	printf("────── %sSUBSHELL I/O (%zu):%s ", TEXT_UWHITE, ast->redir_size, TEXT_RESET);
+	printf("────── %sSUBSHELL I/O (%zu):%s ", TEXT_UWHITE, ast->redir_size,
+		TEXT_RESET);
 	print_ast_redirection(ast, indent);
 }
 
@@ -128,7 +129,8 @@ void	print_ast(t_ast *ast)
 {
 	if (!ast)
 	{
-		UNREACHABLE("None null ast only!");
+		printf("Empty ast\n");
+		return ;
 	}
 	_print_ast_helper(ast, 0);
 	_print_tree_end_root(0);

@@ -1,5 +1,5 @@
-#ifndef PRINT_AST_H
-# define PRINT_AST_H
+#ifndef AST_PRINT_H
+# define AST_PRINT_H
 
 # include "main.h"
 
