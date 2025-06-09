@@ -1,10 +1,10 @@
 #include "parser.h"
 
-t_ast *ast_add_error(t_ast **ast_head, const char *format, const char *tok);
+t_ast	*ast_add_error(t_ast **ast_head, const char *format, const char *tok);
 
-bool connector_is_valid(t_ast **ast_head, t_lexer *lexer)
+bool	connector_is_valid(t_ast **ast_head, t_lexer *lexer)
 {
-	char  *connector;
+	char	*connector;
 
 	if (!last_ast(*ast_head))
 	{
@@ -20,10 +20,10 @@ bool connector_is_valid(t_ast **ast_head, t_lexer *lexer)
 	return (true);
 }
 
-t_ast *ast_add_connector(t_ast **ast_head, t_lexer *lexer)
+t_ast	*ast_add_connector(t_ast **ast_head, t_lexer *lexer)
 {
-	t_ast  *ast;
-	t_token token;
+	t_ast	*ast;
+	t_token	token;
 
 	if (!connector_is_valid(ast_head, lexer))
 		return (NULL);

@@ -57,5 +57,6 @@ char *lexer_next_zip_word(t_lexer *lexer);
 bool next_token_is_joinable(t_lexer *lexer);
 t_redirect_type tok_kind_to_redir_type(t_token_kind kind);
 t_token lexer_peek_next_token(t_lexer *lexer);
+bool	lexer_check_parens(t_lexer *lexer);
 
 #endif /*_LEXER_H_ */

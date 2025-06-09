@@ -1,10 +1,9 @@
 #include "parser.h"
-#include <stdbool.h>
 
-void skip_nested_parens(t_lexer *lexer)
+void	skip_nested_parens(t_lexer *lexer)
 {
-	t_token token;
-	int	depth;
+	t_token	token;
+	int		depth;
 
 	token = lexer_next_token(lexer);
 	depth = 1;
@@ -15,38 +14,15 @@ void skip_nested_parens(t_lexer *lexer)
 		else if (token.kind == TOKEN_CPAREN)
 			depth--;
 		if (token.kind == TOKEN_CPAREN && depth == 0)
-			break;
+			break ;
 		token = lexer_next_token(lexer);
 	}
 }
 
-bool closing_parent_exists(t_lexer *lexer)
-{
-	t_token token;
-	int	depth;
-	size_t	cursor_loc;
-
-	cursor_loc = lexer->cursor;
-	token = lexer_next_token(lexer);
-	depth = 0;
-	while (token.kind)
-	{
-		if (token.kind == TOKEN_OPAREN)
-			depth++;
-		else if (token.kind == TOKEN_CPAREN)
-			depth--;
-		token = lexer_next_token(lexer);
-	}
-	lexer->cursor = cursor_loc;
-	if (depth != 0)
-		return (false);
-	return (true);
-}
-
-t_lexer subshell_new_lexer(t_lexer *lexer)
+t_lexer	subshell_new_lexer(t_lexer *lexer)
 {
 	size_t	cursor_loc;
-	t_lexer sub_lexer;
+	t_lexer	sub_lexer;
 	size_t	lexer_size;
 
 	lexer_next_token(lexer); /* skip open parent */
@@ -57,9 +33,9 @@ t_lexer subshell_new_lexer(t_lexer *lexer)
 	return (sub_lexer);
 }
 
-t_ast *init_ast_subshell(void)
+t_ast	*init_ast_subshell(void)
 {
-	t_ast *ast;
+	t_ast	*ast;
 
 	ast = ft_calloc(1, sizeof(t_ast));
 	ast->type = AST_SUBSHELL;
@@ -69,11 +45,11 @@ t_ast *init_ast_subshell(void)
 	return (ast);
 }
 
-bool is_valid_subshell(t_ast **ast_head, t_lexer *lexer)
+bool	is_valid_subshell(t_ast **ast_head, t_lexer *lexer)
 {
-	char *token_str;
+	char	*token_str;
 
-	if (!closing_parent_exists(lexer))
+	if (!lexer_check_parens(lexer))
 	{
 		token_str = alloc_token_str(lexer_peek_next_token(lexer));
 		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, token_str);
@@ -90,11 +66,11 @@ bool is_valid_subshell(t_ast **ast_head, t_lexer *lexer)
 	return (true);
 }
 
-t_ast *ast_add_subshell(t_ast **ast_head, t_lexer *lexer)
+t_ast	*ast_add_subshell(t_ast **ast_head, t_lexer *lexer)
 {
-	t_ast  *ast;
-	t_token token;
-	t_lexer sub_lexer;
+	t_ast	*ast;
+	t_token	token;
+	t_lexer	sub_lexer;
 
 	if (!is_valid_subshell(ast_head, lexer))
 		return (NULL);

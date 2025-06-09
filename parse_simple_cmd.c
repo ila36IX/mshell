@@ -1,11 +1,11 @@
 #include "parser.h"
 #include "types.h"
 
-void ast_simple_cmd_realloc(t_ast *ast)
+void	ast_simple_cmd_realloc(t_ast *ast)
 {
-	size_t buff_size;
-	char **buff;
-	size_t i;
+	size_t	buff_size;
+	char	**buff;
+	size_t	i;
 
 	buff_size = ast->simple_cmd.argc * 2;
 	buff = ft_calloc(buff_size, sizeof(char *));
@@ -19,14 +19,14 @@ void ast_simple_cmd_realloc(t_ast *ast)
 	ast->simple_cmd._buff_size = buff_size;
 }
 
-void ast_simple_cmd_add_arg(t_ast *ast, t_lexer *lexer)
+void	ast_simple_cmd_add_arg(t_ast *ast, t_lexer *lexer)
 {
-	char *arg;
+	char	*arg;
 
 	if (ast->type != AST_SIMPLE_COMMAND)
 	{
 		UNREACHABLE("Wrong ast type!");
-		return;
+		return ;
 	}
 	if (ast->simple_cmd._buff_size == ast->simple_cmd.argc)
 		ast_simple_cmd_realloc(ast);
@@ -34,9 +34,9 @@ void ast_simple_cmd_add_arg(t_ast *ast, t_lexer *lexer)
 	ast->simple_cmd.argv[ast->simple_cmd.argc++] = arg;
 }
 
-t_ast *init_ast_simple_cmd(void)
+t_ast	*init_ast_simple_cmd(void)
 {
-	t_ast *ast;
+	t_ast	*ast;
 
 	ast = ft_calloc(1, sizeof(t_ast));
 	ast->type = AST_SIMPLE_COMMAND;
@@ -49,10 +49,9 @@ t_ast *init_ast_simple_cmd(void)
 	return (ast);
 }
 
-bool is_valid_simple_cmd(t_ast **ast_head, t_lexer *lexer)
+bool	is_valid_simple_cmd(t_ast **ast_head, t_lexer *lexer)
 {
-
-	char *token_str;
+	char	*token_str;
 
 	if (!last_ast(*ast_head))
 		return (true);
@@ -65,10 +64,10 @@ bool is_valid_simple_cmd(t_ast **ast_head, t_lexer *lexer)
 	return (true);
 }
 
-t_ast *ast_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
+t_ast	*ast_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
 {
-	t_ast  *ast;
-	t_token token;
+	t_ast	*ast;
+	t_token	token;
 
 	token = lexer_peek_next_token(lexer);
 	if (!is_valid_simple_cmd(ast_head, lexer))
@@ -85,7 +84,7 @@ t_ast *ast_add_simple_cmd(t_ast **ast_head, t_lexer *lexer)
 				return (ast);
 		}
 		else
-			break;
+			break ;
 		token = lexer_peek_next_token(lexer);
 	}
 	return (ast);

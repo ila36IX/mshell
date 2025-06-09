@@ -114,7 +114,14 @@ bool	ast_error_found(t_ast *ast)
 	}
 	return (found);
 }
-
+/**
+ * create_ast - allocate the ast
+ *
+ * @lexer: the lexer
+ * 
+ * Return: The ast or NULl if its empty.
+ * NOTE: INVALID ast is an ast that contains a `INVALID_AST` node
+ */
 t_ast *create_ast(t_lexer *lexer)
 {
 	t_ast  *ast;
