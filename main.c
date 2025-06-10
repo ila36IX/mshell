@@ -17,6 +17,9 @@ int	main(int ac, char **av)
 	(void)(ac);
 
 	char **list = ft_split(av[1], ' ');
+	ft_gcadd_back(list);
+	ft_gcadd_back(list);
+	ft_gcadd_back(list);
 	ft_gc_clear();
 
 	(void)list;
