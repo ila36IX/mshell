@@ -16,9 +16,9 @@
 
 typedef enum e_connector
 {
-	OP_AND,
-	OP_PIPE,
-	OP_OR
+	CONNECTOR_AND,
+	CONNECTOR_PIPE,
+	CONNECTOR_OR
 }						t_connector;
 
 typedef enum e_ast_type
@@ -37,17 +37,18 @@ typedef enum e_redirect_type
 }						t_redirect_type;
 
 /**
- * t_redirect - Linked list describing a redirections of command
+ * t_redirect - Mimics the behavior of dynamic array
+ * to avoid the overhead caused when using linked-lists
  *
  * @type: Integer represinting redirection type see t_redirect_type
  * @target: Filename for <, >, >> Delimiter for <<
- * @next: next user redirection or NULL if no any exist
+ * @redirect_size: Current size of the array.
  */
 typedef struct s_redirect
 {
 	t_redirect_type		type;
 	char				*target;
-	struct s_redirect	*next;
+	size_t				redirec_size;
 }						t_redirect;
 
 /**
@@ -57,7 +58,8 @@ typedef struct s_redirect
 typedef struct s_simple_cmd
 {
 	char				**argv;
-	int					argc;
+	size_t					argc;
+	size_t _buff_size;
 }						t_simple_cmd;
 
 /*
@@ -68,11 +70,13 @@ typedef struct s_ast
 	t_ast_type			type;
 	union
 	{
-		t_connector		connecter;
-		t_simple_cmd	*simple_cmd;
+		t_connector		connector;
+		t_simple_cmd	simple_cmd;
 		struct s_ast	*subshell;
 	};
 	t_redirect			*redir;
+	size_t			redir_size;
+	size_t _buff_size;
 	struct s_ast		*next;
 }						t_ast;
 
