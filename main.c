@@ -19,7 +19,6 @@ int	main(void)
 {
 	t_ast *ast;
 	char *line;
-	t_lexer lexer;
 
 	while ((line = readline("$ ")))
 	{
