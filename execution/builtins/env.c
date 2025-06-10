@@ -38,7 +38,7 @@ static void	env_init(t_list **head, char **env)
  * @key: Key, Ex: PWD
  * @value: value, Ex: /home/sboukiou
  */
-void	env_insert(t_list **head, char *key, char *value)
+void	export(t_list **head, char *key, char *value)
 {
 	t_env_dict	*new_dict;
 	t_list		*node;
@@ -54,11 +54,11 @@ void	env_insert(t_list **head, char *key, char *value)
 }
 
 /*
- * env_remove - Removes a key/val node from the env (Used by unset)
+ * unset - Removes a key/val node from the env (Used by unset)
  * @head: Head of the linked list
  * @key: Key, Ex: PWD
  */
-void	env_remove(t_list *head, char *key)
+void	unset(t_list *head, char *key)
 {
 	t_list	*temp;
 	t_env_dict	*dict;
