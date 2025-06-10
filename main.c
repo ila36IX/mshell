@@ -14,14 +14,23 @@
 
 int	main(int ac, char **av)
 {
-	(void)(ac);
+	t_ast	*ast;
+	char	*cmd;
 
-	char **list = ft_split(av[1], ' ');
-	ft_gcadd_back(list);
-	ft_gcadd_back(list);
-	ft_gcadd_back(list);
-	ft_gc_clear();
-
-	(void)list;
+	UNSET(ac);
+	UNSET(av);
+	UNSET(ast);
+	while (true)
+	{
+		cmd = readline("[minishell]$ ");
+		ft_gcadd_back(cmd);
+		if (cmd == NULL)
+		{
+			ft_gc_clear();
+			exit(0);
+		}
+		printf("%s\n", cmd);
+		ft_gc_clear();
+	}
 	return (EXIT_SUCCESS);
 }
