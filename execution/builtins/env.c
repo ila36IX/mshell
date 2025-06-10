@@ -27,7 +27,7 @@ static void	env_init(t_list **head, char **env)
 		node = ft_lstnew(dict);
 		ft_gcadd_back(node);
 		ft_lstadd_back(head, node);
-		/*ft_g_cremove(list);*/
+		/*ft_gc_remove_split(list);*/
 		i++;
 	}
 }
