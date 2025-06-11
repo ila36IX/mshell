@@ -17,12 +17,14 @@ typedef struct s_env_dict
 }	t_env_dict;
 
 /* Built-in functions */
-int	echo(const char *text, bool newline);
+int	echo(char **av, t_redirect *redir, t_list *env);
 int	pwd(void);
 int	cd(int ac, char **av);
 /* Env utils-funcs */
+t_list	*env_init(char **env);
 int	env(char **envp);
 void	env_insert(t_list **head, char *key, char *value);
 void	env_remove(t_list *head, char *key);
+char	*env_get_value(char *key, t_list *env);
 
 #endif

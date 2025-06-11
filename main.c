@@ -19,18 +19,18 @@
 
 # include <sys/stat.h>
 
-int	exec_builtin(char **av, t_redirect *redir)
+int	exec_builtin(char **av, t_redirect *redir, t_list *env)
 {
 	if (ft_strcmp(av[0], "echo") == 0)
-		echo(av, redir);
+		echo(av, redir, env);
 	else if (ft_strcmp(av[0], "cd") == 0)
 			cd(av, redir);
 	else if (ft_strcmp(av[0], "pwd") == 0)
-			pwd(redir)
+			pwd(redir);
 	else if (ft_strcmp(av[0], "export") == 0)
-					export(av, redir)
+					export(av, redir);
 	else if (ft_strcmp(av[0], "unset") == 0)
-		  unset(av, redir)
+		  unset(av, redir);
 	else if (ft_strcmp(av[0], "env") == 0)
 		  env(redir);
 	else if (ft_strcmp(av[0], "exit") == 0)
@@ -74,7 +74,7 @@ int	check_command_type(char *name)
  * @redir: Redirection information (files, and streams)
  * Return: Exit status of the cmd
  */
-int	exec_simple_cmd(t_simple_cmd *cmd, t_redirect *redir)
+int	exec_simple_cmd(t_simple_cmd *cmd, t_redirect *redir,t_list *env)
 {
 	int	i;
 
@@ -82,9 +82,9 @@ int	exec_simple_cmd(t_simple_cmd *cmd, t_redirect *redir)
 		return (EXIT_FAILURE);
 	i = 0;
 	if (check_command_type(cmd->argv[0]) == BUILTIN)
-		exec_builtin(cmd->argv, cmd->redir);
+		exec_builtin(cmd->argv, cmd->redir, env);
 	else if (check_command_type(cmd->argv[0]) == PRECOMPILED)
-		exec_precompiled(cmd->argv, cmd->redir);
+		exec_precompiled(cmd->argv, cmd->redir, env);
 
 }
 
@@ -93,16 +93,16 @@ int	exec_simple_cmd(t_simple_cmd *cmd, t_redirect *redir)
 	* @ast: Ast data
 	* @return: Exit status of the given command
  */
-int	main_exec(t_ast *ast)
+int	main_exec(t_ast *ast, t_list *env)
 {
 	if (!ast)
 		return (EXIT_FAILURE);
 	if (ast->type == AST_SIMPLE_COMMAND)
-		return (exec_simple_cmd(ast->simple_cmd, ast->redir));
+		return (exec_simple_cmd(ast->simple_cmd, ast->redir, env));
 	else if (ast->type == AST_SUBSHELL)
-			return (exec_subshell(ast->subshell, ast->redir));
+			return (exec_subshell(ast->subshell, ast->redir, env));
 	else if (ast->type == AST_CONNECTOR)
-			return (exec_connector(ast->prev, ast->next));
+			return (exec_connector(ast->prev, ast->next, env));
 	else
 		UNIMPLEMENTED("It shouldn't get here. AST type is invalid\n");
 	return (0);
@@ -115,14 +115,16 @@ int	main_exec(t_ast *ast)
 	* @envp: Env variables
 	* Return: 0 on SUCCESS or non-null value otherwise
 */
-int	main(int ac, char **av)
+int	main(int ac, char **av, char **envp)
 {
 	t_ast	*ast;
 	char	*cmd;
+	t_list	*env;
 
 	UNSET(ac);
 	UNSET(av);
 	UNSET(ast);
+	env = env_init(envp);
 	while (true)
 	{
 		cmd = readline("[minishell]$ ");
