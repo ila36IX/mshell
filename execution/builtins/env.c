@@ -8,11 +8,13 @@
  * ["key=val"]
  */
 
-static void	env_init(t_list **head, char **env)
+t_list	*env_list = NULL;
+void	env_init(char **env)
 {
 	int	i;
 	t_env_dict	*dict;
 	t_list	*node;
+	t_list	**head = &env_list;
 	char	**list;
 
 	if (!env)
@@ -30,6 +32,28 @@ static void	env_init(t_list **head, char **env)
 		/*ft_gc_remove_split(list);*/
 		i++;
 	}
+}
+
+
+/**
+	* env_get_value - Gets the value based on a key
+	* @key: Key to check for its value
+	* Return: Value or NULL if its not found
+ */
+char	*env_get_value(char *key)
+{
+	t_list	*temp;
+	t_env_dict	*dict;
+
+	temp = env_list;
+	while (temp)
+	{
+		dict = (t_env_dict *)temp->content;
+		if (ft_strcmp(dict->key, key) == 0)
+			return (dict->val);
+		temp = temp->next;
+	}
+	return (NULL);
 }
 
 /*
@@ -88,7 +112,7 @@ int	env(char **envp)
 	t_list	*env;
 
 	env = NULL;
-	env_init(&env, envp);
+	env_init(envp);
 	if (!env)
 		return (EXIT_FAILURE);
 	while (env)
