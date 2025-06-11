@@ -4,8 +4,10 @@
 /**
 	 * expand_write - Expands and prints a env-variable
 	 * @var: Env variable key
+	 * @env: linked list holding all environment variables as key.val
+	 * pairs
  */
-void	expand_write(char *var)
+void	expand_write(char *var, t_list *env)
 {
 	char	*val;
 
@@ -14,7 +16,7 @@ void	expand_write(char *var)
 
 	if (var[0] == '$')
 	{
-		val = env_get_value(var + 1);
+		val = env_get_value(var + 1, env);
 		if (val)
 			printf("[%s] ", val);
 	}
@@ -30,7 +32,7 @@ void	expand_write(char *var)
 	* Return: Number of bytes written or EXIT_FAILURE (1) instead
 */
 
-int	echo(char **av, t_redirect *redir)
+int	echo(char **av, t_redirect *redir, t_list *env)
 {
 	int	i;
 	bool	newline;
@@ -39,12 +41,15 @@ int	echo(char **av, t_redirect *redir)
 	if (!av)
 		return (EXIT_FAILURE);
 	i = 1;
+	newline = true;
+	while (av[i] && ft_strcmp(av[i], "-n") == 0)
+	{
+		newline = false;
+		i++;
+	}
 	while (av[i])
 	{
-		if (ft_strcmp(av[i], "-n") == 0)
-			newline = true;
-		else
-			expand_write(av[i]);
+		expand_write(av[i], env);
 		i++;
 	}
 	if (newline == true)
@@ -52,18 +57,3 @@ int	echo(char **av, t_redirect *redir)
 	return (0);
 
 }
-/*{*/
-/*	int	written;*/
-/*	int	text_len;*/
-/**/
-/*	if (text == NULL)*/
-/*		return (EXIT_FAILURE);*/
-/*	text_len = ft_strlen(text);*/
-/*	if (newline == true)*/
-/*		written = printf("%s\n", text);*/
-/*	else*/
-/*		written = printf("%s", text);*/
-/*	if (text_len > written)*/
-/*		return (EXIT_FAILURE);*/
-/*	return (written);*/
-/*}*/
