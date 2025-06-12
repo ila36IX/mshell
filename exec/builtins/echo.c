@@ -18,10 +18,10 @@ void	expand_write(char *var, t_list *env)
 	{
 		val = env_get_value(var + 1, env);
 		if (val)
-			printf("[%s] ", val);
+			printf("%s", val);
 	}
 	else
-		printf("[%s] ", var);
+		printf("%s", var);
 }
 
 /**
@@ -50,6 +50,8 @@ int	echo(char **av, t_redirect *redir, t_list *env)
 	while (av[i])
 	{
 		expand_write(av[i], env);
+		if (av[i + 1])
+			printf(" ");
 		i++;
 	}
 	if (newline == true)
