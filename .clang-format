@@ -1,0 +1,23 @@
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle:    LLVM
+Language: C
+
+# Indentation
+UseTab:          Always
+TabWidth:        8
+IndentWidth:     8
+
+# Column limit
+ColumnLimit:     80
+
+# Braces will take one line of its own
+BreakBeforeBraces: Allman
+
+AlignConsecutiveAssignments:
+  Enabled: false
+
+AlignConsecutiveDeclarations:
+  Enabled: true
+
+AlignTrailingComments:
+  Kind: Always

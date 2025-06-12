@@ -7,17 +7,6 @@ typedef enum s_act
 	REMOVE
 }	t_act;
 
-/*static void	ft_gcprint(t_list *gc)*/
-/*{*/
-/*	printf("-------------\n");*/
-/*	while (gc)*/
-/*	{*/
-/*		printf("[%p]\n", gc->content);*/
-/*		gc = gc->next;*/
-/*	}*/
-/*	printf("-------------\n");*/
-/*}*/
-
 static void	ft_gc_act(void *addr, t_act action)
 {
 	static t_list	*gc;

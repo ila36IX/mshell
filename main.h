@@ -12,23 +12,27 @@
 
 #ifndef MAIN_H
 # define MAIN_H
-# include "libft/libft.h"
 # include "./includes.h"
-# include "./types.h"
-# include "./prototypes.h"
 # include "./lexer.h"
 #include "./execution/builtins/builtins.h"
+# include "./prototypes.h"
+# include "./types.h"
+# include "libft/libft.h"
 
-#define UNIMPLEMENTED(...)                                                      \
-        printf("%s:%d: UNIMPLEMENTED: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
-        exit(1);
+# define UNIMPLEMENTED(...)                                                  \
+	printf("%s:%d: UNIMPLEMENTED: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
+	exit(1);
 
-#define UNREACHABLE(...)                                                      \
-        printf("%s:%d: UNREACHABLE: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
-        exit(1);
+# define UNREACHABLE(...)                                                  \
+	printf("%s:%d: UNREACHABLE: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
+	exit(1);
 
-#define TODO(...)                                                      \
-        printf("%s:%d: TODO: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
-        exit(1);
+# define TODO(...)                                                  \
+	printf("%s:%d: TODO: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
+	exit(1);
+
+# define PANIC(...)                                                  \
+	printf("%s:%d: PANIC: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
+	exit(1);
 
 #endif
