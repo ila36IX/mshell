@@ -1,14 +1,15 @@
-#include "print_ast.h"
+#include "ast_print.h"
 
 /**
- * _print_ast_helper - print ast nodes and follow its childs recursively meant only to be
+ * _print_ast_helper
+	- print ast nodes and follow its childs recursively meant only to be
  * used internally with the ast printer
  *
  * @indent: current indentation
  * @ast: first ast node of the tree
  * Return: Nothing
  */
-void _print_ast_helper(t_ast *ast, int indent)
+void	_print_ast_helper(t_ast *ast, int indent)
 {
 	while (ast)
 	{
@@ -32,7 +33,7 @@ void _print_ast_helper(t_ast *ast, int indent)
  */
 void	_tree_line_prefix(int indent, bool is_empty_line)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < indent)
@@ -56,7 +57,7 @@ void	_tree_line_prefix(int indent, bool is_empty_line)
  */
 void	_print_tree_end_root(int indent)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < indent)

@@ -1,4 +1,4 @@
-#include "print_ast.h"
+#include "ast_print.h"
 
 /**
  * ast_type_to_str - Get string representatoin of a ast type
@@ -6,7 +6,7 @@
  * @type: ast type to be represented
  * Return: constant LATERAL string
  */
-const char	*ast_type_to_str(t_ast_type type) 
+const char	*ast_type_to_str(t_ast_type type)
 {
 	if (type == AST_CONNECTOR)
 		return ("CONNECTOR");
@@ -14,7 +14,8 @@ const char	*ast_type_to_str(t_ast_type type)
 		return ("SUBSHELL");
 	else if (type == AST_SIMPLE_COMMAND)
 		return ("SIMPLE COMMAND");
-	else {
+	else
+	{
 		UNREACHABLE("ast type string represenation needed!");
 	}
 }
@@ -25,7 +26,7 @@ const char	*ast_type_to_str(t_ast_type type)
  * @type: connector type to be represented
  * Return: constant LATERAL string
  */
-const char *connector_type_to_str(t_connector type)
+const char	*connector_type_to_str(t_connector type)
 {
 	if (type == CONNECTOR_AND)
 		return ("AND");
@@ -45,7 +46,7 @@ const char *connector_type_to_str(t_connector type)
  * @type: redicretion type to be represented
  * Return: constant LATERAL string
  */
-const char *redir_type_to_str(t_redirect_type type)
+const char	*redir_type_to_str(t_redirect_type type)
 {
 	if (type == REDIR_TYPE_IN)
 		return ("<");
