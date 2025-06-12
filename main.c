@@ -48,9 +48,7 @@ int	check_command_type(char *name)
 
 	if (!name)
 		return (NOT_FOUND);
-	if (stat(name, &file_data) == 0 && file_data.st_mode == S_IXUSR)
-		return (PRECOMPILED);
-	else if (ft_strcmp(name, "echo") == 0)
+	if (ft_strcmp(name, "echo") == 0)
 			return (BUILTIN);
 	else if (ft_strcmp(name, "cd") == 0)
 			return (BUILTIN);
@@ -64,6 +62,8 @@ int	check_command_type(char *name)
 			return (BUILTIN);
 	else if (ft_strcmp(name, "exit") == 0)
 			return (BUILTIN);
+	else if (stat(name, &file_data) == 0 && file_data.st_mode == S_IXUSR)
+		return (PRECOMPILED);
 	return (NOT_FOUND);
 }
 
@@ -100,7 +100,7 @@ int	main_exec(t_ast *ast, t_list *env)
 	if (ast->type == AST_SIMPLE_COMMAND)
 		return (exec_simple_cmd(ast->simple_cmd, ast->redir, env));
 	else if (ast->type == AST_SUBSHELL)
-			return (exec_subshell(ast->subshell, ast->redir, env));
+			return (main_exec(ast->subshell, env));
 	else if (ast->type == AST_CONNECTOR)
 			return (exec_connector(ast->prev, ast->next, env));
 	else
