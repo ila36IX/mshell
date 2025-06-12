@@ -32,12 +32,11 @@ void	expand_write(char *var, t_list *env)
 	* Return: Number of bytes written or EXIT_FAILURE (1) instead
 */
 
-int	echo(char **av, t_redirect *redir, t_list *env)
+int	echo(char **av, t_list *env)
 {
 	int	i;
 	bool	newline;
 
-	UNSET(redir);
 	if (!av)
 		return (EXIT_FAILURE);
 	i = 1;

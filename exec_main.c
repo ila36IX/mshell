@@ -7,22 +7,25 @@
 
 # include <sys/stat.h>
 
-int	exec_builtin(char **av, t_redirect *redir, t_list *env)
+int	exec_builtin(t_ast *ast, t_list *env)
 {
-	if (ft_strcmp(av[0], "echo") == 0)
-		return (echo(av, redir, env));
-	/*else if (ft_strcmp(av[0], "cd") == 0)*/
-	/*		cd(av, redir);*/
-	/*else if (ft_strcmp(av[0], "pwd") == 0)*/
-	/*		pwd(redir);*/
+	t_simple_cmd	cmd;
+
+	cmd = ast->simple_cmd;
+	if (ft_strcmp(cmd.argv[0], "echo") == 0)
+		return (echo(cmd.argv, env));
+	else if (ft_strcmp(cmd.argv[0], "cd") == 0)
+			cd(cmd.argc, cmd.argv);
+	else if (ft_strcmp(cmd.argv[0], "pwd") == 0)
+			pwd();
+	else if (ft_strcmp(cmd.argv[0], "exit") == 0)
+					quit(cmd.argv, cmd.argc);
 	/*else if (ft_strcmp(av[0], "export") == 0)*/
 	/*				export(av, redir);*/
 	/*else if (ft_strcmp(av[0], "unset") == 0)*/
 	/*	  unset(av, redir);*/
 	/*else if (ft_strcmp(av[0], "env") == 0)*/
 	/*	  env(redir);*/
-	/*else if (ft_strcmp(av[0], "exit") == 0)*/
-	/*				exit(av);*/
 	return (0);
 }
 
@@ -76,13 +79,14 @@ int	exec_simple_cmd(t_ast *ast, t_list *env)
 	if (saved_stream == -1)
 		printf("setup faild\n");
 	if (check_command_type(cmd.argv[0]) == BUILTIN)
-		exec_builtin(cmd.argv, ast->redir, env);
+		exec_builtin(ast, env);
 	else
 		return (0);
 	/*else if (check_command_type(cmd.argv[0]) == PRECOMPILED)*/
 	/*	exec_precompiled(cmd->argv, ast->redir, env);*/
 	cleanup_redirection(ast->redir, saved_stream);
-	close(target_fd);
+	if (target_fd != -1)
+		close(target_fd);
 	return (0);
 }
 
