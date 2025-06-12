@@ -11,19 +11,19 @@ int	single_redirections(t_redirect *redir, int *target_fd)
 	saved_stream = -1;
 	if (redir->type == REDIR_TYPE_OUT)
 	{
-		*target_fd = open(redir->target, O_RDWR | O_CREAT | O_TRUNC, 0644);
+		saved_stream = dup(STDOUT_FILENO);
+		*target_fd = open(redir->target, O_WRONLY | O_CREAT, 0644);
 		if (*target_fd == -1)
 			perror("Open");
-		saved_stream = dup(STDOUT_FILENO);
 		if (dup2(*target_fd, STDOUT_FILENO) ==  -1)
 			perror("dup2");
 	}
 	if (redir->type == REDIR_TYPE_APPEND)
 	{
-		*target_fd = open(redir->target, O_APPEND | O_CREAT);
+		saved_stream = dup(STDOUT_FILENO);
+		*target_fd = open(redir->target, O_WRONLY | O_APPEND | O_CREAT, 0644);
 		if (*target_fd == -1)
 			perror("open");
-		saved_stream = dup(STDOUT_FILENO);
 		if (dup2(*target_fd, STDOUT_FILENO) ==  -1)
 			perror("dup2");
 	}
