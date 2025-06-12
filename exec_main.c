@@ -1,4 +1,5 @@
 # include "./main.h"
+# include "./exec.h"
 
 # define BUILTIN 0
 # define PRECOMPILED 1
@@ -65,16 +66,23 @@ int	check_command_type(char *name)
 int	exec_simple_cmd(t_ast *ast, t_list *env)
 {
 	t_simple_cmd	cmd;
+	int	saved_stream;
+	int	target_fd;
 
 	if (!ast || !env)
 		return (EXIT_FAILURE);
 	cmd = ast->simple_cmd;
+	saved_stream = setup_redirections(ast, &target_fd);
+	if (saved_stream == -1)
+		printf("setup faild\n");
 	if (check_command_type(cmd.argv[0]) == BUILTIN)
 		exec_builtin(cmd.argv, ast->redir, env);
 	else
 		return (0);
 	/*else if (check_command_type(cmd.argv[0]) == PRECOMPILED)*/
 	/*	exec_precompiled(cmd->argv, ast->redir, env);*/
+	cleanup_redirection(ast->redir, saved_stream);
+	close(target_fd);
 	return (0);
 }
 
