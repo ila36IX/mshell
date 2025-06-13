@@ -58,27 +58,6 @@ char	*env_get_value(char *key, t_list *env)
 }
 
 /*
- * env_insert - Inserts a new dict(key,val) into the env-list
- * @head: Head of the linked list
- * @key: Key, Ex: PWD
- * @value: value, Ex: /home/sboukiou
- */
-void	export(t_list **head, char *key, char *value)
-{
-	t_env_dict	*new_dict;
-	t_list		*node;
-
-	new_dict = ft_malloc(1, sizeof(t_env_dict));
-	new_dict->key = key;
-	new_dict->val = value;
-	node = ft_lstnew(&new_dict);
-	if (!node)
-		ft_gc_clear();
-	ft_gcadd_back(node);
-	ft_lstadd_back(head, node);
-}
-
-/*
  * unset - Removes a key/val node from the env (Used by unset)
  * @head: Head of the linked list
  * @key: Key, Ex: PWD
@@ -107,13 +86,10 @@ void	unset(t_list *head, char *key)
  * Return: 0 if succeeded or EXIT_FAILURE otherwise
  */
 
-int	env(char **envp)
+int	env(t_list *env)
 {
 	t_env_dict	*dict;
-	t_list	*env;
 
-	env = NULL;
-	env_init(envp);
 	if (!env)
 		return (EXIT_FAILURE);
 	while (env)
