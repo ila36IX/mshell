@@ -1,4 +1,5 @@
 # include "./builtins.h"
+#include "environ.h"
 
 
 /**
@@ -7,7 +8,7 @@
 	 * @env: linked list holding all environment variables as key.val
 	 * pairs
  */
-void	expand_write(char *var, t_list *env)
+void	expand_write(char *var)
 {
 	char	*val;
 
@@ -16,7 +17,7 @@ void	expand_write(char *var, t_list *env)
 
 	if (var[0] == '$')
 	{
-		val = env_get_value(var + 1, env);
+		val = environ_get(var);
 		if (val)
 			printf("%s", val);
 	}
@@ -32,7 +33,7 @@ void	expand_write(char *var, t_list *env)
 	* Return: Number of bytes written or EXIT_FAILURE (1) instead
 */
 
-int	echo(char **av, t_list *env)
+int	echo(char **av)
 {
 	int	i;
 	bool	newline;
@@ -48,7 +49,7 @@ int	echo(char **av, t_list *env)
 	}
 	while (av[i])
 	{
-		expand_write(av[i], env);
+		expand_write(av[i]);
 		if (av[i + 1])
 			printf(" ");
 		i++;

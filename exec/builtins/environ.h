@@ -1,7 +1,7 @@
 #ifndef ENVIRON_H
 # define ENVIRON_H
 
-# include "main.h"
+# include "../../main.h"
 
 typedef enum e_env_action
 {
@@ -19,7 +19,8 @@ typedef struct s_dict
 	struct s_dict	*next;
 }					t_dict;
 
-char				*envron_get(const char *key);
+void	environ_init(const char **envp);
+char				*environ_get(const char *key);
 void				environ_unset(const char *key);
 void				environ_set(const char *key, const char *value);
 void				environ_free(void);

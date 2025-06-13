@@ -1,5 +1,6 @@
 # include "./main.h"
 # include "./exec.h"
+# include "./exec/builtins/environ.h"
 
 # define BUILTIN 0
 # define PRECOMPILED 1
@@ -7,13 +8,13 @@
 
 # include <sys/stat.h>
 
-int	exec_builtin(t_ast *ast, t_list *envp)
+int	exec_builtin(t_ast *ast)
 {
 	t_simple_cmd	cmd;
 
 	cmd = ast->simple_cmd;
 	if (ft_strcmp(cmd.argv[0], "echo") == 0)
-		return (echo(cmd.argv, envp));
+		return (echo(cmd.argv));
 	else if (ft_strcmp(cmd.argv[0], "cd") == 0)
 			cd(cmd.argc, cmd.argv);
 	else if (ft_strcmp(cmd.argv[0], "pwd") == 0)
@@ -21,11 +22,11 @@ int	exec_builtin(t_ast *ast, t_list *envp)
 	else if (ft_strcmp(cmd.argv[0], "exit") == 0)
 					quit(cmd.argv, cmd.argc);
 	else if (ft_strcmp(cmd.argv[0], "export") == 0)
-					bin_export(cmd, envp);
+					bin_export(cmd);
 	else if (ft_strcmp(cmd.argv[0], "env") == 0)
-		  env(envp);
-	/*else if (ft_strcmp(av[0], "unset") == 0)*/
-	/*	  unset(av, redir);*/
+		environ_print();
+	else if (ft_strcmp(cmd.argv[0], "unset") == 0)
+		  environ_unset(cmd.argv[1]);
 	return (0);
 }
 
@@ -66,20 +67,20 @@ int	check_command_type(char *name)
  * @redir: Redirection information (files, and streams)
  * Return: Exit status of the cmd
  */
-int	exec_simple_cmd(t_ast *ast, t_list *env)
+int	exec_simple_cmd(t_ast *ast)
 {
 	t_simple_cmd	cmd;
 	int	saved_stream;
 	int	target_fd;
 
-	if (!ast || !env)
+	if (!ast)
 		return (EXIT_FAILURE);
 	cmd = ast->simple_cmd;
 	saved_stream = setup_redirections(ast, &target_fd);
 	if (saved_stream == -1)
 		printf("setup faild\n");
 	if (check_command_type(cmd.argv[0]) == BUILTIN)
-		exec_builtin(ast, env);
+		exec_builtin(ast);
 	else
 		return (0);
 	/*else if (check_command_type(cmd.argv[0]) == PRECOMPILED)*/
@@ -98,16 +99,15 @@ int	exec_simple_cmd(t_ast *ast, t_list *env)
 int exec_main(t_ast *ast, char **envp)
 {
 	int	status;
-	t_list	*env;
 
 	status = 0;
 	if (!ast)
 		return (EXIT_FAILURE);
-	env = env_init(envp);
 	if (!envp)
 		return (EXIT_FAILURE);
+	environ_init((const char **)envp);
 	if (ast->type == AST_SIMPLE_COMMAND)
-		return (exec_simple_cmd(ast, env));
+		return (exec_simple_cmd(ast));
 	/*else if (ast->type == AST_SUBSHELL)*/
 	/*		return (main_exec(ast->subshell, env));*/
 	/*else if (ast->type == AST_CONNECTOR)*/

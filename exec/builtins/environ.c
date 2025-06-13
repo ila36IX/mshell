@@ -2,7 +2,7 @@
 
 t_dict	*g_environ_head = NULL;
 
-char	*envron_get(const char *key)
+char	*environ_get(const char *key)
 {
 	t_dict	*walk;
 
@@ -91,3 +91,21 @@ void	environ_print(void)
 		walk = walk->next;
 	}
 }
+
+void	environ_init(const char **envp)
+{
+	int	i;
+	char	**list;
+
+	i = 0;
+	while (envp[i])
+	{
+		list = ft_split(envp[i], '=');
+		if (!list)
+			return ;
+		environ_set(list[0], list[1]);
+		/*ft_gcremove_split(list);*/
+		i++;
+	}
+}
+
