@@ -2,7 +2,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror -ggdb3 -g3
 LINKERS = -lft -lreadline
 
-SRC_FILES= $(wildcard *.c)
+SRC_FILES= $(wildcard *.c ./exec/*.c ./exec/builtins/*.c)
 SRC_OBJ= $(SRC_FILES:%.c=%.o)
 
 
