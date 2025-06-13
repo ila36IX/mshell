@@ -22,8 +22,8 @@ int	pwd(void);
 int	cd(int ac, char **av);
 /* Env utils-funcs */
 t_list	*env_init(char **env);
-int	env(char **envp);
-void	env_insert(t_list **head, char *key, char *value);
+int	env(t_list *env);
+void	bin_export(t_simple_cmd cmd, t_list *env);
 void	env_remove(t_list *head, char *key);
 char	*env_get_value(char *key, t_list *env);
 int	quit(char **av, int ac);

@@ -7,25 +7,25 @@
 
 # include <sys/stat.h>
 
-int	exec_builtin(t_ast *ast, t_list *env)
+int	exec_builtin(t_ast *ast, t_list *envp)
 {
 	t_simple_cmd	cmd;
 
 	cmd = ast->simple_cmd;
 	if (ft_strcmp(cmd.argv[0], "echo") == 0)
-		return (echo(cmd.argv, env));
+		return (echo(cmd.argv, envp));
 	else if (ft_strcmp(cmd.argv[0], "cd") == 0)
 			cd(cmd.argc, cmd.argv);
 	else if (ft_strcmp(cmd.argv[0], "pwd") == 0)
 			pwd();
 	else if (ft_strcmp(cmd.argv[0], "exit") == 0)
 					quit(cmd.argv, cmd.argc);
-	/*else if (ft_strcmp(av[0], "export") == 0)*/
-	/*				export(av, redir);*/
+	else if (ft_strcmp(cmd.argv[0], "export") == 0)
+					bin_export(cmd, envp);
+	else if (ft_strcmp(cmd.argv[0], "env") == 0)
+		  env(envp);
 	/*else if (ft_strcmp(av[0], "unset") == 0)*/
 	/*	  unset(av, redir);*/
-	/*else if (ft_strcmp(av[0], "env") == 0)*/
-	/*	  env(redir);*/
 	return (0);
 }
 

@@ -30,8 +30,8 @@ int	main(int ac, char **av, char **envp)
 	{
 		lexer = lexer_new(line, ft_strlen(line));
 		ast = create_ast(&lexer);
-		/*if (ast_print_error(ast) == false)*/
-		/*	print_ast(ast);*/
+		if (ast_print_error(ast) == false)
+			print_ast(ast);
 		exec_main(ast, envp);
 	}
 }
