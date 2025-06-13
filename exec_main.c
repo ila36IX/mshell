@@ -30,6 +30,22 @@ int	exec_builtin(t_ast *ast)
 	return (0);
 }
 
+int	exec_precompiled(t_ast *ast)
+{
+	pid_t	pid;
+	if (!ast)
+		return (EXIT_FAILURE);
+	pid = fork();
+	if (pid == -1)
+		return (EXIT_FAILURE);
+	if (pid == 0)
+	{
+		if (execve(ast->simple_cmd.argv[0], ast->simple_cmd.argv, NULL) == -1)
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
+}
+
 /**
  * check_command_type - Checks for the type of given command by name
  * @name: A string given as comman name (EX: ls)
@@ -37,7 +53,6 @@ int	exec_builtin(t_ast *ast)
  */
 int	check_command_type(char *name)
 {
-	struct	stat	file_data;
 
 	if (!name)
 		return (NOT_FOUND);
@@ -55,7 +70,7 @@ int	check_command_type(char *name)
 			return (BUILTIN);
 	else if (ft_strcmp(name, "exit") == 0)
 			return (BUILTIN);
-	else if (stat(name, &file_data) == 0 && file_data.st_mode == S_IXUSR)
+	else if (access(name, F_OK | X_OK) == 0)
 		return (PRECOMPILED);
 	return (NOT_FOUND);
 }
@@ -81,10 +96,8 @@ int	exec_simple_cmd(t_ast *ast)
 		printf("setup faild\n");
 	if (check_command_type(cmd.argv[0]) == BUILTIN)
 		exec_builtin(ast);
-	else
-		return (0);
-	/*else if (check_command_type(cmd.argv[0]) == PRECOMPILED)*/
-	/*	exec_precompiled(cmd->argv, ast->redir, env);*/
+	else if (check_command_type(cmd.argv[0]) == PRECOMPILED)
+		exec_precompiled(ast);
 	cleanup_redirection(ast->redir, saved_stream);
 	if (target_fd != -1)
 		close(target_fd);
