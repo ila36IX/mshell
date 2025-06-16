@@ -3,15 +3,6 @@
 
 # include "../../main.h"
 
-typedef enum e_env_action
-{
-	ENV_ACTION_GET,
-	ENV_ACTION_SET,
-	ENV_ACTION_UNSET,
-	ENV_ACTION_FREE,
-	ENV_ACTION_PRINT,
-}					t_env_action;
-
 typedef struct s_dict
 {
 	char			*key;
