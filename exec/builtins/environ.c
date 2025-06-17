@@ -2,7 +2,7 @@
 
 t_dict	*g_environ_head = NULL;
 
-char	*environ_get(const char *key)
+const char	*envron_get(const char *key)
 {
 	t_dict	*walk;
 
