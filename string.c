@@ -15,7 +15,7 @@ static int	string_ensure_capacity(t_string *s, size_t add_size)
 	new_buff = malloc(new_capacity * sizeof(char));
 	if (!new_buff)
 		return (-1);
-	memcpy(new_buff, s->buff, s->length);
+	ft_memcpy(new_buff, s->buff, s->length);
 	new_buff[s->length] = '\0';
 	free(s->buff);
 	s->buff = new_buff;
@@ -35,7 +35,7 @@ void	string_append_str(t_string *s, const char *str_to_append, size_t size)
 	if (!str_to_append)
 		return ;
 	string_ensure_capacity(s, size);
-	memcpy(s->buff + s->length, str_to_append, size);
+	ft_memcpy(s->buff + s->length, str_to_append, size);
 	s->length += size;
 	s->buff[s->length] = '\0';
 }
