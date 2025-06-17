@@ -10,7 +10,7 @@ typedef struct s_dict
 	struct s_dict	*next;
 }					t_dict;
 
-char				*envron_get(const char *key);
+const char				*envron_get(const char *key);
 void				environ_unset(const char *key);
 void				environ_set(const char *key, const char *value);
 void				environ_free(void);
