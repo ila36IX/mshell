@@ -2,10 +2,18 @@
 #include "string.h"
 #include "environ.h"
 
-char *environ_get_ncstr(const char *s, size_t size)
+/**
+ * environ_get_ncstr - get environment varaible of string using its size
+ *
+ * @s: string identifies by its size, not by null terminator at the end
+ * @size: size of s
+ *
+ * Return: Pointer of string from the environ varaible
+ */
+const char *environ_get_ncstr(const char *s, size_t size)
 {
 	t_string string;
-	char *value;
+	const char *value;
 
 	value = NULL;
 	string = string_init();
@@ -20,7 +28,7 @@ size_t handle_expand(t_string *str, const char *s, size_t curr_idx, size_t size)
 {
 	size_t i;
 	const char *s_pos;
-	char *value;
+	const char *value;
 
 	s_pos = &s[curr_idx];
 	i = 0;
@@ -36,27 +44,41 @@ size_t handle_expand(t_string *str, const char *s, size_t curr_idx, size_t size)
 	return (i);
 }
 
-char *expand_tok(const char *s, size_t size)
+void expand_tok(t_string *str, const char *s, size_t size)
 {
-	t_string str;
 	size_t i;
 	
 	i = 0;
-	str = string_init();
 	while (i < size)
 	{
 		if (s[i] == '$' && (ft_isalpha(s[i + 1]) || s[i + 1] == '_'))
 		{
 			i++;
-			i += (handle_expand(&str, s, i, size));
+			i += (handle_expand(str, s, i, size));
 		}
 		else
-			string_append_char(&str, s[i++]);
+			string_append_char(str, s[i++]);
 	}
-	return (str.buff);
 }
 
 char *alloc_token_str(t_token token)
 {
-	return (expand_tok(token.text, token.text_len));
+	return (ft_substr(token.text, 0, token.text_len));
+}
+
+/**
+ * token_to_expand_str - Join the text of the token after expanding to the
+ * content of str variable
+ *
+ * @str: dynamic array of charachters
+ * @token: the token to be added into str
+ *
+ * Return: Nothing, token text will be expanded then appended into the str
+ */
+void token_to_expand_str(t_string *str, t_token token)
+{
+	if (token.kind == TOKEN_SQ)
+		string_append_str(str, token.text, token.text_len);
+	else
+		expand_tok(str, token.text, token.text_len);
 }
