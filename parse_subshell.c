@@ -1,9 +1,9 @@
 #include "parser.h"
 
-void skip_nested_parens(t_lexer *lexer)
+void	skip_nested_parens(t_lexer *lexer)
 {
-	t_token token;
-	int	depth;
+	t_token	token;
+	int		depth;
 
 	token = lexer_next_token(lexer);
 	depth = 1;
@@ -14,26 +14,16 @@ void skip_nested_parens(t_lexer *lexer)
 		else if (token.kind == TOKEN_CPAREN)
 			depth--;
 		if (token.kind == TOKEN_CPAREN && depth == 0)
-			break;
+			break ;
 		token = lexer_next_token(lexer);
-	}
-	if (depth > 0)
-	{
-		printf(ERR_UNEXPECTED_TOK, "(");
-		UNIMPLEMENTED("Handle unclosing parentheses errors");
-	}
-	else if (depth < 0)
-	{
-		printf(ERR_UNEXPECTED_TOK, ")");
-		UNIMPLEMENTED("Handle unclosing parentheses errors");
 	}
 }
 
-t_lexer subshell_new_lexer(t_lexer *lexer)
+t_lexer	subshell_new_lexer(t_lexer *lexer)
 {
 	size_t	cursor_loc;
-	t_lexer sub_lexer;
-	size_t lexer_size;
+	t_lexer	sub_lexer;
+	size_t	lexer_size;
 
 	lexer_next_token(lexer); /* skip open parent */
 	cursor_loc = lexer->cursor;
@@ -43,9 +33,9 @@ t_lexer subshell_new_lexer(t_lexer *lexer)
 	return (sub_lexer);
 }
 
-t_ast *init_ast_subshell(void)
+t_ast	*init_ast_subshell(void)
 {
-	t_ast *ast;
+	t_ast	*ast;
 
 	ast = ft_calloc(1, sizeof(t_ast));
 	ast->type = AST_SUBSHELL;
@@ -55,40 +45,50 @@ t_ast *init_ast_subshell(void)
 	return (ast);
 }
 
-t_ast *ast_try_add_subshell(t_ast **ast_head, t_lexer *lexer)
+bool	is_valid_subshell(t_ast **ast_head, t_lexer *lexer)
 {
-	t_ast  *ast;
-	t_token token;
-	t_lexer sub_lexer;
+	char	*token_str;
 
-	token = lexer_peek_next_token(lexer);
-	if (token.kind == TOKEN_CPAREN)
+	if (!lexer_check_parens(lexer))
 	{
-		printf(ERR_UNEXPECTED_TOK, ")");
-		TODO("Handle Errors\n");
+		token_str = alloc_token_str(lexer_peek_next_token(lexer));
+		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, token_str);
+		return (false);
 	}
-	if (token.kind != TOKEN_OPAREN)
+	if (!last_ast(*ast_head))
+		return (true);
+	if (last_ast(*ast_head)->type != AST_CONNECTOR)
+	{
+		token_str = alloc_token_str(lexer_peek_next_token(lexer));
+		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, token_str);
+		return (false);
+	}
+	return (true);
+}
+
+t_ast	*ast_add_subshell(t_ast **ast_head, t_lexer *lexer)
+{
+	t_ast	*ast;
+	t_token	token;
+	t_lexer	sub_lexer;
+
+	if (!is_valid_subshell(ast_head, lexer))
 		return (NULL);
-	if (last_ast(*ast_head) && last_ast(*ast_head)->type != AST_CONNECTOR)
-	{
-		printf(ERR_UNEXPECTED_TOK, ")");
-		UNIMPLEMENTED("Syntax error\n");
-	}
-	ast = init_ast_subshell();
 	sub_lexer = subshell_new_lexer(lexer);
+	ast = init_ast_subshell();
 	ast->subshell = create_ast(&sub_lexer);
 	if (ast->subshell == NULL)
 	{
-		printf(ERR_UNEXPECTED_TOK, ")");
-		UNIMPLEMENTED("Syntax error\n");
+		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, "empty subshell");
+		return (NULL);
 	}
 	token = lexer_peek_next_token(lexer);
 	while (token_is_redir_op(token))
 	{
-		ast_add_redirct(ast, lexer);
+		if (!ast_add_redirct(ast_head, ast, lexer))
+			return (ast);
 		token = lexer_peek_next_token(lexer);
 	}
 	ast_add_back(ast_head, ast);
 	return (ast);
 }
-
