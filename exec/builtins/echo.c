@@ -10,7 +10,7 @@
  */
 void	expand_write(char *var)
 {
-	char	*val;
+	const char	*val;
 
 	if (!var)
 		return ;

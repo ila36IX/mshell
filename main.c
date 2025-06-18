@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "main.h"
-#include "environ.h"
+#include "./exec/builtins/environ.h"
 #include "string.h"
 #include "parser.h"
 #include "ast_print.h"

@@ -1,6 +1,6 @@
 #include "lexer.h"
 #include "string.h"
-#include "environ.h"
+#include "./exec/builtins/environ.h"
 
 /**
  * environ_get_ncstr - get environment varaible of string using its size
@@ -18,7 +18,7 @@ const char *environ_get_ncstr(const char *s, size_t size)
 	value = NULL;
 	string = string_init();
 	string_append_str(&string, s, size);
-	value =	envron_get(string.buff);
+	value =	environ_get(string.buff);
 	printf("GET: %s => %s\n", string.buff, value);
 	free(string.buff);
 	return (value);

@@ -11,7 +11,7 @@ typedef struct s_dict
 }					t_dict;
 
 void	environ_init(const char **envp);
-const char				*envron_get(const char *key);
+const char				*environ_get(const char *key);
 void				environ_unset(const char *key);
 void				environ_set(const char *key, const char *value);
 void				environ_free(void);
