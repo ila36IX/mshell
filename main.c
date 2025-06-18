@@ -34,6 +34,8 @@ int	main(void)
 	environ_set("Harry", "Potter");
 	environ_set("_Harry", "_Potter");
 	environ_set("hassan", "gay");
+	environ_set("who", "I AM LORD VOLDEMORT!");
+	environ_set("spaces", "file1 file2");
 	environ_print();
 	while ((line = readline("$ ")))
 	{
