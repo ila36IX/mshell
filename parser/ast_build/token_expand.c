@@ -1,6 +1,4 @@
-#include "lexer.h"
-#include "string.h"
-#include "./exec/builtins/environ.h"
+#include "ast_parser.h"
 
 /**
  * environ_get_ncstr - get environment varaible of string using its size

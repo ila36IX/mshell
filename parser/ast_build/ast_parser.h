@@ -1,5 +1,5 @@
-#include "lexer.h"
-#include "main.h"
+#include "../lexer/lexer.h"
+#include "../../exec/builtins/environ.h"
 
 #define ARRAY_INIT_SIZE 16
 #define ERR_UNEXPECTED_TOK "msh: syntax error near unexpected token `%s'\n"

@@ -11,10 +11,6 @@
 /* ************************************************************************** */
 
 #include "main.h"
-#include "./exec/builtins/environ.h"
-#include "string.h"
-#include "parser.h"
-#include "ast_print.h"
 
 bool	ast_print_error(t_ast *ast);
 
