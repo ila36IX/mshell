@@ -7,7 +7,13 @@
 # define NOT_FOUND 2
 
 # include <sys/stat.h>
+# include <sys/wait.h>
 
+/**
+ * Executes a built-in command
+ * @ast: Ast structure
+ * Return: Exit status of the given command
+ */
 int	exec_builtin(t_ast *ast)
 {
 	t_simple_cmd	cmd;
@@ -30,19 +36,59 @@ int	exec_builtin(t_ast *ast)
 	return (0);
 }
 
+char	*get_full_pathname(char *name)
+{
+	char	**list;
+	char	*env;
+	char	*final_path;
+	int	i;
+
+	if (!name)
+		return (NULL);
+	if (access(name, F_OK | X_OK) == 0)
+		return (name);
+	env = environ_get("PATH");
+	if (!env)
+		return (NULL);
+	list = ft_split(env, ':');
+	if (!list)
+		return (NULL);
+	i = 0;
+	while (list[i])
+	{
+		final_path = ft_strjoin(list[i], "/");
+		final_path = ft_strjoin(final_path, name);
+		if (access(final_path, F_OK | X_OK) == 0)
+			return (final_path);
+		// ft_gc_remove(final_path);
+		i++;
+	}
+	return (NULL);
+}
+
+/**
+ * Executes an executble-file command
+ * @ast: Ast structure
+ * Return: Exit status of the given command
+ */
 int	exec_precompiled(t_ast *ast)
 {
 	pid_t	pid;
+	char	**envp;
 	if (!ast)
 		return (EXIT_FAILURE);
 	pid = fork();
 	if (pid == -1)
 		return (EXIT_FAILURE);
+	ast->simple_cmd.argv[0] = get_full_pathname(ast->simple_cmd.argv[0]);
 	if (pid == 0)
 	{
-		if (execve(ast->simple_cmd.argv[0], ast->simple_cmd.argv, NULL) == -1)
+		envp = environ_array_execve();
+		if (execve(ast->simple_cmd.argv[0], ast->simple_cmd.argv, envp) == -1)
 		return (EXIT_FAILURE);
 	}
+	else
+		wait(0);
 	return (EXIT_SUCCESS);
 }
 
@@ -70,9 +116,9 @@ int	check_command_type(char *name)
 			return (BUILTIN);
 	else if (ft_strcmp(name, "exit") == 0)
 			return (BUILTIN);
-	else if (access(name, F_OK | X_OK) == 0)
-		return (PRECOMPILED);
-	return (NOT_FOUND);
+	// else if (access(name, F_OK | X_OK) == 0)
+	// 	return (PRECOMPILED);
+	return (PRECOMPILED);
 }
 
 /**
@@ -126,6 +172,6 @@ int exec_main(t_ast *ast, char **envp)
 	/*else if (ast->type == AST_CONNECTOR)*/
 	/*		return (exec_connector(ast->prev, ast->next, env));*/
 	else
-		UNIMPLEMENTED("It shouldn't get here. AST type is invalid\n");
+		return (-1);
 	return (status);
 }

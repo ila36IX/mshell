@@ -25,5 +25,6 @@ void				environ_unset(const char *key);
 void				environ_set(const char *key, const char *value);
 void				environ_free(void);
 void				environ_print(void);
+char	**environ_array_execve(void);
 
 #endif
