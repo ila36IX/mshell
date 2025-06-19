@@ -19,6 +19,14 @@ void	ast_simple_cmd_realloc(t_ast *ast)
 	ast->simple_cmd._buff_size = buff_size;
 }
 
+/**
+ * ast_simple_cmd_add_arg - Get next argument from the lexer and add it to the ast
+ *
+ * @ast: ast node of type AST_SIMPLE_COMMAND
+ * @lexer: lexer
+ *
+ * Return: Nothing, new argumenet will be added to the argv of the ast
+ **/
 void	ast_simple_cmd_add_arg(t_ast *ast, t_lexer *lexer)
 {
 	char	*arg;
@@ -28,9 +36,11 @@ void	ast_simple_cmd_add_arg(t_ast *ast, t_lexer *lexer)
 		UNREACHABLE("Wrong ast type!");
 		return ;
 	}
+	arg = lexer_next_zip_word(lexer);
+	if (!arg)
+		return ;
 	if (ast->simple_cmd._buff_size == ast->simple_cmd.argc)
 		ast_simple_cmd_realloc(ast);
-	arg = lexer_next_zip_word(lexer);
 	ast->simple_cmd.argv[ast->simple_cmd.argc++] = arg;
 }
 
