@@ -1,5 +1,6 @@
 #include "environ.h"
 
+# define ENV_SIZE 100
 t_dict	*g_environ_head = NULL;
 
 const char	*environ_get(const char *key)
@@ -107,5 +108,31 @@ void	environ_init(const char **envp)
 		/*ft_gcremove_split(list);*/
 		i++;
 	}
+}
+char	**environ_array_execve(void)
+{
+	char **list;
+	int	i;
+	t_dict	*temp;
+	char	*str_temp;
+
+	temp = g_environ_head;
+	list = ft_malloc(ENV_SIZE, sizeof(char *));
+	if (!list)
+		return (NULL);
+	i = 0;
+	while (temp)
+	{
+		 str_temp = ft_strjoin(temp->key, "=");
+		 if (!str_temp)
+			 return (NULL);
+		list[i] = ft_strjoin(str_temp, temp->value);
+		if (!list[i])
+			return (NULL);
+		// ft_gcremove(str_temp);
+		temp =  temp->next;
+		i++;
+	}
+	return (list);
 }
 
