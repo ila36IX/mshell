@@ -1,7 +1,8 @@
 #ifndef AST_PRINT_H
 # define AST_PRINT_H
 
-# include "main.h"
+# include "../../types.h"
+# include "../../debug_macroc.h"
 
 # define INDENT_SIZE 8
 

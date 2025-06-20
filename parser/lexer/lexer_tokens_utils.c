@@ -1,5 +1,4 @@
 #include "lexer.h"
-#include "main.h"
 
 bool token_is_word(t_token token)
 {

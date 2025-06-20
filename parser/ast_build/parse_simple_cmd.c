@@ -1,5 +1,4 @@
-#include "parser.h"
-#include "types.h"
+#include "ast_parser.h"
 
 void	ast_simple_cmd_realloc(t_ast *ast)
 {

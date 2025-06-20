@@ -1,4 +1,4 @@
-#include "main.h"
+#include "lexer.h"
 
 bool	lexer_trim_left(t_lexer *l);
 void	extract_word_token(t_lexer *l, t_token *token);

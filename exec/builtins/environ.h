@@ -1,8 +1,8 @@
 #ifndef ENVIRON_H
 # define ENVIRON_H
 
-# include "../../main.h"
-
+#include <stdlib.h>
+#include "../../libft/libft.h"
 typedef struct s_dict
 {
 	char			*key;

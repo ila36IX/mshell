@@ -1,5 +1,4 @@
 #include "lexer.h"
-#include "main.h"
 
 static const char	*more_token_kind_name(t_token_kind kind)
 {
