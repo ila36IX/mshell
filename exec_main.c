@@ -39,7 +39,7 @@ int	exec_builtin(t_ast *ast)
 char	*get_full_pathname(char *name)
 {
 	char	**list;
-	char	*env;
+	const char	*env;
 	char	*final_path;
 	int	i;
 
