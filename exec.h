@@ -1,7 +1,8 @@
 #ifndef EXEC_H
 # define EXEC_H
 
-# include "./main.h"
+# include "./includes.h"
+# include "./types.h"
 
 int exec_main(t_ast *ast, char **envp);
 

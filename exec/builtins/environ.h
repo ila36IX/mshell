@@ -1,7 +1,7 @@
 #ifndef ENVIRON_H
 # define ENVIRON_H
 
-# include "../../main.h"
+# include "../../includes.h"
 
 typedef struct s_dict
 {
