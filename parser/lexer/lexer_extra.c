@@ -1,6 +1,4 @@
 #include "lexer.h"
-#include "parser.h"
-#include "string.h"
 
 /**
  * lexer_peek_next_token - Get the next token without moving the cursor

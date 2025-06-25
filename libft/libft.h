@@ -18,7 +18,8 @@
 # include <stdint.h>
 # include <stdlib.h>
 # include <unistd.h>
-#include "../memory.h"
+# include "../memory.h"
+
 # define BUFFER_SIZE 1024
 
 int					ft_isalpha(int c);
@@ -76,5 +77,6 @@ void				ft_lstiter(t_list *lst, void (*f)(void *));
 bool	ft_lstismember(t_list *head, void *data);
 t_list				*ft_lstmap(t_list *l, void *(*f)(void *),
 						void (*d)(void *));
+char	*xgc_strdup(const char *src);
 
 #endif

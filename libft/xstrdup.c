@@ -1,4 +1,4 @@
-#include "main.h"
+#include "libft.h"
 
 /*
  * xstrdup - allocate duplication of string wihtout using gc

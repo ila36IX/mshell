@@ -1,7 +1,7 @@
 #ifndef STRING_H
 #define STRING_H
 #include <stdlib.h>
-#include "libft/libft.h"
+#include "../libft/libft.h"
 
 #define INIT_STR_ARRAY_SIZE 16
 typedef struct s_string

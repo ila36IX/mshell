@@ -13,27 +13,14 @@
 #ifndef MAIN_H
 # define MAIN_H
 # include "./includes.h"
-# include "./lexer.h"
-#include "./exec/builtins/builtins.h"
+# include "./exec/builtins/builtins.h"
+# include "./exec/builtins/environ.h"
 # include "./prototypes.h"
 # include "./types.h"
 # include "libft/libft.h"
+# include "debug_macroc.h"
+#include "./parser/parser.h"
 
-# define UNIMPLEMENTED(...)                                                  \
-	printf("%s:%d: UNIMPLEMENTED: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
-	exit(1);
-
-# define UNREACHABLE(...)                                                  \
-	printf("%s:%d: UNREACHABLE: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
-	exit(1);
-
-# define TODO(...)                                                  \
-	printf("%s:%d: TODO: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
-	exit(1);
-
-# define PANIC(...)                                                  \
-	printf("%s:%d: PANIC: %s \n", __FILE__, __LINE__, __VA_ARGS__); \
-	exit(1);
 
 char	*xgc_strdup(const char *src);
 #endif

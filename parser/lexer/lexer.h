@@ -1,7 +1,10 @@
 #ifndef _LEXER_H_
 # define _LEXER_H_
-# include "types.h"
-# include "string.h"
+#include <stdbool.h>
+#include <stdlib.h>
+#include "../../types.h"
+#include "../../dynamic_array/string.h"
+#include "../../debug_macroc.h"
 
 typedef enum
 {
