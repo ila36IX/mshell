@@ -1,10 +1,11 @@
-# include "./main.h"
 # include "./exec.h"
 # include "./exec/builtins/environ.h"
 
 # define BUILTIN 0
 # define PRECOMPILED 1
 # define NOT_FOUND 2
+# define ERR_OPEN -1
+# define ERR_NULL 1
 
 # include <sys/stat.h>
 # include <sys/wait.h>
@@ -131,22 +132,28 @@ int	check_command_type(char *name)
 int	exec_simple_cmd(t_ast *ast)
 {
 	t_simple_cmd	cmd;
-	int	saved_stream;
 	int	target_fd;
+	int			saved_stdin;
+	int			saved_stdout;
 
 	if (!ast)
 		return (EXIT_FAILURE);
 	cmd = ast->simple_cmd;
-	saved_stream = setup_redirections(ast, &target_fd);
-	if (saved_stream == -1)
-		printf("setup faild\n");
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	if (saved_stdin == ERR_OPEN || saved_stdout == ERR_OPEN)
+		return (ERR_OPEN);
+	target_fd = setup_redirect(ast);
+	if (target_fd == 2)
+		return (EXIT_FAILURE);
 	if (check_command_type(cmd.argv[0]) == BUILTIN)
 		exec_builtin(ast);
 	else if (check_command_type(cmd.argv[0]) == PRECOMPILED)
 		exec_precompiled(ast);
-	cleanup_redirection(ast->redir, saved_stream);
-	if (target_fd != -1)
-		close(target_fd);
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
 	return (0);
 }
 

@@ -1,86 +1,115 @@
 # include "./main.h"
 
+# define ERR_OPEN -1
+# define ERR_FILE_NOT_FOUND -2
+# define ERR_NULL 1
 
-int	single_redirections(t_redirect *redir, int *target_fd)
+static int	setup_single_redir(t_redirect *redir)
 {
-	int	saved_stream;
-	char	*herdoc_line;
+	int	target_fd;
 
 	if (!redir)
-		return (-1);
+		return (ERR_NULL);
 
-	saved_stream = -2;
-	if (redir->type == REDIR_TYPE_OUT)
+	if (redir->type == REDIR_TYPE_IN)
 	{
-		saved_stream = dup(STDOUT_FILENO);
-		*target_fd = open(redir->target, O_WRONLY | O_CREAT, 0644);
-		if (*target_fd == -1)
-			perror("Open");
-		if (dup2(*target_fd, STDOUT_FILENO) ==  -1)
-			perror("dup2");
+		target_fd = open(redir->target, O_RDONLY, 0644);
+		if (target_fd == ERR_OPEN)
+			return (ERR_OPEN);
+		if (dup2(target_fd, STDIN_FILENO) == ERR_OPEN)
+		{
+			printf("mshell: %s: No such file or directory\n", redir->target);
+			return (ERR_OPEN);
+		}
+		close(target_fd);
 	}
-	else if (redir->type == REDIR_TYPE_APPEND)
+	if (redir->type == REDIR_TYPE_OUT || redir->type == REDIR_TYPE_APPEND)
 	{
-		saved_stream = dup(STDOUT_FILENO);
-		*target_fd = open(redir->target, O_WRONLY | O_APPEND | O_CREAT, 0644);
-		if (*target_fd == -1)
-			perror("open");
-		if (dup2(*target_fd, STDOUT_FILENO) ==  -1)
-			perror("dup2");
+		if (redir->type == REDIR_TYPE_OUT)
+			target_fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		else if (redir->type == REDIR_TYPE_APPEND)
+			target_fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
+		if (target_fd == ERR_OPEN)
+			return (ERR_OPEN);
+		if (dup2(target_fd, STDOUT_FILENO) == ERR_OPEN)
+			perror("[DUP2]");
+		close(target_fd);
 	}
-	else if (redir->type == REDIR_TYPE_IN)
+	if (redir->type == REDIR_TYPE_HEREDOC)
 	{
-		saved_stream = dup(STDIN_FILENO);
-		*target_fd = open(redir->target, O_RDONLY | O_CREAT, 0644);
-		if (*target_fd == -1)
-			perror("open");
-		if (dup2(*target_fd, STDIN_FILENO) ==  -1)
-			perror("dup2");
-	}
-	else if (redir->type == REDIR_TYPE_HEREDOC)
-	{
-		saved_stream = dup(STDIN_FILENO);
+		char	*line;
+		int	pipefd[2];
+		pipe(pipefd);
 		while (true)
 		{
-			herdoc_line = readline("> ");
-			if (!herdoc_line || ft_strcmp(herdoc_line, redir->target) == 0) {
-				free(herdoc_line);
+			line = readline("> ");
+			if (line == NULL)
+				break;
+			if (ft_strcmp(line, redir->target) == 0)
+			{
+				free(line);
 				break;
 			}
+			write(pipefd[1], line, ft_strlen(line));
+			write(pipefd[1], "\n", 1);
 		}
+		close(pipefd[1]);
+		dup2(pipefd[0], STDIN_FILENO);
+		close(pipefd[0]);
 	}
-	return (saved_stream);
+	return (target_fd);
 }
 
-void	cleanup_redirection(t_redirect *redir, int saved_stream)
+static void	create_targets(t_redirect *redir, size_t size)
 {
-	if (redir->type == REDIR_TYPE_IN)
-		dup2(saved_stream, STDIN_FILENO);
-	else if (redir->type == REDIR_TYPE_OUT || redir->type == REDIR_TYPE_APPEND)
-		dup2(saved_stream, STDOUT_FILENO);
-	if (saved_stream < 0)
-		close(saved_stream);
-}
-
-int	setup_redirections(t_ast *ast, int *target)
-{
-	int	saved_stream;
-	t_redirect	*redir;
 	size_t	i;
+	int		fd;
 
 	i = 0;
-	redir = ast->redir;
-	while (i < ast->redir_size)
+	while (i < size)
 	{
-		saved_stream = single_redirections(redir + i, target);
-		if (i + 1 < ast->redir_size && redir[i + 1].type != REDIR_TYPE_HEREDOC)
+		if (redir[i].type != REDIR_TYPE_IN && redir[i].type != REDIR_TYPE_HEREDOC)
 		{
-			cleanup_redirection(redir + i, saved_stream);
-			if (*target != -1)
-				close(*target);
+			fd = open(redir->target, O_CREAT, 0644);
+			if (fd == ERR_OPEN)
+				perror("[OPEN]");
+			close(fd);
 		}
 		i++;
 	}
-	return (saved_stream);
 }
 
+int	setup_redirect(t_ast *ast)
+{
+	t_redirect	*redir;
+	size_t		i;
+	int			in_file;
+	int			out_file;
+
+	if (!ast || !ast->redir)
+		return (ERR_NULL);
+	redir = ast->redir;
+	i = 0;
+	in_file = -1;
+	out_file = -1;
+	create_targets(redir, ast->redir_size);
+	while (i < ast->redir_size)
+	{
+		if (redir[i].type == REDIR_TYPE_IN || redir[i].type == REDIR_TYPE_HEREDOC)
+			in_file = i;
+		if (redir[i].type == REDIR_TYPE_OUT || redir[i].type == REDIR_TYPE_APPEND)
+			out_file = i;
+		i++;
+	}
+	if (in_file != ERR_OPEN)
+		printf("Last in file --> [%s]\n", redir[in_file].target);
+	if (out_file != ERR_OPEN)
+		printf("Last out file --> [%s]\n", redir[out_file].target);
+	if (in_file != ERR_OPEN)
+		in_file = setup_single_redir(redir + in_file);
+	if (out_file != ERR_OPEN)
+		out_file = setup_single_redir(redir + out_file);
+	if (in_file == ERR_FILE_NOT_FOUND)
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
+}
