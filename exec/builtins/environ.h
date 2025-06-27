@@ -1,7 +1,7 @@
 #ifndef ENVIRON_H
 # define ENVIRON_H
 
-#include <stdlib.h>
+# include "../../includes.h"
 #include "../../libft/libft.h"
 typedef struct s_dict
 {

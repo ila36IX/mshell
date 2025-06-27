@@ -13,6 +13,9 @@
 #ifndef MAIN_H
 # define MAIN_H
 # include "./includes.h"
+# include "./parser/lexer/lexer.h"
+# include "./exec/exec.h"
+#include "./exec/builtins/builtins.h"
 # include "./exec/builtins/builtins.h"
 # include "./exec/builtins/environ.h"
 # include "./prototypes.h"
