@@ -2,7 +2,7 @@
 # define ENVIRON_H
 
 # include "../../includes.h"
-
+#include "../../libft/libft.h"
 typedef struct s_dict
 {
 	char			*key;
