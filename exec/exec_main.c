@@ -73,17 +73,20 @@ int	exec_precompiled(t_ast *ast)
 {
 	pid_t	pid;
 	char	**envp;
+	char	*cmd;
 	if (!ast)
 		return (EXIT_FAILURE);
 	pid = fork();
 	if (pid == -1)
 		return (EXIT_FAILURE);
-	ast->simple_cmd.argv[0] = get_full_pathname(ast->simple_cmd.argv[0]);
+	cmd = get_full_pathname(ast->simple_cmd.argv[0]);
 	if (pid == 0)
 	{
+		if (cmd == NULL)
+			dprintf(STDERR_FILENO, "%s: command not found\n", ast->simple_cmd.argv[0]);
 		envp = environ_array_execve();
-		if (execve(ast->simple_cmd.argv[0], ast->simple_cmd.argv, envp) == -1)
-		return (EXIT_FAILURE);
+		if (execve(cmd, ast->simple_cmd.argv, envp) == -1)
+			return (EXIT_FAILURE);
 	}
 	else
 		wait(0);
