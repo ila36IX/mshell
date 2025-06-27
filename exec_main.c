@@ -135,7 +135,6 @@ int	exec_simple_cmd(t_ast *ast)
 	int	target_fd;
 	int			saved_stdin;
 	int			saved_stdout;
-
 	if (!ast)
 		return (EXIT_FAILURE);
 	cmd = ast->simple_cmd;
@@ -176,8 +175,6 @@ int exec_main(t_ast *ast, char **envp)
 		return (exec_simple_cmd(ast));
 	/*else if (ast->type == AST_SUBSHELL)*/
 	/*		return (main_exec(ast->subshell, env));*/
-	/*else if (ast->type == AST_CONNECTOR)*/
-	/*		return (exec_connector(ast->prev, ast->next, env));*/
 	else
 		return (-1);
 	return (status);

@@ -20,6 +20,7 @@
 # include "libft/libft.h"
 # include "debug_macroc.h"
 #include "./parser/parser.h"
+#include "./exec.h"
 
 
 char	*xgc_strdup(const char *src);

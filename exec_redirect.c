@@ -6,7 +6,9 @@
 
 static int	setup_single_redir(t_redirect *redir)
 {
-	int	target_fd;
+	int		target_fd;
+	char	*line;
+	int		pipefd[2];
 
 	if (!redir)
 		return (ERR_NULL);
@@ -28,7 +30,7 @@ static int	setup_single_redir(t_redirect *redir)
 		if (redir->type == REDIR_TYPE_OUT)
 			target_fd = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		else if (redir->type == REDIR_TYPE_APPEND)
-			target_fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND | O_TRUNC, 0644);
+			target_fd = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (target_fd == ERR_OPEN)
 			return (ERR_OPEN);
 		if (dup2(target_fd, STDOUT_FILENO) == ERR_OPEN)
@@ -37,8 +39,6 @@ static int	setup_single_redir(t_redirect *redir)
 	}
 	if (redir->type == REDIR_TYPE_HEREDOC)
 	{
-		char	*line;
-		int	pipefd[2];
 		pipe(pipefd);
 		while (true)
 		{
@@ -52,6 +52,7 @@ static int	setup_single_redir(t_redirect *redir)
 			}
 			write(pipefd[1], line, ft_strlen(line));
 			write(pipefd[1], "\n", 1);
+			free(line);
 		}
 		close(pipefd[1]);
 		dup2(pipefd[0], STDIN_FILENO);
@@ -85,6 +86,7 @@ int	setup_redirect(t_ast *ast)
 	size_t		i;
 	int			in_file;
 	int			out_file;
+	int			last_heredoc;
 
 	if (!ast || !ast->redir)
 		return (ERR_NULL);
@@ -96,15 +98,17 @@ int	setup_redirect(t_ast *ast)
 	while (i < ast->redir_size)
 	{
 		if (redir[i].type == REDIR_TYPE_IN || redir[i].type == REDIR_TYPE_HEREDOC)
+		{
 			in_file = i;
+			if (redir[i].type == REDIR_TYPE_HEREDOC)
+				last_heredoc = i;
+		}
 		if (redir[i].type == REDIR_TYPE_OUT || redir[i].type == REDIR_TYPE_APPEND)
 			out_file = i;
 		i++;
 	}
-	if (in_file != ERR_OPEN)
-		printf("Last in file --> [%s]\n", redir[in_file].target);
-	if (out_file != ERR_OPEN)
-		printf("Last out file --> [%s]\n", redir[out_file].target);
+	if (last_heredoc != -1)
+		setup_single_redir(redir + last_heredoc);
 	if (in_file != ERR_OPEN)
 		in_file = setup_single_redir(redir + in_file);
 	if (out_file != ERR_OPEN)
