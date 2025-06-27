@@ -1,6 +1,6 @@
 # include "./exec.h"
-# include "./exec/builtins/environ.h"
-# include "./exec/builtins/builtins.h"
+# include "./builtins/environ.h"
+# include "./builtins/builtins.h"
 
 # define BUILTIN 0
 # define PRECOMPILED 1

@@ -1,5 +1,5 @@
-# include "./main.h"
-
+# include "./exec.h"
+# include "../libft/libft.h"
 
 int	single_redirections(t_redirect *redir, int *target_fd)
 {

@@ -14,7 +14,7 @@
 # define MAIN_H
 # include "./includes.h"
 # include "./lexer.h"
-# include "./exec.h"
+# include "./exec/exec.h"
 #include "./exec/builtins/builtins.h"
 # include "./prototypes.h"
 # include "./types.h"
