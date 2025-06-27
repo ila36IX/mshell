@@ -18,7 +18,7 @@
 # include <stdint.h>
 # include <stdlib.h>
 # include <unistd.h>
-#include "../memory.h"
+#include "./memory.h"
 # define BUFFER_SIZE 1024
 
 int					ft_isalpha(int c);

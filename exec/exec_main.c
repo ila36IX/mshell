@@ -6,8 +6,6 @@
 # define PRECOMPILED 1
 # define NOT_FOUND 2
 
-# include <sys/stat.h>
-# include <sys/wait.h>
 
 /**
  * Executes a built-in command

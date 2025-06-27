@@ -15,13 +15,15 @@
 # include <stdlib.h>
 # include <stdio.h>
 # include <unistd.h>
-# include <sys/types.h>
 # include <signal.h>
 # include <fcntl.h>
 # include <string.h>
 # include <stdbool.h>
 # include <readline/readline.h>
 # include <readline/history.h>
+# include <sys/stat.h>
+# include <sys/wait.h>
+# include <sys/types.h>
 
 # define TEXT_RESET "\033[0m"
 

@@ -1,4 +1,4 @@
-#include "./main.h"
+#include "./libft.h"
 
 typedef enum s_act
 {
