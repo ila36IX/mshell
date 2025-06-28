@@ -1,15 +1,12 @@
-#include "main.h"
+# include "./main.h"
+# include "./parser/parser.h"
 
 # define PROMPT "\033[0;33m[User@Debian]$ \033[0m"
 
-bool	ast_print_error(t_ast *ast);
-
-
-
 int	main(int ac, char **av, char **envp)
 {
+	t_ast	*ast;
 	char	*line;
-	t_ast *ast;
 	t_lexer lexer;
 	(void)(ac);
 	(void)(av);

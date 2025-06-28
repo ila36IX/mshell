@@ -1,4 +1,4 @@
-#include "../../main.h"
+#include "../../libft/libft.h"
 #include "environ.h"
 
 void	insert_new_node(char *expression)

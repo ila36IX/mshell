@@ -1,8 +1,8 @@
-# include "./main.h"
-
 # define ERR_OPEN -1
 # define ERR_FILE_NOT_FOUND -2
 # define ERR_NULL 1
+# include "./exec.h"
+# include "../libft/libft.h"
 
 static int	setup_single_redir(t_redirect *redir)
 {

@@ -1,4 +1,6 @@
-#include "environ.h"
+#include "./environ.h"
+#include "../../main.h"
+# include "../../libft/libft.h"
 
 # define ENV_SIZE 100
 t_dict	*g_environ_head = NULL;
@@ -135,4 +137,3 @@ char	**environ_array_execve(void)
 	}
 	return (list);
 }
-
