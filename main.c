@@ -19,6 +19,7 @@ int	main(int ac, char **av, char **envp)
 		ast = create_ast(&lexer);
 		/* print_ast(ast); */
 		exec_main(ast, envp);
+		ft_gc_clear();
 	}
 	status = status_get();
 	return (status);

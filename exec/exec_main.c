@@ -23,17 +23,17 @@ int	exec_builtin(t_ast *ast)
 	if (ft_strcmp(cmd.argv[0], "echo") == 0)
 		return (echo(cmd.argv));
 	else if (ft_strcmp(cmd.argv[0], "cd") == 0)
-			cd(cmd.argc, cmd.argv);
+			return (cd(cmd.argc, cmd.argv));
 	else if (ft_strcmp(cmd.argv[0], "pwd") == 0)
-			pwd();
+			return (pwd());
 	else if (ft_strcmp(cmd.argv[0], "exit") == 0)
 					quit(cmd.argv, cmd.argc);
 	else if (ft_strcmp(cmd.argv[0], "export") == 0)
-					bin_export(cmd);
+					return (bin_export(cmd));
 	else if (ft_strcmp(cmd.argv[0], "env") == 0)
-		environ_print();
+		return (environ_print());
 	else if (ft_strcmp(cmd.argv[0], "unset") == 0)
-		  environ_unset(cmd.argv[1]);
+		  return (environ_unset(cmd.argv[1]));
 	return (0);
 }
 
@@ -84,7 +84,7 @@ int	exec_precompiled(t_ast *ast)
 	cmd = get_full_pathname(ast->simple_cmd.argv[0]);
 	pid = fork();
 	if (pid == -1)
-		return (free(cmd), EXIT_FAILURE);
+		return (EXIT_FAILURE);
 	status = 0;
 	if (pid == 0)
 	{
@@ -99,7 +99,6 @@ int	exec_precompiled(t_ast *ast)
 	}
 	else
 		waitpid(pid, &status, 0);
-	free(cmd);
 	status_set(WEXITSTATUS(status));
 	return (EXIT_SUCCESS);
 }

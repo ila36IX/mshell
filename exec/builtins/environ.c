@@ -19,7 +19,7 @@ const char	*environ_get(const char *key)
 	return (NULL);
 }
 
-void	environ_unset(const char *key)
+int	environ_unset(const char *key)
 {
 	t_dict	**cur;
 	t_dict	*tmp;
@@ -34,10 +34,11 @@ void	environ_unset(const char *key)
 			free(tmp->key);
 			free(tmp->value);
 			free(tmp);
-			return ;
+			return (EXIT_SUCCESS);
 		}
 		cur = &(*cur)->next;
 	}
+	return (EXIT_SUCCESS);
 }
 
 void	environ_set(const char *key, const char *value)
@@ -78,14 +79,14 @@ void	environ_free(void)
 	g_environ_head = NULL;
 }
 
-void	environ_print(void)
+int	environ_print(void)
 {
 	t_dict	*walk;
 
 	if (!g_environ_head)
 	{
 		printf("(nil)\n");
-		return ;
+		return (EXIT_SUCCESS);
 	}
 	walk = g_environ_head;
 	while (walk)
@@ -93,6 +94,7 @@ void	environ_print(void)
 		printf("[%s] = %s\n", walk->key, walk->value);
 		walk = walk->next;
 	}
+	return (EXIT_SUCCESS);
 }
 
 void	environ_init(const char **envp)

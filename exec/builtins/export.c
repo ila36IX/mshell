@@ -12,9 +12,7 @@ void	insert_new_node(char *expression)
 	list = ft_split(expression, '=');
 	if (!list)
 		return ;
-	if (ft_isalpha(list[0][0]) == 0)
-		return ;
-	environ_set(list[0], list[1]);
+	environ_set(list[0] + 1, list[1]);
 	/*ft_gcremove_split(list);*/
 }
 
@@ -24,7 +22,7 @@ void	insert_new_node(char *expression)
  * @key: Key, Ex: PWD
  * @value: value, Ex: /home/sboukiou
  */
-void	bin_export(t_simple_cmd cmd)
+int	bin_export(t_simple_cmd cmd)
 {
 	int			i;
 
@@ -32,7 +30,7 @@ void	bin_export(t_simple_cmd cmd)
 	while (cmd.argv[i])
 	{
 		insert_new_node(cmd.argv[i]);
-		printf("[Added new node to env]\n");
 		i++;
 	}
+	return (EXIT_SUCCESS);
 }
