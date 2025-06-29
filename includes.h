@@ -69,5 +69,6 @@
 # define TEXT_BG_WHITE "\033[47m"
 
 # define UNSET(var) (void)(var);
+# define MARK(str) printf("(%s)(%s) [%s]", __LINE__, __FILE__, str);
 #endif
 
