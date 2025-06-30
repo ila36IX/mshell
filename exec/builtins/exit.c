@@ -1,6 +1,7 @@
 # include "../../includes.h"
 # include "../../libft/libft.h"
 # include "../status.h"
+# include "./environ.h"
 # define FAIL -1
 # define ERR_NNUM_VAL 2
 # define TO_MANY_ARGS 1
@@ -17,6 +18,8 @@ int	quit(char **av, int ac)
 		ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
 		return (FAIL);
 	}
+	ft_gc_clear();
+	environ_free();
 	if (av[1] != NULL)
 	{
 		val = ft_atoi(av[1]);
