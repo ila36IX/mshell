@@ -4,27 +4,9 @@
 # define ERR_OPEN -1
 # define ERR_FILE_NOT_FOUND -2
 # define ERR_NULL 1
-# define SUCCESS 0
-# define FAIL 1
-
-static int	setup_redir_out(t_redirect *redir)
-{
-	int	target;
-
-	if (!redir)
-		return (FAIL);
-	target = 0;
-	if (redir->type == REDIR_TYPE_OUT)
-		target = open(redir->target, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-	else if (redir->type == REDIR_TYPE_APPEND)
-		target = open(redir->target, O_CREAT | O_WRONLY | O_TRUNC | O_APPEND, 0644);
-	if (target == ERR_OPEN)
-		return (FAIL);
-	if (dup2(target, STDOUT_FILENO) != EXIT_SUCCESS)
-		return (FAIL);
-	close(target);
-	return (SUCCESS);
-}
+# define PIPE_SIZE 2
+# include "./exec.h"
+# include "../libft/libft.h"
 
 static int	setup_redir_in(t_redirect *redir)
 {
@@ -32,97 +14,72 @@ static int	setup_redir_in(t_redirect *redir)
 
 	if (!redir)
 		return (FAIL);
-	target = open(redir->target, O_RDONLY | O_TRUNC, 0644);
+	target = open(redir->target, O_RDONLY);
 	if (target == ERR_OPEN)
 		return (FAIL);
-	if (dup2(target, STDIN_FILENO) != EXIT_SUCCESS)
+	if (dup2(target, STDIN_FILENO) == ERR_OPEN)
 		return (FAIL);
 	close(target);
 	return (SUCCESS);
 }
 
-
-static int	setup_redir_heredoc(t_redirect *redir)
+static int	setup_redir_out(t_redirect *redir)
 {
-	int		pipefd[2];
-	char	*line;
+	int	target;
 
 	if (!redir)
 		return (FAIL);
-	if (pipe(pipefd) != SUCCESS)
+	if (redir->type == REDIR_TYPE_OUT)
+		target = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else
+		target = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (target == ERR_OPEN)
 		return (FAIL);
-	while (true)
-	{
-		line = readline("> ");
-		if (!line)
-			break;
-		if (ft_strcmp(line, redir->target) == 0)
-		{
-			free(line);
-			break;
-		}
-			write(pipefd[1], line, ft_strlen(line));
-			write(pipefd[1], "\n", 1);
-	}
-	dup2(pipefd[0], STDIN_FILENO);
-	close(pipefd[0]);
-	close(pipefd[1]);
+	if (dup2(target, STDOUT_FILENO) == ERR_OPEN)
+		return (FAIL);
+	close(target);
 	return (SUCCESS);
 }
 
-static void	fake_heredoc(t_redirect *redir)
+static int	setup_redir_heredoc(t_redirect *redir)
 {
-
-	char	*line;
+	int	pipefd[PIPE_SIZE];
 
 	if (!redir)
-		return ;
-	while (true)
-	{
-		line = readline("> ");
-		if (!line)
-			break;
-		if (ft_strcmp(line, redir->target) == 0)
-		{
-			free(line);
-			break;
-		}
-	}
+		return (FAIL);
+	if (pipe(pipefd) == ERR_OPEN)
+		return (FAIL);
+	if (write(pipefd[1], redir->target, ft_strlen(redir->target)) == ERR_OPEN)
+			return (FAIL);
+	close(pipefd[1]);
+	if (dup2(pipefd[0], STDIN_FILENO) == ERR_OPEN)
+		return (FAIL);
+	close(pipefd[0]);
+	return (SUCCESS);
 }
 
 int	setup_redirect(t_ast *ast)
 {
-	t_redirect	*redir;
 	size_t		i;
-	int			last_heredoc;
+	t_redirect	*redir;
 
 	if (!ast)
 		return (FAIL);
-	redir = ast->redir;
-
-	i = 0;
-	while (i < ast->redir_size)
-	{
-		if (redir[i].type == REDIR_TYPE_HEREDOC)
-			last_heredoc = i;
-		i++;
-	}
 	i  = 0;
+	redir = ast->redir;
+	if (!redir)
+		return (FAIL);
 	while (i < ast->redir_size)
 	{
-		if (redir[i].type == REDIR_TYPE_OUT)
-			return (setup_redir_out(redir + i));
-		else if (redir[i].type == REDIR_TYPE_APPEND)
-			return (setup_redir_out(redir + i));
-		else if (redir[i].type == REDIR_TYPE_IN)
-			return (setup_redir_in(redir + i));
-		else if (redir[i].type == REDIR_TYPE_HEREDOC)
-		{
-			if ((int )(i) == last_heredoc)
-				return (setup_redir_heredoc(redir + i));
-			else
-				fake_heredoc(redir + i);
-		}
+		if (redir[i].type == REDIR_TYPE_IN)
+			if (setup_redir_in(redir + i) == FAIL)
+				return (FAIL);
+		if (redir[i].type == REDIR_TYPE_OUT || redir->type == REDIR_TYPE_APPEND)
+			if (setup_redir_out(redir + i) == FAIL)
+				return (FAIL);
+		if (redir[i].type == REDIR_TYPE_HEREDOC)
+			if (setup_redir_heredoc(redir + i) == FAIL)
+				return (FAIL);
 		i++;
 	}
 	return (SUCCESS);
