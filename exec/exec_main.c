@@ -60,9 +60,10 @@ char	*get_full_pathname(char *name)
 		final_path = ft_strjoin(final_path, name);
 		if (access(final_path, F_OK | X_OK) == 0)
 			return (final_path);
-		// ft_gc_remove(final_path);
+		ft_gc_remove(final_path);
 		i++;
 	}
+	ft_gc_remove_ft_split(list);
 	return (NULL);
 }
 
@@ -134,7 +135,7 @@ int	check_command_type(char *name)
 int	exec_simple_cmd(t_ast *ast)
 {
 	t_simple_cmd	cmd;
-	int	target_fd;
+	int	redirect;
 	int			saved_stdin;
 	int			saved_stdout;
 	if (!ast)
@@ -144,9 +145,9 @@ int	exec_simple_cmd(t_ast *ast)
 	saved_stdout = dup(STDOUT_FILENO);
 	if (saved_stdin == ERR_OPEN || saved_stdout == ERR_OPEN)
 		return (ERR_OPEN);
-	target_fd = setup_redirect(ast);
-	if (target_fd == 2)
-		return (EXIT_FAILURE);
+	redirect = setup_redirect(ast);
+	if (redirect == FAIL)
+		dprintf(saved_stdin, "Failed to setup the redirections\n");
 	if (check_command_type(cmd.argv[0]) == BUILTIN)
 		exec_builtin(ast);
 	else if (check_command_type(cmd.argv[0]) == PRECOMPILED)
