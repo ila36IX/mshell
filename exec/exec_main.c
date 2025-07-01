@@ -10,99 +10,6 @@
 # define ERR_NULL 1
 
 
-/**
- * Executes a built-in command
- * @ast: Ast structure
- * Return: Exit status of the given command
- */
-int	exec_builtin(t_ast *ast)
-{
-	t_simple_cmd	cmd;
-
-	cmd = ast->simple_cmd;
-	if (ft_strcmp(cmd.argv[0], "echo") == 0)
-		return (echo(cmd.argv));
-	else if (ft_strcmp(cmd.argv[0], "cd") == 0)
-			return (cd(cmd.argc, cmd.argv));
-	else if (ft_strcmp(cmd.argv[0], "pwd") == 0)
-			return (pwd());
-	else if (ft_strcmp(cmd.argv[0], "exit") == 0)
-					quit(cmd.argv, cmd.argc);
-	else if (ft_strcmp(cmd.argv[0], "export") == 0)
-					return (bin_export(cmd));
-	else if (ft_strcmp(cmd.argv[0], "env") == 0)
-		return (environ_print());
-	else if (ft_strcmp(cmd.argv[0], "unset") == 0)
-		  return (environ_unset(cmd.argv[1]));
-	return (0);
-}
-
-char	*get_full_pathname(char *name)
-{
-	char	**list;
-	const char	*env;
-	char	*final_path;
-	int	i;
-
-	if (!name)
-		return (NULL);
-	if (access(name, F_OK | X_OK) == 0)
-		return (name);
-	env = environ_get("PATH");
-	if (!env)
-		return (NULL);
-	list = ft_split(env, ':');
-	if (!list)
-		return (NULL);
-	i = 0;
-	while (list[i])
-	{
-		final_path = ft_strjoin(list[i], "/");
-		final_path = ft_strjoin(final_path, name);
-		if (access(final_path, F_OK | X_OK) == 0)
-			return (final_path);
-		ft_gc_remove(final_path);
-		i++;
-	}
-	ft_gc_remove_ft_split(list);
-	return (NULL);
-}
-
-/**
- * Executes an executble-file command
- * @ast: Ast structure
- * Return: Exit status of the given command
- */
-int	exec_precompiled(t_ast *ast)
-{
-	pid_t	pid;
-	char	**envp;
-	char	*cmd;
-	int		status;
-
-	if (!ast)
-		return (EXIT_FAILURE);
-	cmd = get_full_pathname(ast->simple_cmd.argv[0]);
-	pid = fork();
-	if (pid == -1)
-		return (EXIT_FAILURE);
-	status = 0;
-	if (pid == 0)
-	{
-		if (cmd == NULL)
-		{
-			dprintf(STDERR_FILENO, "%s: command not found\n", ast->simple_cmd.argv[0]);
-			exit(NOT_FOUND);
-		}
-		envp = environ_array_execve();
-		if (execve(cmd, ast->simple_cmd.argv, envp) == -1)
-			exit(NOT_FOUND);
-	}
-	else
-		waitpid(pid, &status, 0);
-	status_set(WEXITSTATUS(status));
-	return (EXIT_SUCCESS);
-}
 
 /**
  * check_command_type - Checks for the type of given command by name
@@ -182,6 +89,29 @@ static int	exec_simple_cmd(t_ast *ast, int pipe_in)
 	return (pipe_out);
 }
 
+
+
+static int exec_connected(t_ast *ast)
+{
+	if (!ast)
+		return (FAIL);
+	if (ast->connector == CONNECTOR_OR)
+	{
+		if (status_get() == 0)
+			return (SUCCESS);
+		else
+			exec_simple_cmd(ast->next, -1);
+	}
+	if (ast->connector == CONNECTOR_AND)
+	{
+		if (status_get() != 0)
+			return (FAIL);
+		else
+			exec_simple_cmd(ast->next, -1);
+	}
+	return (SUCCESS);
+}
+
 /**
  	* exec_main - main execution function that takes the ast
 	* @ast: Ast data
@@ -198,10 +128,15 @@ void	exec_main(t_ast *ast, char **envp)
 	{
 		if (ast->type == AST_SIMPLE_COMMAND)
 			pipe_in = exec_simple_cmd(ast, pipe_in);
-		/*else if (ast->type == AST_SUBSHELL)*/
-		/*		return (main_exec(ast->subshell, env));*/
-		/*else if (ast->type == CONNECTOR)*/
-		/*		return (main_exec(ast->connector, env));*/
+		else if (ast->type == AST_CONNECTOR)
+		{
+			exec_connected(ast);
+			if (ast->connector != CONNECTOR_PIPE)
+				ast = ast->next;
+		}
+		/* else if (ast->type == AST_SUBSHELL)
+			exec_subshell(ast->subshell, pipe_in); */
 		ast = ast->next;
 	}
 }
+
