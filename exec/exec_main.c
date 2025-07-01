@@ -139,19 +139,32 @@ int	check_command_type(char *name)
  * @cmd: Command to execute with its meta-data
  * @redir: Redirection information (files, and streams)
  */
-static int	exec_simple_cmd(t_ast *ast)
+static int	exec_simple_cmd(t_ast *ast, int pipe_in)
 {
 	t_simple_cmd	cmd;
 	int	redirect;
 	int			saved_stdin;
 	int			saved_stdout;
+	int			pipefd[2];
+	int			pipe_out;
 
 	if (!ast)
-		return (FAIL);
+		return (SUCCESS);
 	cmd = ast->simple_cmd;
 	/* Saving stding and stdout streams */
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
+	pipe_out = -1;
+	if (ast->next && ast->next->type == AST_CONNECTOR
+			&& ast->next->connector == CONNECTOR_PIPE)
+	{
+		pipe(pipefd);
+		dup2(pipefd[1], STDOUT_FILENO);
+		pipe_out = pipefd[0];
+		close(pipefd[1]);
+	}
+	if (pipe_in != FAIL)
+		dup2(pipe_in, STDIN_FILENO);
 	if (saved_stdin == ERR_OPEN || saved_stdout == ERR_OPEN)
 		return (ERR_OPEN);
 	redirect = setup_redirect(ast);
@@ -165,7 +178,8 @@ static int	exec_simple_cmd(t_ast *ast)
 	dup2(saved_stdout, STDOUT_FILENO);
 	close(saved_stdin);
 	close(saved_stdout);
-	return (SUCCESS);
+	close(pipe_in);
+	return (pipe_out);
 }
 
 /**
@@ -174,14 +188,16 @@ static int	exec_simple_cmd(t_ast *ast)
  */
 void	exec_main(t_ast *ast, char **envp)
 {
+	int	pipe_in;
 
 	if (!ast || !envp)
 		return ;
+	pipe_in  = -1;
 	environ_init((const char **)envp);
 	while (ast)
 	{
 		if (ast->type == AST_SIMPLE_COMMAND)
-			exec_simple_cmd(ast);
+			pipe_in = exec_simple_cmd(ast, pipe_in);
 		/*else if (ast->type == AST_SUBSHELL)*/
 		/*		return (main_exec(ast->subshell, env));*/
 		/*else if (ast->type == CONNECTOR)*/
