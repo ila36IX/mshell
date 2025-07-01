@@ -139,7 +139,7 @@ int	check_command_type(char *name)
  * @cmd: Command to execute with its meta-data
  * @redir: Redirection information (files, and streams)
  */
-void	exec_simple_cmd(t_ast *ast)
+static int	exec_simple_cmd(t_ast *ast)
 {
 	t_simple_cmd	cmd;
 	int	redirect;
@@ -147,7 +147,7 @@ void	exec_simple_cmd(t_ast *ast)
 	int			saved_stdout;
 
 	if (!ast)
-		return ;
+		return (FAIL);
 	cmd = ast->simple_cmd;
 	/* Saving stding and stdout streams */
 	saved_stdin = dup(STDIN_FILENO);
@@ -165,6 +165,7 @@ void	exec_simple_cmd(t_ast *ast)
 	dup2(saved_stdout, STDOUT_FILENO);
 	close(saved_stdin);
 	close(saved_stdout);
+	return (SUCCESS);
 }
 
 /**
@@ -174,15 +175,17 @@ void	exec_simple_cmd(t_ast *ast)
 void	exec_main(t_ast *ast, char **envp)
 {
 
-	if (!ast)
-		return ;
-	if (!envp)
+	if (!ast || !envp)
 		return ;
 	environ_init((const char **)envp);
-	if (ast->type == AST_SIMPLE_COMMAND)
-		exec_simple_cmd(ast);
-	/*else if (ast->type == AST_SUBSHELL)*/
-	/*		return (main_exec(ast->subshell, env));*/
-	/*else if (ast->type == CONNECTOR)*/
-	/*		return (main_exec(ast->connector, env));*/
+	while (ast)
+	{
+		if (ast->type == AST_SIMPLE_COMMAND)
+			exec_simple_cmd(ast);
+		/*else if (ast->type == AST_SUBSHELL)*/
+		/*		return (main_exec(ast->subshell, env));*/
+		/*else if (ast->type == CONNECTOR)*/
+		/*		return (main_exec(ast->connector, env));*/
+		ast = ast->next;
+	}
 }
