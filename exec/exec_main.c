@@ -169,7 +169,7 @@ static int	exec_simple_cmd(t_ast *ast, int pipe_in)
 		return (ERR_OPEN);
 	redirect = setup_redirect(ast);
 	if (redirect == FAIL)
-		dprintf(saved_stdin, "Failed to setup the redirections\n");
+		return (FAIL);
 	if (check_command_type(cmd.argv[0]) == BUILTIN)
 		exec_builtin(ast);
 	else if (check_command_type(cmd.argv[0]) == PRECOMPILED)

@@ -16,7 +16,7 @@ static int	setup_redir_in(t_redirect *redir)
 		return (FAIL);
 	target = open(redir->target, O_RDONLY);
 	if (target == ERR_OPEN)
-		return (FAIL);
+		return (printf("minishell: %s: No such file or directory\n", redir->target), FAIL);
 	if (dup2(target, STDIN_FILENO) == ERR_OPEN)
 		return (FAIL);
 	close(target);
