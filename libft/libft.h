@@ -77,6 +77,7 @@ void				ft_lstiter(t_list *lst, void (*f)(void *));
 bool	ft_lstismember(t_list *head, void *data);
 t_list				*ft_lstmap(t_list *l, void *(*f)(void *),
 						void (*d)(void *));
+void	ft_lstremove(t_list **head, void *data, void (*del)(void *));
 char	*xgc_strdup(const char *src);
 
 #endif

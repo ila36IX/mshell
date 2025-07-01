@@ -1,86 +1,83 @@
+# define ERR_OPEN -1
+# define ERR_FILE_NOT_FOUND -2
+# define ERR_NULL 1
+# define PIPE_SIZE 2
 # include "./exec.h"
 # include "../libft/libft.h"
 
-int	single_redirections(t_redirect *redir, int *target_fd)
+static int	setup_redir_in(t_redirect *redir)
 {
-	int	saved_stream;
-	char	*herdoc_line;
+	int	target;
 
 	if (!redir)
-		return (-1);
+		return (FAIL);
+	target = open(redir->target, O_RDONLY);
+	if (target == ERR_OPEN)
+		return (FAIL);
+	if (dup2(target, STDIN_FILENO) == ERR_OPEN)
+		return (FAIL);
+	close(target);
+	return (SUCCESS);
+}
 
-	saved_stream = -2;
+static int	setup_redir_out(t_redirect *redir)
+{
+	int	target;
+
+	if (!redir)
+		return (FAIL);
 	if (redir->type == REDIR_TYPE_OUT)
-	{
-		saved_stream = dup(STDOUT_FILENO);
-		*target_fd = open(redir->target, O_WRONLY | O_CREAT, 0644);
-		if (*target_fd == -1)
-			perror("Open");
-		if (dup2(*target_fd, STDOUT_FILENO) ==  -1)
-			perror("dup2");
-	}
-	else if (redir->type == REDIR_TYPE_APPEND)
-	{
-		saved_stream = dup(STDOUT_FILENO);
-		*target_fd = open(redir->target, O_WRONLY | O_APPEND | O_CREAT, 0644);
-		if (*target_fd == -1)
-			perror("open");
-		if (dup2(*target_fd, STDOUT_FILENO) ==  -1)
-			perror("dup2");
-	}
-	else if (redir->type == REDIR_TYPE_IN)
-	{
-		saved_stream = dup(STDIN_FILENO);
-		*target_fd = open(redir->target, O_RDONLY | O_CREAT, 0644);
-		if (*target_fd == -1)
-			perror("open");
-		if (dup2(*target_fd, STDIN_FILENO) ==  -1)
-			perror("dup2");
-	}
-	else if (redir->type == REDIR_TYPE_HEREDOC)
-	{
-		saved_stream = dup(STDIN_FILENO);
-		while (true)
-		{
-			herdoc_line = readline("> ");
-			if (!herdoc_line || ft_strcmp(herdoc_line, redir->target) == 0) {
-				free(herdoc_line);
-				break;
-			}
-		}
-	}
-	return (saved_stream);
+		target = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	else
+		target = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (target == ERR_OPEN)
+		return (FAIL);
+	if (dup2(target, STDOUT_FILENO) == ERR_OPEN)
+		return (FAIL);
+	close(target);
+	return (SUCCESS);
 }
 
-void	cleanup_redirection(t_redirect *redir, int saved_stream)
+static int	setup_redir_heredoc(t_redirect *redir)
 {
-	if (redir->type == REDIR_TYPE_IN)
-		dup2(saved_stream, STDIN_FILENO);
-	else if (redir->type == REDIR_TYPE_OUT || redir->type == REDIR_TYPE_APPEND)
-		dup2(saved_stream, STDOUT_FILENO);
-	if (saved_stream < 0)
-		close(saved_stream);
+	int	pipefd[PIPE_SIZE];
+
+	if (!redir)
+		return (FAIL);
+	if (pipe(pipefd) == ERR_OPEN)
+		return (FAIL);
+	if (write(pipefd[1], redir->target, ft_strlen(redir->target)) == ERR_OPEN)
+			return (FAIL);
+	close(pipefd[1]);
+	if (dup2(pipefd[0], STDIN_FILENO) == ERR_OPEN)
+		return (FAIL);
+	close(pipefd[0]);
+	return (SUCCESS);
 }
 
-int	setup_redirections(t_ast *ast, int *target)
+int	setup_redirect(t_ast *ast)
 {
-	int	saved_stream;
+	size_t		i;
 	t_redirect	*redir;
-	size_t	i;
 
-	i = 0;
+	if (!ast)
+		return (FAIL);
+	i  = 0;
 	redir = ast->redir;
+	if (!redir)
+		return (FAIL);
 	while (i < ast->redir_size)
 	{
-		saved_stream = single_redirections(redir + i, target);
-		if (i + 1 < ast->redir_size && redir[i + 1].type != REDIR_TYPE_HEREDOC)
-		{
-			cleanup_redirection(redir + i, saved_stream);
-			if (*target != -1)
-				close(*target);
-		}
+		if (redir[i].type == REDIR_TYPE_IN)
+			if (setup_redir_in(redir + i) == FAIL)
+				return (FAIL);
+		if (redir[i].type == REDIR_TYPE_OUT || redir->type == REDIR_TYPE_APPEND)
+			if (setup_redir_out(redir + i) == FAIL)
+				return (FAIL);
+		if (redir[i].type == REDIR_TYPE_HEREDOC)
+			if (setup_redir_heredoc(redir + i) == FAIL)
+				return (FAIL);
 		i++;
 	}
-	return (saved_stream);
+	return (SUCCESS);
 }
-

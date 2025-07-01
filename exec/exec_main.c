@@ -5,6 +5,8 @@
 # define BUILTIN 0
 # define PRECOMPILED 1
 # define NOT_FOUND 2
+# define ERR_OPEN -1
+# define ERR_NULL 1
 
 
 /**
@@ -58,9 +60,10 @@ char	*get_full_pathname(char *name)
 		final_path = ft_strjoin(final_path, name);
 		if (access(final_path, F_OK | X_OK) == 0)
 			return (final_path);
-		// ft_gc_remove(final_path);
+		ft_gc_remove(final_path);
 		i++;
 	}
+	ft_gc_remove_ft_split(list);
 	return (NULL);
 }
 
@@ -132,22 +135,27 @@ int	check_command_type(char *name)
 int	exec_simple_cmd(t_ast *ast)
 {
 	t_simple_cmd	cmd;
-	int	saved_stream;
-	int	target_fd;
-
+	int	redirect;
+	int			saved_stdin;
+	int			saved_stdout;
 	if (!ast)
 		return (EXIT_FAILURE);
 	cmd = ast->simple_cmd;
-	saved_stream = setup_redirections(ast, &target_fd);
-	if (saved_stream == -1)
-		printf("setup faild\n");
+	saved_stdin = dup(STDIN_FILENO);
+	saved_stdout = dup(STDOUT_FILENO);
+	if (saved_stdin == ERR_OPEN || saved_stdout == ERR_OPEN)
+		return (ERR_OPEN);
+	redirect = setup_redirect(ast);
+	if (redirect == FAIL)
+		dprintf(saved_stdin, "Failed to setup the redirections\n");
 	if (check_command_type(cmd.argv[0]) == BUILTIN)
 		exec_builtin(ast);
 	else if (check_command_type(cmd.argv[0]) == PRECOMPILED)
 		exec_precompiled(ast);
-	cleanup_redirection(ast->redir, saved_stream);
-	if (target_fd != -1)
-		close(target_fd);
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
 	return (0);
 }
 
@@ -170,8 +178,6 @@ int exec_main(t_ast *ast, char **envp)
 		return (exec_simple_cmd(ast));
 	/*else if (ast->type == AST_SUBSHELL)*/
 	/*		return (main_exec(ast->subshell, env));*/
-	/*else if (ast->type == AST_CONNECTOR)*/
-	/*		return (exec_connector(ast->prev, ast->next, env));*/
 	else
 		return (-1);
 	return (status);
