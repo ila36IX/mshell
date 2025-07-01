@@ -1,10 +1,11 @@
 # include "./exec.h"
 # include "./builtins/environ.h"
 # include "./builtins/builtins.h"
+# include "./status.h"
+# include "../includes.h"
 
 # define BUILTIN 0
 # define PRECOMPILED 1
-# define NOT_FOUND 2
 # define ERR_OPEN -1
 # define ERR_NULL 1
 
@@ -22,17 +23,17 @@ int	exec_builtin(t_ast *ast)
 	if (ft_strcmp(cmd.argv[0], "echo") == 0)
 		return (echo(cmd.argv));
 	else if (ft_strcmp(cmd.argv[0], "cd") == 0)
-			cd(cmd.argc, cmd.argv);
+			return (cd(cmd.argc, cmd.argv));
 	else if (ft_strcmp(cmd.argv[0], "pwd") == 0)
-			pwd();
+			return (pwd());
 	else if (ft_strcmp(cmd.argv[0], "exit") == 0)
 					quit(cmd.argv, cmd.argc);
 	else if (ft_strcmp(cmd.argv[0], "export") == 0)
-					bin_export(cmd);
+					return (bin_export(cmd));
 	else if (ft_strcmp(cmd.argv[0], "env") == 0)
-		environ_print();
+		return (environ_print());
 	else if (ft_strcmp(cmd.argv[0], "unset") == 0)
-		  environ_unset(cmd.argv[1]);
+		  return (environ_unset(cmd.argv[1]));
 	return (0);
 }
 
@@ -77,22 +78,29 @@ int	exec_precompiled(t_ast *ast)
 	pid_t	pid;
 	char	**envp;
 	char	*cmd;
+	int		status;
+
 	if (!ast)
 		return (EXIT_FAILURE);
+	cmd = get_full_pathname(ast->simple_cmd.argv[0]);
 	pid = fork();
 	if (pid == -1)
 		return (EXIT_FAILURE);
-	cmd = get_full_pathname(ast->simple_cmd.argv[0]);
+	status = 0;
 	if (pid == 0)
 	{
 		if (cmd == NULL)
+		{
 			dprintf(STDERR_FILENO, "%s: command not found\n", ast->simple_cmd.argv[0]);
+			exit(NOT_FOUND);
+		}
 		envp = environ_array_execve();
 		if (execve(cmd, ast->simple_cmd.argv, envp) == -1)
-			return (EXIT_FAILURE);
+			exit(NOT_FOUND);
 	}
 	else
-		wait(0);
+		waitpid(pid, &status, 0);
+	status_set(WEXITSTATUS(status));
 	return (EXIT_SUCCESS);
 }
 
@@ -130,17 +138,18 @@ int	check_command_type(char *name)
  * arguments and redirections
  * @cmd: Command to execute with its meta-data
  * @redir: Redirection information (files, and streams)
- * Return: Exit status of the cmd
  */
-int	exec_simple_cmd(t_ast *ast)
+void	exec_simple_cmd(t_ast *ast)
 {
 	t_simple_cmd	cmd;
 	int	redirect;
 	int			saved_stdin;
 	int			saved_stdout;
+
 	if (!ast)
-		return (EXIT_FAILURE);
+		return ;
 	cmd = ast->simple_cmd;
+	/* Saving stding and stdout streams */
 	saved_stdin = dup(STDIN_FILENO);
 	saved_stdout = dup(STDOUT_FILENO);
 	if (saved_stdin == ERR_OPEN || saved_stdout == ERR_OPEN)
@@ -156,29 +165,24 @@ int	exec_simple_cmd(t_ast *ast)
 	dup2(saved_stdout, STDOUT_FILENO);
 	close(saved_stdin);
 	close(saved_stdout);
-	return (0);
 }
 
 /**
  	* exec_main - main execution function that takes the ast
 	* @ast: Ast data
-	* @return: Exit status of the given command
  */
-int exec_main(t_ast *ast, char **envp)
+void	exec_main(t_ast *ast, char **envp)
 {
-	int	status;
 
-	status = 0;
 	if (!ast)
-		return (EXIT_FAILURE);
+		return ;
 	if (!envp)
-		return (EXIT_FAILURE);
+		return ;
 	environ_init((const char **)envp);
 	if (ast->type == AST_SIMPLE_COMMAND)
-		return (exec_simple_cmd(ast));
+		exec_simple_cmd(ast);
 	/*else if (ast->type == AST_SUBSHELL)*/
 	/*		return (main_exec(ast->subshell, env));*/
-	else
-		return (-1);
-	return (status);
+	/*else if (ast->type == CONNECTOR)*/
+	/*		return (main_exec(ast->connector, env));*/
 }

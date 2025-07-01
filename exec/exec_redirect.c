@@ -1,3 +1,6 @@
+# include "../libft/libft.h"
+
+
 # define ERR_OPEN -1
 # define ERR_FILE_NOT_FOUND -2
 # define ERR_NULL 1

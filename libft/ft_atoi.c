@@ -10,70 +10,60 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "./libft.h"
 
-static int	ft_isspace(char c)
+/**
+	* is_delim - Checks if a char is a delimiter or not
+	* @c: Char to check
+	* Return: 1 if it is a delimiter , 0 otherwise
+*/
+
+static int	is_delim(char c)
 {
-	char	*spaces;
-	int		found;
-
-	found = 0;
-	spaces = " \f\n\r\t\v";
-	while (*spaces)
-	{
-		if (*spaces++ == c)
-			found = 1;
-	}
-	return (found);
+	if (c == ' ' || c == '\r' || c == '\f')
+		return (1);
+	if (c == '\t' || c == '\v' || c == '\n')
+		return (1);
+	return (0);
 }
 
-static int	ft_overflow(unsigned long nbr, char next_digit, int sign)
+int	valid_number(char digit, long num, int sign)
 {
-	unsigned long	cutoff;
-	int				cutlim;
-	int				return_value;
-
-	return_value = 0;
-	if (sign == 1)
-	{
-		cutoff = LONG_MAX;
-		return_value = -1;
-	}
-	else
-	{
-		cutoff = (unsigned long)LONG_MAX + 1;
-		return_value = 0;
-	}
-	cutlim = cutoff % 10;
-	cutoff = cutoff / 10;
-	if (nbr > cutoff || (nbr == cutoff && (next_digit - '0') > cutlim))
-		return (return_value);
-	return (1);
+	if (digit)
+		return (-1);
+	return (num * sign);
 }
 
-int	ft_atoi(const char *str)
+/**
+	* ft_atoi - Converts a valid alphanumerical string into an integer literal
+	* @nptr: Alphanum string to convert
+	* Return: An int depending on the nptr
+*/
+int	ft_atoi(const char *nptr)
 {
-	char			c;
-	int				sign;
-	unsigned long	nbr;
+	int		count;
+	int		sign;
+	long	num;
 
+	count = 0;
+	while (is_delim(nptr[count]) && nptr[count])
+		count++;
 	sign = 1;
-	nbr = 0;
-	while (ft_isspace(*str))
-		str++;
-	if (*str == '+' || *str == '-')
+	if (nptr[count] == '-')
 	{
-		if (*str == '-')
-			sign *= -1;
-		str++;
+		sign = -1;
+		count++;
 	}
-	while (*str && *str >= '0' && *str <= '9')
+	else if (nptr[count] == '+')
+		count++;
+	num = 0;
+	if (!ft_isdigit(nptr[count]))
+		return (-1);
+	while (ft_isdigit(nptr[count]) && nptr[count])
 	{
-		if (ft_overflow(nbr, *(str + 1), sign) != 1)
-			return (ft_overflow(nbr, *(str + 1), sign));
-		c = *str++;
-		nbr *= 10;
-		nbr += (c - '0');
+		num = (num * 10) + nptr[count++] - '0';
+		if (num > INT_MAX)
+			return (-1);
 	}
-	return (nbr * sign);
+	return (valid_number(nptr[count], num, sign));
 }

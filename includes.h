@@ -73,5 +73,6 @@
 # define GLOB_HEREDOC_FILE "heredoc.log"
 
 # define UNSET(var) (void)(var);
+# define MARK(str) printf("(%s)(%s) [%s]", __LINE__, __FILE__, str);
 #endif
 

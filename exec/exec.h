@@ -4,8 +4,7 @@
 # include "../includes.h"
 # include "../types.h"
 
-int exec_main(t_ast *ast, char **envp);
-
-int	setup_redirect(t_ast *ast);
+void	exec_main(t_ast *ast, char **envp);
+int		setup_redirect(t_ast *ast);
 void	cleanup_redirection(t_redirect *redir, int saved_stream);
 #endif
