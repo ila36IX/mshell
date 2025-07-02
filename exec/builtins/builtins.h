@@ -27,5 +27,7 @@ int		bin_export(t_simple_cmd cmd);
 void	env_remove(t_list *head, char *key);
 char	*env_get_value(char *key, t_list *env);
 int		quit(char **av, int ac);
+/* Main builtin function */
+int	exec_builtin(t_ast *ast);
 
 #endif
