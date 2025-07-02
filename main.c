@@ -1,5 +1,7 @@
 # include "./main.h"
 # include "./parser/parser.h"
+# include "./exec/status.h"
+# define PROMPT "\033[0;33m[User@Debian]$ \033[0m"
 
 static char	*ft_readline(const char *prompt)
 {
@@ -16,16 +18,19 @@ int	main(int ac, char **av, char **envp)
 {
 	t_ast	*ast;
 	char	*line;
-	t_lexer	lexer;
+	t_lexer lexer;
+	int		status;
+	(void)(ac);
+	(void)(av);
 
-	(void)ac;
-	(void)av;
-	while ((line = ft_readline("$ ")))
+	while ((line = readline(PROMPT)))
 	{
 		lexer = lexer_new(line, ft_strlen(line));
 		ast = create_ast(&lexer);
-		exec_main(ast, envp);
 		/* print_ast(ast); */
+		exec_main(ast, envp);
+		ft_gc_clear();
 	}
-	return (0);
+	status = status_get();
+	return (status);
 }
