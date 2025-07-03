@@ -1,31 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   string.h                                           :+:      :+:    :+:   */
+/*   arrays.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/03 17:41:36 by aljbari           #+#    #+#             */
-/*   Updated: 2025/07/03 17:41:39 by aljbari          ###   ########.fr       */
+/*   Created: 2025/07/03 17:42:16 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/03 17:42:18 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef STRING_H
-# define STRING_H
-# include "../libft/libft.h"
-# define INIT_STR_ARRAY_SIZE 16
+#ifndef ARRAYS_H
+# define ARRAYS_H
 
-typedef struct s_string
+# include "../includes.h"
+
+typedef struct s_word
 {
-	size_t	length;
-	size_t	capacity;
-	char	*buff;
-}			t_string;
+	const char	*text;
+	size_t		len;
+}				t_word;
 
-void		string_append_char(t_string *s, char c);
-void		string_append_str(t_string *s, const char *str_to_append,
-				size_t size);
-t_string	string_init(void);
-void		string_append_cstr(t_string *s, const char *str_to_append);
+typedef struct s_words
+{
+	t_word		*buff;
+	size_t		capacity;
+	size_t		length;
+}				t_words;
+void			words_append(t_words *words, t_word word);
+t_words			words_init(void);
 
 #endif
