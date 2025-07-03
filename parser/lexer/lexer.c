@@ -93,42 +93,6 @@ bool	check_special_tokens(t_lexer *l, t_token *token)
 }
 
 /**
- * is_quote_token - Handler for the case of qoute token
- *
- * @l: lexer
- * @token, reference to token to be changed
- * @quote: " or '
- * @kind: TOKEN_DQ or TOKEN_SQ
- *
- * Return: true if quote token is handled.
- * false if inclosing quote is found, the text field of @token will hold the
- * error msg and the kind of the token is TOKEN_INVALID
- */
-bool	is_quote_token(t_lexer *l, t_token *token, char quote,
-		t_token_kind kind)
-{
-	if (l->content[l->cursor] != quote)
-		return (false);
-	token->kind = kind;
-	l->cursor++;
-	token->text = &l->content[l->cursor];
-	while (l->content[l->cursor] != quote)
-	{
-		token->text_len++;
-		l->cursor++;
-		if (!l->content[l->cursor])
-		{
-			token->kind = TOKEN_INVALID;
-			token->text = "Enclosing \" or '";
-			token->text_len = strlen("Enclosing \" or '");
-			return (true);
-		}
-	}
-	l->cursor++;
-	return (true);
-}
-
-/**
  * lexer_next_token - get next token in command
  *
  * @l: the lexer holding metadate of the traversed partion of the prompt
@@ -141,14 +105,10 @@ t_token	lexer_next_token(t_lexer *l)
 	t_token	token;
 
 	ft_bzero(&token, sizeof(token));
-	token.whitespace_before = lexer_trim_left(l);
+	lexer_trim_left(l);
 	if (l->cursor >= l->content_len)
 		return (token);
 	if (check_special_tokens(l, &token))
-		return (token);
-	if (is_quote_token(l, &token, '"', TOKEN_DQ))
-		return (token);
-	if (is_quote_token(l, &token, '\'', TOKEN_SQ))
 		return (token);
 	extract_word_token(l, &token);
 	return (token);

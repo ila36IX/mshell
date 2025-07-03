@@ -41,8 +41,8 @@ int	is_whitespace(char c)
  */
 int	is_word_delim(char c)
 {
-	return (c == '"' || c == '\'' || c == '>' || c == '<' || is_whitespace(c)
-		|| c == '\0' || c == '|' || c == '(' || c == ')' || c == '&');
+	return (c == '>' || c == '<' || is_whitespace(c) || c == '\0' || c == '|'
+		|| c == '(' || c == ')' || c == '&');
 }
 
 /**
@@ -66,6 +66,41 @@ bool	lexer_trim_left(t_lexer *l)
 }
 
 /**
+ * is_quote_token - Handler for the case of qoute token
+ *
+ * @l: lexer
+ * @token, reference to token to be changed
+ * @quote: " or '
+ * @kind: TOKEN_DQ or TOKEN_SQ
+ *
+ * Return: true if quote token is handled.
+ * false if inclosing quote is found, the text field of @token will hold the
+ * error msg and the kind of the token is TOKEN_INVALID
+ */
+bool	word_read_quote(t_lexer *l, t_token *token, char quote)
+{
+	if (l->content[l->cursor] != quote)
+		return (false);
+	l->cursor++;
+	token->text_len++;
+	while (l->content[l->cursor] != quote)
+	{
+		if (!l->content[l->cursor] || l->cursor >= l->content_len)
+		{
+			token->kind = TOKEN_INVALID;
+			token->text = "Enclosing \" or '";
+			token->text_len = ft_strlen("Enclosing \" or '");
+			return (false);
+		}
+		token->text_len++;
+		l->cursor++;
+	}
+	l->cursor++;
+	token->text_len++;
+	return (true);
+}
+
+/**
  * extract_word_token - extract word and put it in the token argument
  * - a word is string which surrounded by special charachter or waitspace or
  * start/end of string
@@ -76,11 +111,24 @@ bool	lexer_trim_left(t_lexer *l)
  */
 void	extract_word_token(t_lexer *l, t_token *token)
 {
-	token->kind = TOKEN_WORD;
 	token->text = &l->content[l->cursor];
-	while (!is_word_delim(l->content[l->cursor]))
+	token->kind = TOKEN_WORD;
+	token->text_len = 0;
+	while (!is_word_delim(l->content[l->cursor]) && l->cursor < l->content_len)
 	{
-		token->text_len++;
-		l->cursor++;
+		if (l->content[l->cursor] == '"' || l->content[l->cursor] == '\'')
+		{
+			word_read_quote(l, token, l->content[l->cursor]);
+		}
+		else
+		{
+			token->text_len++;
+			l->cursor++;
+		}
+		if (l->content[l->cursor] == '&' && l->content[l->cursor + 1] != '&')
+		{
+			token->text_len++;
+			l->cursor++;
+		}
 	}
 }

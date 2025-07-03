@@ -33,10 +33,6 @@ const char	*token_kind_name(t_token_kind kind)
 		return ("herdoc redirect");
 	else if (kind == TOKEN_WORD)
 		return ("word");
-	else if (kind == TOKEN_DQ)
-		return ("d-qoute str");
-	else if (kind == TOKEN_SQ)
-		return ("s-qoute str");
 	else if (kind == TOKEN_AND)
 		return ("and operator");
 	else if (kind == TOKEN_OR)
