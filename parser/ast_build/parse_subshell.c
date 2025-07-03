@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_subshell.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 17:46:56 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/03 17:48:03 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ast_parser.h"
 
 void	skip_nested_parens(t_lexer *lexer)
@@ -25,7 +37,7 @@ t_lexer	subshell_new_lexer(t_lexer *lexer)
 	t_lexer	sub_lexer;
 	size_t	lexer_size;
 
-	lexer_next_token(lexer); /* skip open parent */
+	lexer_next_token(lexer);
 	cursor_loc = lexer->cursor;
 	skip_nested_parens(lexer);
 	lexer_size = lexer->cursor - cursor_loc - 1;
@@ -41,26 +53,26 @@ t_ast	*init_ast_subshell(void)
 	ast->type = AST_SUBSHELL;
 	ast->redir_size = 0;
 	ast->redir = ft_calloc(ARRAY_INIT_SIZE, sizeof(t_redirect));
-	ast->_buff_size = ARRAY_INIT_SIZE;
+	ast->redir_capacity = ARRAY_INIT_SIZE;
 	return (ast);
 }
 
 bool	is_valid_subshell(t_ast **ast_head, t_lexer *lexer)
 {
-	char	*token_str;
+	t_token	token;
 
 	if (!lexer_check_parens(lexer))
 	{
-		token_str = alloc_token_str(lexer_peek_next_token(lexer));
-		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, token_str);
+		token = lexer_peek_next_token(lexer);
+		ast_add_error(ast_head, token.text, token.text_len);
 		return (false);
 	}
 	if (!last_ast(*ast_head))
 		return (true);
 	if (last_ast(*ast_head)->type != AST_CONNECTOR)
 	{
-		token_str = alloc_token_str(lexer_peek_next_token(lexer));
-		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, token_str);
+		token = lexer_peek_next_token(lexer);
+		ast_add_error(ast_head, token.text, token.text_len);
 		return (false);
 	}
 	return (true);
@@ -79,7 +91,7 @@ t_ast	*ast_add_subshell(t_ast **ast_head, t_lexer *lexer)
 	ast->subshell = create_ast(&sub_lexer);
 	if (ast->subshell == NULL)
 	{
-		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, "empty subshell");
+		ast_add_error(ast_head, "empty subshell", 14);
 		return (NULL);
 	}
 	token = lexer_peek_next_token(lexer);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ast_create.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 17:46:53 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/03 17:47:10 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ast_parser.h"
 
 t_ast	*last_ast(t_ast *ast)
@@ -31,7 +43,7 @@ void	ast_redirct_realloc(t_ast *ast)
 		i++;
 	}
 	ast->redir = buff;
-	ast->_buff_size = buff_size;
+	ast->redir_capacity = buff_size;
 }
 
 /**
@@ -46,20 +58,21 @@ void	ast_redirct_realloc(t_ast *ast)
 bool	ast_add_redirct(t_ast **ast_head, t_ast *ast, t_lexer *lexer)
 {
 	t_token	token;
-	char	*target;
+	t_word	target;
 
-	if (ast->_buff_size == ast->redir_size)
+	if (ast->redir_capacity == ast->redir_size)
 		ast_redirct_realloc(ast);
 	token = lexer_next_token(lexer);
 	ast->redir[ast->redir_size].type = tok_kind_to_redir_type(token.kind);
-	token = lexer_peek_next_token(lexer);
-	if (token_is_word(token) == false)
+	token = lexer_next_token(lexer);
+	if (token.kind != TOKEN_WORD)
 	{
-		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, alloc_token_str(token));
+		ast_add_error(ast_head, token.text, token.text_len);
 		return (false);
 	}
-	target = lexer_next_zip_word(lexer);
-	ast->redir[ast->redir_size++].target = target;
+	target.len = token.text_len;
+	target.text = token.text;
+	ast->redir[ast->redir_size++].word_target = target;
 	return (true);
 }
 
@@ -80,14 +93,14 @@ t_ast	*create_ast(t_lexer *lexer)
 	token = lexer_peek_next_token(lexer);
 	while (token.kind)
 	{
-		if (token_is_word(token) || token_is_redir_op(token))
+		if (token.kind == TOKEN_WORD || token_is_redir_op(token))
 			ast_add_simple_cmd(&ast, lexer);
 		else if (token_is_connector(token))
 			ast_add_connector(&ast, lexer);
 		else if (token.kind == TOKEN_OPAREN)
 			ast_add_subshell(&ast, lexer);
 		else
-			ast_add_error(&ast, ERR_UNEXPECTED_TOK, alloc_token_str(token));
+			ast_add_error(&ast, token.text, token.text_len);
 		if (ast_error_found(ast))
 			break ;
 		token = lexer_peek_next_token(lexer);
