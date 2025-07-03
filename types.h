@@ -12,6 +12,7 @@
 
 #ifndef TYPES_H
 # define TYPES_H
+# include "./dynamic_array/arrays.h"
 # include "./includes.h"
 
 typedef enum e_connector
@@ -43,23 +44,30 @@ typedef enum e_redirect_type
  *
  * @type: Integer represinting redirection type see t_redirect_type
  * @target: Filename for <, >, >> Delimiter for <<
+ * @tok_target: represents token that will be expanded into @target
  * @redirect_size: Current size of the array.
  */
 typedef struct s_redirect
 {
 	t_redirect_type		type;
 	char				*target;
+	t_word				word_target;
 }						t_redirect;
 
 /**
- * NOTE: ADD docs here
+ * s_simple_cmd - simple command is command of array of arguments
  *
+ * @argv: array of argument after expanding, that field is what execution module
+ * must use
+ * @tok_argv: array of words that will be expanded into argv
+ * @argc: Number of arguments
  */
 typedef struct s_simple_cmd
 {
 	char				**argv;
+	t_words				tok_argv;
 	size_t				argc;
-	size_t				_buff_size;
+	size_t				capacity;
 }						t_simple_cmd;
 
 /*
@@ -77,7 +85,7 @@ typedef struct s_ast
 	};
 	t_redirect			*redir;
 	size_t				redir_size;
-	size_t				_buff_size;
+	size_t				redir_capacity;
 	struct s_ast		*next;
 }						t_ast;
 
