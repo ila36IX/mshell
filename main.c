@@ -23,7 +23,7 @@ int	main(int ac, char **av, char **envp)
 	(void)(ac);
 	(void)(av);
 
-	while ((line = readline(PROMPT)))
+	while ((line = ft_readline(PROMPT)))
 	{
 		lexer = lexer_new(line, ft_strlen(line));
 		ast = create_ast(&lexer);
