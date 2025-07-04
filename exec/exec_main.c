@@ -46,34 +46,25 @@ int	check_command_type(char *name)
  * @cmd: Command to execute with its meta-data
  * @redir: Redirection information (files, and streams)
  */
-static int	exec_simple_cmd(t_ast *ast, int pipe_in)
+static int	exec_simple_cmd(t_ast *ast, int pipe_in, int pipe_out)
 {
 	t_simple_cmd	cmd;
-	int	redirect;
-	int			saved_stdin;
-	int			saved_stdout;
-	int			pipefd[2];
-	int			pipe_out;
+	int				redirect;
 
 	if (!ast)
-		return (SUCCESS);
+		exit(0);
 	cmd = ast->simple_cmd;
-	/* Saving stding and stdout streams */
-	saved_stdin = dup(STDIN_FILENO);
-	saved_stdout = dup(STDOUT_FILENO);
-	pipe_out = -1;
 	if (ast->next && ast->next->type == AST_CONNECTOR
 			&& ast->next->connector == CONNECTOR_PIPE)
 	{
-		pipe(pipefd);
-		dup2(pipefd[1], STDOUT_FILENO);
-		pipe_out = pipefd[0];
-		close(pipefd[1]);
+		dup2(pipe_out, STDOUT_FILENO);
+		close(pipe_out);
 	}
-	if (pipe_in != FAIL)
+	if (pipe_in != -1)
+	{
 		dup2(pipe_in, STDIN_FILENO);
-	if (saved_stdin == ERR_OPEN || saved_stdout == ERR_OPEN)
-		return (ERR_OPEN);
+		close(pipe_in);
+	}
 	redirect = setup_redirect(ast);
 	if (redirect == FAIL)
 		return (FAIL);
@@ -81,17 +72,13 @@ static int	exec_simple_cmd(t_ast *ast, int pipe_in)
 		exec_builtin(ast);
 	else if (check_command_type(cmd.argv[0]) == PRECOMPILED)
 		exec_precompiled(ast);
-	dup2(saved_stdin, STDIN_FILENO);
-	dup2(saved_stdout, STDOUT_FILENO);
-	close(saved_stdin);
-	close(saved_stdout);
-	close(pipe_in);
-	return (pipe_out);
+	exit(status_get());
+	return (SUCCESS);
 }
 
 
 
-static int exec_connected(t_ast *ast)
+static int exec_connected(t_ast *ast, int pipe_out)
 {
 	if (!ast)
 		return (FAIL);
@@ -100,14 +87,14 @@ static int exec_connected(t_ast *ast)
 		if (status_get() == 0)
 			return (SUCCESS);
 		else
-			exec_simple_cmd(ast->next, -1);
+			exec_simple_cmd(ast->next, -1, pipe_out);
 	}
-	if (ast->connector == CONNECTOR_AND)
+	else if (ast->connector == CONNECTOR_AND)
 	{
 		if (status_get() != 0)
 			return (FAIL);
 		else
-			exec_simple_cmd(ast->next, -1);
+			exec_simple_cmd(ast->next, -1, pipe_out);
 	}
 	return (SUCCESS);
 }
@@ -118,25 +105,53 @@ static int exec_connected(t_ast *ast)
  */
 void	exec_main(t_ast *ast, char **envp)
 {
-	int	pipe_in;
+	int		pipe_in;
+	int		pipe_out;
+	pid_t	pid;
+	int		pipefd[2];
 
 	if (!ast || !envp)
 		return ;
 	pipe_in  = -1;
+	pipe_out  = -1;
+	pid = 0;
+	status_set(0);
 	environ_init((const char **)envp);
 	while (ast)
 	{
 		if (ast->type == AST_SIMPLE_COMMAND)
-			pipe_in = exec_simple_cmd(ast, pipe_in);
+		{
+			if (ast->next && ast->next->type == AST_CONNECTOR
+					&& ast->next->connector == CONNECTOR_PIPE)
+			{
+				if (pipe(pipefd) == FAIL)
+					return ;
+				pipe_out = pipefd[1];
+			}
+			if (ft_strcmp(ast->simple_cmd.argv[0], "exit") != 0)
+				pid = fork();
+			if (pid == FAIL)
+				return ;
+			if (pid == 0)
+				exec_simple_cmd(ast, pipe_in, pipe_out);
+			pipe_in = -1;
+		}
 		else if (ast->type == AST_CONNECTOR)
 		{
-			exec_connected(ast);
+			if (ast->connector == CONNECTOR_PIPE)
+				pipe_in = pipefd[0];
+			exec_connected(ast, pipe_out);
 			if (ast->connector != CONNECTOR_PIPE)
 				ast = ast->next;
 		}
-		/* else if (ast->type == AST_SUBSHELL)
-			exec_subshell(ast->subshell, pipe_in); */
+		if (pipe_out != FAIL)
+			close(pipefd[1]);
+		/* if (pipe_in != FAIL)
+			close(pipefd[0]); */
 		ast = ast->next;
 	}
+	if (pid > 0)
+		waitpid(pid, NULL, 0);
+	kill(-9, SIGKILL);
 }
 
