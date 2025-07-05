@@ -6,13 +6,12 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 13:24:58 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/05/15 13:33:08 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/05 17:29:12 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TYPES_H
 # define TYPES_H
-# include "./dynamic_array/arrays.h"
 # include "./includes.h"
 
 typedef enum e_connector
@@ -39,6 +38,32 @@ typedef enum e_redirect_type
 }						t_redirect_type;
 
 /**
+ * t_word - type represent a bash word that possibly contains quotes
+ *
+ * @text: text of the word
+ * @len: size of len
+ */
+typedef struct s_word
+{
+	const char	*text;
+	size_t		len;
+}				t_word;
+
+/**
+ * s_words - dynamic array of words
+ *
+ * @buff: array of words
+ * @capacity: capacity of the array
+ * @length: number of items currently in the array
+ */
+typedef struct s_words
+{
+	t_word		*buff;
+	size_t		capacity;
+	size_t		length;
+}				t_words;
+
+/**
  * t_redirect - Mimics the behavior of dynamic array
  * to avoid the overhead caused when using linked-lists
  *
@@ -55,7 +80,7 @@ typedef struct s_redirect
 }						t_redirect;
 
 /**
- * s_simple_cmd - simple command is command of array of arguments
+ * s_simple_cmd - simple command is a array of arguments
  *
  * @argv: array of argument after expanding, that field is what execution module
  * must use
@@ -70,6 +95,19 @@ typedef struct s_simple_cmd
 	size_t				capacity;
 }						t_simple_cmd;
 
+/**
+ * t_parse_err - type representing error details of a parting error
+ *
+ * @format - the error description
+ * @tok: token that caused the parsing error
+ * @tok_len: size of the token that caused the error
+ */
+typedef struct s_parse_err {
+	const char *format;
+	const char *tok;
+	size_t tok_len;
+} t_parse_err;
+
 /*
  * NOTE: add docs here....
  */
@@ -79,7 +117,7 @@ typedef struct s_ast
 	union
 	{
 		t_connector		connector;
-		const char		*reason[2];
+		t_parse_err		invalid_logs;
 		t_simple_cmd	simple_cmd;
 		struct s_ast	*subshell;
 	};
