@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer_utils.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/05 16:26:21 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/05 16:27:51 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lexer.h"
 
 /**
@@ -43,26 +55,6 @@ int	is_word_delim(char c)
 {
 	return (c == '>' || c == '<' || is_whitespace(c) || c == '\0' || c == '|'
 		|| c == '(' || c == ')' || c == '&');
-}
-
-/**
- * lexer_trim_left - trim white spaces from lexer current position
- *
- * @l: lexer
- *
- * Return: true if lexer cursor moved, and false if not
- */
-bool	lexer_trim_left(t_lexer *l)
-{
-	bool	whitespace_found;
-
-	whitespace_found = false;
-	while (l->cursor < l->content_len && is_whitespace(l->content[l->cursor]))
-	{
-		l->cursor++;
-		whitespace_found = true;
-	}
-	return (whitespace_found);
 }
 
 /**

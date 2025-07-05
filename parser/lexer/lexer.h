@@ -1,10 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/05 16:26:00 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/05 16:28:58 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef LEXER_H
 # define LEXER_H
 # include "../../debug_macroc.h"
 # include "../../dynamic_array/string.h"
 # include "../../types.h"
-# include <stdbool.h>
-# include <stdlib.h>
 
 typedef enum e_token_kind
 {
@@ -56,5 +66,6 @@ bool				token_is_connector(t_token token);
 t_redirect_type		tok_kind_to_redir_type(t_token_kind kind);
 t_token				lexer_peek_next_token(t_lexer *lexer);
 bool				lexer_check_parens(t_lexer *lexer);
+int					is_whitespace(char c);
 
 #endif /*_LEXER_H_ */
