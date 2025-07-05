@@ -6,7 +6,7 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 16:32:03 by aljbari           #+#    #+#             */
-/*   Updated: 2025/07/05 17:10:13 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/07/05 17:20:19 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "ast_parser.h"
@@ -39,7 +39,9 @@ void	ast_expand_argv(t_ast *ast)
 		}
 		i++;
 	}
+	i = ast->simple_cmd.argc;
 	args_append(&ast->simple_cmd, NULL);
+	ast->simple_cmd.argc = i;
 }
 
 /**
