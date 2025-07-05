@@ -1,0 +1,76 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ast_expand.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/05 16:32:03 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/05 17:10:13 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+#include "ast_parser.h"
+
+/**
+ * ast_expand_argv - helper for `ast_expand` function, it expands the argv of an
+ * ast node
+ *
+ * @ast: the ast to be expanded, it only expand this node, doesn't go to the
+ * others
+ *
+ * Return: Nothing.
+ */
+void	ast_expand_argv(t_ast *ast)
+{
+	size_t	i;
+	char	*arg;
+	t_word	word;
+
+	init_argv(&ast->simple_cmd);
+	i = 0;
+	while (i < ast->simple_cmd.tok_argv.length)
+	{
+		word = ast->simple_cmd.tok_argv.buff[i];
+		arg = expand_string(word.text, word.len);
+		if (ft_strlen(arg) > 0)
+		{
+			quote_removal(arg, ft_strlen(arg));
+			args_append(&ast->simple_cmd, arg);
+		}
+		i++;
+	}
+	args_append(&ast->simple_cmd, NULL);
+}
+
+/**
+ * ast_expand - init argv and redirection of ast node, calling this function
+ * will setup the node with its argv and redirections
+ *
+ * @ast: the ast to be expanded, it only expand this node, doesn't go to the
+ * others
+ *
+ * Return: Nothing.
+ */
+void	ast_expand(t_ast *ast)
+{
+	size_t	i;
+	char	*arg;
+	t_word	word;
+
+	if (ast->type == AST_CONNECTOR || ast->type == AST_INVALID)
+	{
+		PANIC("Doesn't make sense to exapnd connector, does't is?");
+	}
+	if (ast->type == AST_SIMPLE_COMMAND)
+		ast_expand_argv(ast);
+	i = 0;
+	while (i < ast->redir_size)
+	{
+		word = ast->redir[i].word_target;
+		arg = expand_string(word.text, word.len);
+		if (ft_strlen(arg) > 0)
+			quote_removal(arg, ft_strlen(arg));
+		ast->redir[i].target = arg;
+		i++;
+	}
+}

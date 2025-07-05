@@ -6,7 +6,7 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 17:46:56 by aljbari           #+#    #+#             */
-/*   Updated: 2025/07/03 17:48:03 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/07/05 16:46:03 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,10 +88,10 @@ t_ast	*ast_add_subshell(t_ast **ast_head, t_lexer *lexer)
 		return (NULL);
 	sub_lexer = subshell_new_lexer(lexer);
 	ast = init_ast_subshell();
-	ast->subshell = create_ast(&sub_lexer);
+	ast->subshell = ast_parse_tree(&sub_lexer);
 	if (ast->subshell == NULL)
 	{
-		ast_add_error(ast_head, "empty subshell", 14);
+		ast_add_error(ast_head, ")", 1);
 		return (NULL);
 	}
 	token = lexer_peek_next_token(lexer);

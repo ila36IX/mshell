@@ -6,13 +6,14 @@
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 17:47:02 by aljbari           #+#    #+#             */
-/*   Updated: 2025/07/03 17:47:10 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/07/05 16:22:18 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast_parser.h"
+#include <stdio.h>
 
-bool	ast_error_found(t_ast *ast)
+bool	ast_has_parse_error(t_ast *ast)
 {
 	bool	found;
 
@@ -20,7 +21,7 @@ bool	ast_error_found(t_ast *ast)
 	while (ast && !found)
 	{
 		if (ast->type == AST_SUBSHELL)
-			found = ast_error_found(ast->subshell);
+			found = ast_has_parse_error(ast->subshell);
 		if (ast->type == AST_INVALID)
 			return (true);
 		ast = ast->next;
@@ -30,7 +31,8 @@ bool	ast_error_found(t_ast *ast)
 
 bool	ast_print_error(t_ast *ast)
 {
-	bool	found;
+	t_parse_err	err;
+	bool		found;
 
 	found = false;
 	while (ast && !found)
@@ -39,7 +41,10 @@ bool	ast_print_error(t_ast *ast)
 			found = ast_print_error(ast->subshell);
 		if (ast->type == AST_INVALID && !found)
 		{
-			printf(ast->reason[0], ast->reason[1]);
+			err = ast->invalid_logs;
+			write(2, err.format, ft_strlen(err.format));
+			write(2, err.tok, err.tok_len);
+			write(2, "'\n", 2);
 			return (true);
 		}
 		ast = ast->next;
@@ -49,15 +54,49 @@ bool	ast_print_error(t_ast *ast)
 
 t_ast	*ast_add_error(t_ast **ast_head, const char *tok, size_t size)
 {
-	t_ast	*ast;
+	t_ast		*ast;
+	t_parse_err	err;
 
-	if (!tok || !tok)
-	{
-		PANIC("Format and the details must not be null");
-	}
 	ast = ft_calloc(1, sizeof(t_ast));
 	ast->type = AST_INVALID;
-	printf("bash: syntax error near unexpected token `%.*s'", (int)size, tok);
+	err.format = SHELL_NAME ": syntax error near unexpected token `";
+	if (size == 0)
+	{
+		err.tok = "\\0";
+		err.tok_len = 2;
+	}
+	else
+	{
+		err.tok = tok;
+		err.tok_len = size;
+	}
+	ast->invalid_logs = err;
 	ast_add_back(ast_head, ast);
 	return (ast);
+}
+
+/**
+ * ast_check_errors - loops through ast nodes lloking for invalid node, if one
+ * found an error will  be reported
+ *
+ * @ast: the ast head
+ *
+ * Return: true if ast is clean, false if error found, if error found it will be
+ * printed into stderr
+ */
+bool	ast_check_errors(t_ast *ast)
+{
+	t_ast	*ast_tail;
+
+	ast_tail = last_ast(ast);
+	if (!ast)
+		return (true);
+	if (ast_tail->type == AST_CONNECTOR)
+		ast_add_error(&ast, "nil", 3);
+	if (ast_has_parse_error(ast))
+	{
+		ast_print_error(ast);
+		return (false);
+	}
+	return (true);
 }

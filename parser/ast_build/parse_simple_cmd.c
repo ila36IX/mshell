@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "ast_parser.h"
+#include <stdio.h>
 
 /**
  * ast_simple_cmd_add_arg
