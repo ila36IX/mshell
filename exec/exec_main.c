@@ -46,7 +46,7 @@ int	check_command_type(char *name)
  * @cmd: Command to execute with its meta-data
  * @redir: Redirection information (files, and streams)
  */
-static int	exec_simple_cmd(t_ast *ast, int pipes[255][2], int pipe_count, int command_count)
+int	exec_simple_cmd(t_ast *ast, int pipes[255][2], int pipe_count, int command_count)
 {
 	t_simple_cmd	cmd;
 
@@ -84,36 +84,24 @@ static int	exec_simple_cmd(t_ast *ast, int pipes[255][2], int pipe_count, int co
  */
 int	exec_main(t_ast *ast, char **envp)
 {
-	int		pipes[PIPE_SIZE][2];
-	int		pipe_count;
-	int		command_count;
-	pid_t	pid;
 
 	environ_init((const char **)(envp));
-	pipe_count = 0;
-	command_count = 0;
 	while (ast)
 	{
 		if (ast->type == AST_SIMPLE_COMMAND)
 		{
-			if (ft_strcmp(ast->simple_cmd.argv[0], "exit") == 0)
-				quit(ast->simple_cmd.argv, ast->simple_cmd.argc);
-			if (pipe_next(ast) == true)
+			execute_simple_command(ast);
+			while (ast)
 			{
-				pipe(pipes[pipe_count]);
-				pipe_count += 1;
+				if (ast->type == AST_CONNECTOR && ast->connector != CONNECTOR_PIPE)
+					break;
+				ast = ast->next;
 			}
-			pid = fork();
-			if (pid == 0)
-				exec_simple_cmd(ast, pipes, pipe_count, command_count);
-			command_count += 1;
 		}
-		ast = ast->next;
-	}
-	for (int i = 0; i < pipe_count; i++)
-	{
-		close(pipes[i][0]);
-		close(pipes[i][1]);
+		else if (ast->type == AST_CONNECTOR)
+			exec_connector(ast);
+		if (ast)
+			ast = ast->next;
 	}
 	while (waitpid(WAIT_ALL_CHILDREN, NULL , 0) > 0);
 	return (SUCCESS);
