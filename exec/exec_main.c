@@ -96,6 +96,8 @@ int	exec_main(t_ast *ast, char **envp)
 	{
 		if (ast->type == AST_SIMPLE_COMMAND)
 		{
+			if (ft_strcmp(ast->simple_cmd.argv[0], "exit") == 0)
+				quit(ast->simple_cmd.argv, ast->simple_cmd.argc);
 			if (pipe_next(ast) == true)
 			{
 				pipe(pipes[pipe_count]);
@@ -108,7 +110,7 @@ int	exec_main(t_ast *ast, char **envp)
 		}
 		ast = ast->next;
 	}
-	for (int i = 0; i <= pipe_count; i++)
+	for (int i = 0; i < pipe_count; i++)
 	{
 		close(pipes[i][0]);
 		close(pipes[i][1]);
