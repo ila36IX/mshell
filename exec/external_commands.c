@@ -41,15 +41,12 @@ int	exec_precompiled(t_ast *ast)
 {
 	char	**envp;
 	char	*cmd;
-	int		status;
 
 	if (!ast)
 		return (EXIT_FAILURE);
 	cmd = get_full_pathname(ast->simple_cmd.argv[0]);
-	status = 0;
 		if (cmd == NULL)
 		{
-			waitpid(-1, NULL, 0);
 			dprintf(STDERR_FILENO, "%s: command not found\n", ast->simple_cmd.argv[0]);
 			exit(NOT_FOUND);
 		}

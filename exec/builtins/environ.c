@@ -109,7 +109,7 @@ void	environ_init(const char **envp)
 		if (!list)
 			return ;
 		environ_set(list[0], list[1]);
-		/*ft_gcremove_split(list);*/
+		ft_gc_remove_ft_split(list);
 		i++;
 	}
 }
@@ -133,7 +133,7 @@ char	**environ_array_execve(void)
 		list[i] = ft_strjoin(str_temp, temp->value);
 		if (!list[i])
 			return (NULL);
-		// ft_gcremove(str_temp);
+		ft_gc_remove(str_temp);
 		temp =  temp->next;
 		i++;
 	}

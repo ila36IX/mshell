@@ -8,6 +8,8 @@
 # define PRECOMPILED 1
 # define ERR_OPEN -1
 # define ERR_NULL 1
+# define WAIT_ALL_CHILDREN -1
+# define PIPE_SIZE 255
 
 
 
@@ -35,8 +37,6 @@ int	check_command_type(char *name)
 			return (BUILTIN);
 	else if (ft_strcmp(name, "exit") == 0)
 			return (BUILTIN);
-	// else if (access(name, F_OK | X_OK) == 0)
-	// 	return (PRECOMPILED);
 	return (PRECOMPILED);
 }
 
@@ -46,28 +46,29 @@ int	check_command_type(char *name)
  * @cmd: Command to execute with its meta-data
  * @redir: Redirection information (files, and streams)
  */
-static int	exec_simple_cmd(t_ast *ast, int pipe_in, int pipe_out)
+static int	exec_simple_cmd(t_ast *ast, int pipes[255][2], int pipe_count, int command_count)
 {
 	t_simple_cmd	cmd;
-	int				redirect;
 
 	if (!ast)
-		exit(0);
-	cmd = ast->simple_cmd;
-	if (ast->next && ast->next->type == AST_CONNECTOR
-			&& ast->next->connector == CONNECTOR_PIPE)
-	{
-		dup2(pipe_out, STDOUT_FILENO);
-		close(pipe_out);
-	}
-	if (pipe_in != -1)
-	{
-		dup2(pipe_in, STDIN_FILENO);
-		close(pipe_in);
-	}
-	redirect = setup_redirect(ast);
-	if (redirect == FAIL)
 		return (FAIL);
+	cmd = ast->simple_cmd;
+	if (command_count == 0)
+	{
+		if (pipe_next(ast) == true)
+			setup_fds(ast, -1, pipes[command_count][1]);
+		else
+			setup_fds(ast, -1, -1);
+	}
+	else if (pipe_next(ast) == false)
+		setup_fds(ast, pipes[command_count - 1][0], -1);
+	else
+		setup_fds(ast, pipes[command_count - 1][0], pipes[command_count][1]);
+	for (int i = 0; i < pipe_count; i++)
+	{
+		close(pipes[i][0]);
+		close(pipes[i][1]);
+	}
 	if (check_command_type(cmd.argv[0]) == BUILTIN)
 		exec_builtin(ast);
 	else if (check_command_type(cmd.argv[0]) == PRECOMPILED)
@@ -77,81 +78,41 @@ static int	exec_simple_cmd(t_ast *ast, int pipe_in, int pipe_out)
 }
 
 
-
-static int exec_connected(t_ast *ast, int pipe_out)
-{
-	if (!ast)
-		return (FAIL);
-	if (ast->connector == CONNECTOR_OR)
-	{
-		if (status_get() == 0)
-			return (SUCCESS);
-		else
-			exec_simple_cmd(ast->next, -1, pipe_out);
-	}
-	else if (ast->connector == CONNECTOR_AND)
-	{
-		if (status_get() != 0)
-			return (FAIL);
-		else
-			exec_simple_cmd(ast->next, -1, pipe_out);
-	}
-	return (SUCCESS);
-}
-
 /**
  	* exec_main - main execution function that takes the ast
 	* @ast: Ast data
  */
-void	exec_main(t_ast *ast, char **envp)
+int	exec_main(t_ast *ast, char **envp)
 {
-	int		pipe_in;
-	int		pipe_out;
+	int		pipes[PIPE_SIZE][2];
+	int		pipe_count;
+	int		command_count;
 	pid_t	pid;
-	int		pipefd[2];
 
-	if (!ast || !envp)
-		return ;
-	pipe_in  = -1;
-	pipe_out  = -1;
-	pid = 0;
-	status_set(0);
-	environ_init((const char **)envp);
+	environ_init((const char **)(envp));
+	pipe_count = 0;
+	command_count = 0;
 	while (ast)
 	{
 		if (ast->type == AST_SIMPLE_COMMAND)
 		{
-			if (ast->next && ast->next->type == AST_CONNECTOR
-					&& ast->next->connector == CONNECTOR_PIPE)
+			if (pipe_next(ast) == true)
 			{
-				if (pipe(pipefd) == FAIL)
-					return ;
-				pipe_out = pipefd[1];
+				pipe(pipes[pipe_count]);
+				pipe_count += 1;
 			}
-			if (ft_strcmp(ast->simple_cmd.argv[0], "exit") != 0)
-				pid = fork();
-			if (pid == FAIL)
-				return ;
+			pid = fork();
 			if (pid == 0)
-				exec_simple_cmd(ast, pipe_in, pipe_out);
-			pipe_in = -1;
+				exec_simple_cmd(ast, pipes, pipe_count, command_count);
+			command_count += 1;
 		}
-		else if (ast->type == AST_CONNECTOR)
-		{
-			if (ast->connector == CONNECTOR_PIPE)
-				pipe_in = pipefd[0];
-			exec_connected(ast, pipe_out);
-			if (ast->connector != CONNECTOR_PIPE)
-				ast = ast->next;
-		}
-		if (pipe_out != FAIL)
-			close(pipefd[1]);
-		/* if (pipe_in != FAIL)
-			close(pipefd[0]); */
 		ast = ast->next;
 	}
-	if (pid > 0)
-		waitpid(pid, NULL, 0);
-	kill(-9, SIGKILL);
+	for (int i = 0; i <= pipe_count; i++)
+	{
+		close(pipes[i][0]);
+		close(pipes[i][1]);
+	}
+	while (waitpid(WAIT_ALL_CHILDREN, NULL , 0) > 0);
+	return (SUCCESS);
 }
-
