@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer_print.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/05 16:26:18 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/05 16:26:27 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lexer.h"
 
 static const char	*more_token_kind_name(t_token_kind kind)
@@ -33,10 +45,6 @@ const char	*token_kind_name(t_token_kind kind)
 		return ("herdoc redirect");
 	else if (kind == TOKEN_WORD)
 		return ("word");
-	else if (kind == TOKEN_DQ)
-		return ("d-qoute str");
-	else if (kind == TOKEN_SQ)
-		return ("s-qoute str");
 	else if (kind == TOKEN_AND)
 		return ("and operator");
 	else if (kind == TOKEN_OR)

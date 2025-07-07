@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer_utils.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/05 16:26:21 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/05 16:27:51 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "lexer.h"
 
 /**
@@ -41,28 +53,43 @@ int	is_whitespace(char c)
  */
 int	is_word_delim(char c)
 {
-	return (c == '"' || c == '\'' || c == '>' || c == '<' || is_whitespace(c)
-		|| c == '\0' || c == '|' || c == '(' || c == ')' || c == '&');
+	return (c == '>' || c == '<' || is_whitespace(c) || c == '\0' || c == '|'
+		|| c == '(' || c == ')' || c == '&');
 }
 
 /**
- * lexer_trim_left - trim white spaces from lexer current position
+ * is_quote_token - Handler for the case of qoute token
  *
  * @l: lexer
+ * @token, reference to token to be changed
+ * @quote: " or '
+ * @kind: TOKEN_DQ or TOKEN_SQ
  *
- * Return: true if lexer cursor moved, and false if not
+ * Return: true if quote token is handled.
+ * false if inclosing quote is found, the text field of @token will hold the
+ * error msg and the kind of the token is TOKEN_INVALID
  */
-bool	lexer_trim_left(t_lexer *l)
+bool	word_read_quote(t_lexer *l, t_token *token, char quote)
 {
-	bool	whitespace_found;
-
-	whitespace_found = false;
-	while (l->cursor < l->content_len && is_whitespace(l->content[l->cursor]))
+	if (l->content[l->cursor] != quote)
+		return (false);
+	l->cursor++;
+	token->text_len++;
+	while (l->content[l->cursor] != quote)
 	{
+		if (!l->content[l->cursor] || l->cursor >= l->content_len)
+		{
+			token->kind = TOKEN_INVALID;
+			token->text = "Enclosing \" or '";
+			token->text_len = ft_strlen("Enclosing \" or '");
+			return (false);
+		}
+		token->text_len++;
 		l->cursor++;
-		whitespace_found = true;
 	}
-	return (whitespace_found);
+	l->cursor++;
+	token->text_len++;
+	return (true);
 }
 
 /**
@@ -76,11 +103,24 @@ bool	lexer_trim_left(t_lexer *l)
  */
 void	extract_word_token(t_lexer *l, t_token *token)
 {
-	token->kind = TOKEN_WORD;
 	token->text = &l->content[l->cursor];
-	while (!is_word_delim(l->content[l->cursor]))
+	token->kind = TOKEN_WORD;
+	token->text_len = 0;
+	while (!is_word_delim(l->content[l->cursor]) && l->cursor < l->content_len)
 	{
-		token->text_len++;
-		l->cursor++;
+		if (l->content[l->cursor] == '"' || l->content[l->cursor] == '\'')
+		{
+			word_read_quote(l, token, l->content[l->cursor]);
+		}
+		else
+		{
+			token->text_len++;
+			l->cursor++;
+		}
+		if (l->content[l->cursor] == '&' && l->content[l->cursor + 1] != '&')
+		{
+			token->text_len++;
+			l->cursor++;
+		}
 	}
 }

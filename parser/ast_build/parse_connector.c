@@ -1,20 +1,29 @@
-#include "ast_parser.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parse_connector.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/03 17:47:01 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/03 17:47:10 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-t_ast	*ast_add_error(t_ast **ast_head, const char *format, const char *tok);
+#include "ast_parser.h"
 
 bool	connector_is_valid(t_ast **ast_head, t_lexer *lexer)
 {
-	char	*connector;
+	t_token	token;
 
+	token = lexer_peek_next_token(lexer);
 	if (!last_ast(*ast_head))
 	{
-		connector = alloc_token_str(lexer_peek_next_token(lexer));
-		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, connector);
+		ast_add_error(ast_head, token.text, token.text_len);
 	}
 	if (last_ast(*ast_head)->type == AST_CONNECTOR)
 	{
-		connector = alloc_token_str(lexer_peek_next_token(lexer));
-		ast_add_error(ast_head, ERR_UNEXPECTED_TOK, connector);
+		ast_add_error(ast_head, token.text, token.text_len);
 		return (false);
 	}
 	return (true);
