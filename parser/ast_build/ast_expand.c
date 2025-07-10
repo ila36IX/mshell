@@ -59,9 +59,11 @@ void	ast_expand(t_ast *ast)
 	char	*arg;
 	t_word	word;
 
+	if (!ast)
+		return ;
 	if (ast->type == AST_CONNECTOR || ast->type == AST_INVALID)
 	{
-		PANIC("Doesn't make sense to exapnd connector, does't is?");
+		PANIC("Doesn't make sense to exapnd connector, does it?");
 	}
 	if (ast->type == AST_SIMPLE_COMMAND)
 		ast_expand_argv(ast);
