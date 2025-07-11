@@ -39,20 +39,12 @@ static char	*get_full_pathname(char *name)
  */
 int	exec_precompiled(t_ast *ast)
 {
-	pid_t	pid;
 	char	**envp;
 	char	*cmd;
-	int		status;
 
 	if (!ast)
 		return (EXIT_FAILURE);
 	cmd = get_full_pathname(ast->simple_cmd.argv[0]);
-	pid = fork();
-	if (pid == -1)
-		return (EXIT_FAILURE);
-	status = 0;
-	if (pid == 0)
-	{
 		if (cmd == NULL)
 		{
 			dprintf(STDERR_FILENO, "%s: command not found\n", ast->simple_cmd.argv[0]);
@@ -61,9 +53,5 @@ int	exec_precompiled(t_ast *ast)
 		envp = environ_array_execve();
 		if (execve(cmd, ast->simple_cmd.argv, envp) == -1)
 			exit(NOT_FOUND);
-	}
-	else
-		waitpid(pid, &status, 0);
-	status_set(WEXITSTATUS(status));
 	return (EXIT_SUCCESS);
 }
