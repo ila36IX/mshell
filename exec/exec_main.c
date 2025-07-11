@@ -84,6 +84,7 @@ int	exec_simple_cmd(t_ast *ast, int pipes[255][2], int pipe_count, int command_c
  */
 int	exec_main(t_ast *ast, char **envp)
 {
+	pid_t	subshell;
 
 	environ_init((const char **)(envp));
 	while (ast)
@@ -98,10 +99,14 @@ int	exec_main(t_ast *ast, char **envp)
 				ast = ast->next;
 			}
 		}
-		else if (ast->type == AST_CONNECTOR)
-			exec_connector(ast);
-		if (ast)
+		else if (ast->type == AST_CONNECTOR && status_get() == 0 && ast->connector == CONNECTOR_AND)
 			ast = ast->next;
+		else if (ast->type == AST_CONNECTOR && status_get() != 0 && ast->connector == CONNECTOR_AND)
+			ast = ast->next->next;
+		else if (ast->type == AST_CONNECTOR && status_get() != 0 && ast->connector == CONNECTOR_OR)
+			ast = ast->next;
+		else if (ast->type == AST_CONNECTOR && status_get() == 0 && ast->connector == CONNECTOR_OR)
+			ast = ast->next->next;
 	}
 	while (waitpid(WAIT_ALL_CHILDREN, NULL , 0) > 0);
 	return (SUCCESS);
