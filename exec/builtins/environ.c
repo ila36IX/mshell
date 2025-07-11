@@ -2,7 +2,7 @@
 #include "../../main.h"
 # include "../../libft/libft.h"
 
-# define ENV_SIZE 100
+# define ENV_SIZE 1024
 t_dict	*g_environ_head = NULL;
 
 const char	*environ_get(const char *key)
