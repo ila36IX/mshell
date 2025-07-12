@@ -1,16 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   token_expand.c                                     :+:      :+:    :+:   */
+/*   word_expand.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/03 17:46:57 by aljbari           #+#    #+#             */
-/*   Updated: 2025/07/03 17:47:10 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/07/05 18:14:01 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast_parser.h"
+#include "../../exec/status.h"
 
 /**
  * environ_get_ncstr - get environment varaible of string using its size
@@ -65,6 +66,22 @@ static size_t	expand_var(t_string *str, const char *s, size_t curr_idx,
 	return (i);
 }
 
+void	string_append_nbr(t_string *s, int nb)
+{
+	unsigned int	n;
+
+	if (nb < 0)
+	{
+		n = nb * -1;
+		string_append_char(s, '-');
+	}
+	else
+		n = nb;
+	if (n > 9)
+		string_append_nbr(s, n / 10);
+	string_append_char(s, n % 10 + '0');
+}
+
 /**
  * expand_string - expand the contetn of str if its expandeble
  *
@@ -88,6 +105,8 @@ char	*expand_string(const char *str, size_t size)
 			i++;
 			i += (expand_var(&s, str, i, size));
 		}
+		else if (str[i] == '$' && str[i + 1] == '?')
+			i = (string_append_nbr(&s, status_get()), i + 2);
 		else if (str[i] == '\'')
 		{
 			string_append_char(&s, str[i++]);
