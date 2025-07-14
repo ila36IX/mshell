@@ -1,3 +1,4 @@
+# include "./exec.h"
 # include "../libft/libft.h"
 
 
@@ -5,8 +6,6 @@
 # define ERR_FILE_NOT_FOUND -2
 # define ERR_NULL 1
 # define PIPE_SIZE 2
-# include "./exec.h"
-# include "../libft/libft.h"
 
 static int	setup_redir_in(t_redirect *redir)
 {
@@ -50,7 +49,7 @@ static int	setup_redir_heredoc(t_redirect *redir)
 	if (pipe(pipefd) == ERR_OPEN)
 		return (FAIL);
 	if (write(pipefd[1], redir->target, ft_strlen(redir->target)) == ERR_OPEN)
-			return (FAIL);
+		return (FAIL);
 	close(pipefd[1]);
 	if (dup2(pipefd[0], STDIN_FILENO) == ERR_OPEN)
 		return (FAIL);
@@ -58,7 +57,7 @@ static int	setup_redir_heredoc(t_redirect *redir)
 	return (SUCCESS);
 }
 
-int	setup_redirect(t_ast *ast)
+int	setup_redirections(t_ast *ast)
 {
 	size_t		i;
 	t_redirect	*redir;

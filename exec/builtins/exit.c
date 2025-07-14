@@ -4,22 +4,31 @@
 # include "./environ.h"
 # define FAIL -1
 # define ERR_NNUM_VAL 2
-# define TO_MANY_ARGS 1
+# define ERR_TO_MANY_ARGS 1
 
 
-int	quit(char **av, int ac)
+int	ft_exit(int ac, char **av)
 {
 	int	stat;
 	int	val;
 
+	/* ft_gc_clear(); */
+	/* environ_free(); */
 	if (ac > 2)
 	{
-		status_set(TO_MANY_ARGS);
-		ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
-		return (FAIL);
+		if (ft_atoi(av[1]) ==  -1 && ft_strcmp(av[1], "-1") != 0)
+		{
+			dprintf(STDERR_FILENO, "minishell: exit: %s: numeric argument required\n", av[1]);
+			status_set(ERR_NNUM_VAL);
+			exit(ERR_NNUM_VAL);
+		}
+		else
+		{
+			status_set(ERR_TO_MANY_ARGS);
+			ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
+			return (ERR_TO_MANY_ARGS);
+		}
 	}
-	ft_gc_clear();
-	environ_free();
 	if (av[1] != NULL)
 	{
 		val = ft_atoi(av[1]);

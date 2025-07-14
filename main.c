@@ -14,22 +14,20 @@ static char	*ft_readline(const char *prompt)
 	return (line);
 }
 
-int	main(int ac, char **av, char **envp)
+int	main(int ac, const char **av, const char **envp)
 {
 	t_ast	*ast;
 	char	*line;
-	t_lexer lexer;
 	int		status;
 	(void)(ac);
 	(void)(av);
 
+	environ_init(envp);
 	while ((line = ft_readline(PROMPT)))
 	{
-		lexer = lexer_new(line, ft_strlen(line));
-		ast = create_ast(&lexer);
-		/* print_ast(ast); */
-		exec_main(ast, envp);
-		ft_gc_clear();
+		add_history(line);
+		ast =ast_create(line);
+		exec(ast);
 	}
 	status = status_get();
 	return (status);

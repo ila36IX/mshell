@@ -1,49 +1,53 @@
-# include "./exec.h"
 # include "../includes.h"
+# include "../parser/parser.h"
+# include "../libft/libft.h"
 
-/* static	int	close_pipes(int *in, int *out)
+bool	is_builtin(t_ast *ast)
 {
-	if (*out != -1) {
-		if (close(*out) == FAIL)
-			return (FAIL);
-		*out = -1;
-	}
-	if (*in != -1) {
-		if (close(*in) == FAIL)
-			return (FAIL);
-		*in  = -1;
-	}
-	return (SUCCESS);
-} */
+	char	**av;
 
-bool	pipe_next(t_ast *ast)
-{
 	if (ast == NULL)
 		return (false);
-	if (!ast->next)
+	av = ast->simple_cmd.argv;
+	if (av == NULL)
+		return (printf("NULLED av\n"), false);
+	if (ft_strcmp(av[0], "echo") == SUCCESS)
+		return (true);
+	if (ft_strcmp(av[0], "cd") == SUCCESS)
+		return (true);
+	if (ft_strcmp(av[0], "pwd") == SUCCESS)
+		return (true);
+	if (ft_strcmp(av[0], "export") == SUCCESS)
+		return (true);
+	if (ft_strcmp(av[0], "unset") == SUCCESS)
+		return (true);
+	if (ft_strcmp(av[0], "env") == SUCCESS)
+		return (true);
+	if (ft_strcmp(av[0], "exit") == SUCCESS)
+		return (true);
+	return (false);
+}
+
+bool	is_pipe_next(t_ast *ast)
+{
+	if (!ast)
 		return (false);
-	if (ast->next->type == AST_CONNECTOR)
+	if (ast->next)
 	{
-		if (ast->next->connector == CONNECTOR_PIPE)
-			return (true);
+		ast = ast->next;
+		if (ast->type == AST_CONNECTOR)
+			if (ast->connector == CONNECTOR_PIPE)
+				return (true);
 	}
 	return (false);
 }
 
-/* int	setup_pipes(t_ast *ast)
+bool	is_pipe(t_ast *ast)
 {
-	int	pipe_fd[2];
-
-	if (ast == NULL)
-		return (FAIL);
-	if (pipe_next(ast) == true)
-	{
-		if (pipe(pipe_fd) == FAIL)
-			return (FAIL);
-		ast->simple_cmd.pipe_out = pipe_fd[1];
-		ast->next->next->simple_cmd.pipe_in = pipe_fd[0];
-	}
-	else
-		ast->simple_cmd.pipe_out = FAIL;
-	return (SUCCESS);
-} */
+	if (!ast)
+		return (false);
+	if (ast->type == AST_CONNECTOR)
+		if (ast->connector == CONNECTOR_PIPE)
+			return (true);
+	return (false);
+}
