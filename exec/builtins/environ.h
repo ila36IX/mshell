@@ -16,6 +16,7 @@ int				environ_unset(const char *key);
 void				environ_set(const char *key, const char *value);
 void				environ_free(void);
 int				environ_print(void);
-char	**environ_array_execve(void);
+char				**environ_array_execve(void);
+t_dict				*environ_get_head(void);
 
 #endif

@@ -49,7 +49,10 @@ void	environ_set(const char *key, const char *value)
 	environ_unset(key);
 	node = malloc(sizeof(t_dict));
 	node->key = xgc_strdup(key);
-	node->value = xgc_strdup(value);
+	if (value)
+		node->value = xgc_strdup(value);
+	else
+		node->value = NULL;
 	node->next = NULL;
 	if (!g_environ_head)
 	{
@@ -91,7 +94,8 @@ int	environ_print(void)
 	walk = g_environ_head;
 	while (walk)
 	{
-		printf("[%s] = %s\n", walk->key, walk->value);
+		if (walk->key && walk->value)
+			printf("[%s] = %s\n", walk->key, walk->value);
 		walk = walk->next;
 	}
 	return (EXIT_SUCCESS);
@@ -138,4 +142,8 @@ char	**environ_array_execve(void)
 		i++;
 	}
 	return (list);
+}
+t_dict	*environ_get_head(void)
+{
+	return (g_environ_head);
 }

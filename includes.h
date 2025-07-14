@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 13:23:19 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/05 17:30:32 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/07/13 02:30:20 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <errno.h>
 
 # define TEXT_RESET "\033[0m"
 
@@ -70,7 +71,8 @@
 
 # define SUCCESS 0
 # define FAIL -1
-# define GLOB_HEREDOC_FILE "heredoc.log"
+# define ERR_NULL 1
+# define MAX_WD_SIZE 1024
 # define SHELL_NAME "minishell"
 # define UNSET(var) (void)(var);
 # define MARK(str) printf("(%s)(%s) [%s]", __LINE__, __FILE__, str);

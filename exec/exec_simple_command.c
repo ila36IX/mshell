@@ -1,44 +1,101 @@
-# include "../includes.h"
 # include "./exec.h"
-# include "../libft/libft.h"
-# include "./builtins/builtins.h"
 
-# define PIPE_SIZE 255
-# define WAIT_ALL_CHILDREN -1
 
-int	execute_simple_command(t_ast *ast)
+ int	setup_fds(t_ast *ast, int pipe_in, int pipe_out)
 {
-	int		pipes[PIPE_SIZE][2];
-	int		pipe_count;
+	int	redirect;
+
+	if (ast == NULL)
+		return (-1);
+	if (pipe_out != -1)
+	{
+		if (dup2(pipe_out, STDOUT_FILENO) == -1)
+			return (-1);
+		if (close(pipe_out) == -1)
+			return (-1);
+	}
+	if (pipe_in != -1)
+	{
+		if (dup2(pipe_in, STDIN_FILENO) == -1)
+			return (-1);
+		if (close(pipe_in) == -1)
+			return (-1);
+	}
+	redirect = setup_redirections(ast);
+	if (redirect == -1)
+		return (-1);
+	return (SUCCESS);
+}
+
+static int	link_pipe(t_ast *ast,
+		int pipes[MAX_PIPES_COUNT][PIPE_SIZE], int command_count)
+{
+			if (command_count == 0)
+			{
+				if (is_pipe_next(ast))
+					setup_fds(ast, -1, pipes[command_count][1]);
+				else
+					setup_fds(ast, -1, -1);
+			}
+			else if (is_pipe_next(ast))
+					setup_fds(ast, pipes[command_count - 1][0], pipes[command_count][1]);
+			else
+				setup_fds(ast, pipes[command_count - 1][0], -1);
+			return (SUCCESS);
+}
+
+
+int	exec_simple_command(t_ast *ast)
+{
+	int		status;
+	int 	pipes[MAX_PIPES_COUNT][PIPE_SIZE];
 	int		command_count;
+	int		pipe_count;
+	int		saved_stdin;
+	int		saved_stdout;
 	pid_t	pid;
 
 	if (ast == NULL)
-		return (FAIL);
-	pipe_count = 0;
+		return (ERR_NULL);
+	status = 0;
 	command_count = 0;
-	pipe_count = 0;
-	command_count = 0;
+	pipe_count = pipe_setall(ast, pipes);
 	while (ast)
 	{
+		if (ast->type != AST_SIMPLE_COMMAND && !is_pipe(ast))
+			break;
 		if (ast->type == AST_SIMPLE_COMMAND)
 		{
-			if (ft_strcmp(ast->simple_cmd.argv[0], "exit") == 0)
-				quit(ast->simple_cmd.argv, ast->simple_cmd.argc);
-			if (pipe_next(ast) == true)
+			ast_expand(ast);
+			saved_stdin = dup(STDIN_FILENO);
+			saved_stdout = dup(STDOUT_FILENO);
+			if (is_builtin(ast) == true)
 			{
-				pipe(pipes[pipe_count]);
-				pipe_count += 1;
+				link_pipe(ast, pipes, command_count);
+				status = exec_builtin(ast);
 			}
-			pid = fork();
-			if (pid == 0)
-				exec_simple_cmd(ast, pipes, pipe_count, command_count);
+			else
+			{
+				pid = fork();
+				if (pid == FAIL)
+					return (EXIT_FAILURE);
+				if (pid == 0)
+				{
+					link_pipe(ast, pipes, command_count);
+					for (int i  = 0; i < pipe_count; i++)
+					{
+						close(pipes[i][0]);
+						close(pipes[i][1]);
+					}
+					status = exec_executable(ast);
+					exit(status);
+				}
+			}
+			dup2(saved_stdin, STDIN_FILENO);
+			dup2(saved_stdout, STDOUT_FILENO);
+			close(saved_stdin);
+			close(saved_stdout);
 			command_count += 1;
-		}
-		else if (ast->type == AST_CONNECTOR)
-		{
-			if (ast->connector != CONNECTOR_PIPE)
-				break;
 		}
 		ast = ast->next;
 	}
@@ -47,7 +104,7 @@ int	execute_simple_command(t_ast *ast)
 		close(pipes[i][0]);
 		close(pipes[i][1]);
 	}
-	while (waitpid(WAIT_ALL_CHILDREN, NULL , 0) > 0);
-
-	return (SUCCESS);
+	while (waitpid(-1, NULL, 0) > 0)
+		;
+	return (status);
 }
