@@ -46,6 +46,8 @@ static int	setup_redir_heredoc(t_redirect *redir)
 
 	if (!redir)
 		return (FAIL);
+	if (redir->target == NULL)
+		return (ERR_NULL);
 	if (pipe(pipefd) == ERR_OPEN)
 		return (FAIL);
 	if (write(pipefd[1], redir->target, ft_strlen(redir->target)) == ERR_OPEN)

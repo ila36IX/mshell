@@ -1,23 +1,79 @@
 # include "./exec.h"
 # define PIPE_SIZE 2
 
+static t_ast	*exec_connector(t_ast *ast, int *node_count)
+{
+	t_connector	connector;
+
+	if (ast == NULL)
+		return (NULL);
+	connector = ast->connector;
+	if (connector == CONNECTOR_AND)
+	{
+		*node_count = 0;
+		if (status_get() == SUCCESS)
+			return (ast);
+		else
+				return (ast->next);
+	}
+	if (connector == CONNECTOR_OR)
+	{
+		*node_count = 0;
+		if (status_get() != SUCCESS)
+			return (ast);
+		else
+			return (ast->next);
+	}
+	else if (connector == CONNECTOR_PIPE)
+		return (ast);
+	return (NULL);
+}
 
 int	exec(t_ast *ast)
 {
+	int		status;
+	pid_t	subshell;
+	int		node_count;
+
 	if (ast == NULL)
 		return (ERR_NULL);
+	status =  0;
+	node_count = 0;
+	init_gates(ast);
 	while (ast)
 	{
+		if (ast->type != AST_CONNECTOR)
+			setup_gates(ast, node_count);
 		if (ast->type == AST_SIMPLE_COMMAND)
 		{
 			exec_simple_command(ast);
-			while (ast && (ast->type == AST_SIMPLE_COMMAND || is_pipe(ast)))
-				ast =  ast->next;
+			node_count += 1;
 		}
+		if (ast->type == AST_SUBSHELL)
+		{
+			subshell = fork();
+			if (subshell == FAIL)
+				return (status);
+			if (subshell  == 0)
+			{
+				close_gates();
+				status = exec(ast->subshell);
+				while (waitpid(-1, NULL, 0) > 0)
+					;
+				exit(status);
+			}
+			else
+				waitpid(subshell, &status, -1);
+			node_count += 1;
+		}
+		else if (ast->type == AST_CONNECTOR)
+			ast = exec_connector(ast, &node_count);
+		restore_gates();
 		if (ast)
 			ast = ast->next;
 	}
+	close_gates();
 	while (waitpid(-1, NULL, 0) > 0)
 		;
-	return (SUCCESS);
+	return (status);
 }
