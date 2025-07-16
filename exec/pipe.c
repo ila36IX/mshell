@@ -6,6 +6,7 @@ int	pipe_out;
 int		pipes[MAX_PIPES_COUNT][PIPE_SIZE];
 int		pipe_count;
 
+
 int	pipe_init(void)
 {
 	pipe_in = dup(STDIN_FILENO);
@@ -47,24 +48,25 @@ int init_gates(t_ast *ast)
 int setup_gates(t_ast *ast, int node_count)
 {
 	int	status;
-	int	pipe_in;
-	int	pipe_out;
+	int	pipe_input;
+	int	pipe_output;
 
 	status = 0;
-	pipe_in = -1;
-	pipe_out = -1;
+	pipe_input = -1;
+	pipe_output = -1;
 	pipe_init();
 	if (node_count == 0)
 	{
 		if (is_pipe_next(ast))
-			pipe_out = pipes[node_count][1];
+			pipe_output = pipes[node_count][1];
 	}
 	else {
 		if (is_pipe_next(ast))
-			pipe_out = pipes[node_count][1];
-		pipe_in = pipes[node_count - 1][0];
+			pipe_output = pipes[node_count][1];
+		pipe_input = pipes[node_count - 1][0];
 	}
-	status = setup_fds(ast, pipe_in, pipe_out);
+	status = setup_fds(ast, pipe_input, pipe_output);
+		return (EXIT_FAILURE);
 	return (status);
 }
 

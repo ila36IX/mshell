@@ -4,12 +4,15 @@
 static t_ast	*exec_connector(t_ast *ast, int *node_count)
 {
 	t_connector	connector;
+	int			status;
 
 	if (ast == NULL)
 		return (NULL);
 	connector = ast->connector;
 	if (connector == CONNECTOR_AND)
 	{
+		while (waitpid(-1, &status, 0) > 0)
+			;
 		*node_count = 0;
 		if (status_get() == SUCCESS)
 			return (ast);
@@ -18,6 +21,8 @@ static t_ast	*exec_connector(t_ast *ast, int *node_count)
 	}
 	if (connector == CONNECTOR_OR)
 	{
+		while (waitpid(-1, &status, 0) > 0)
+			;
 		*node_count = 0;
 		if (status_get() != SUCCESS)
 			return (ast);
@@ -43,6 +48,8 @@ int	exec(t_ast *ast)
 	while (ast)
 	{
 		if (ast->type != AST_CONNECTOR)
+			ast_expand(ast);
+		if (ast->type != AST_CONNECTOR)
 			setup_gates(ast, node_count);
 		if (ast->type == AST_SIMPLE_COMMAND)
 		{
@@ -58,8 +65,7 @@ int	exec(t_ast *ast)
 			{
 				close_gates();
 				status = exec(ast->subshell);
-				while (waitpid(-1, NULL, 0) > 0)
-					;
+				/* while (waitpid()) */
 				exit(status);
 			}
 			else
@@ -73,7 +79,6 @@ int	exec(t_ast *ast)
 			ast = ast->next;
 	}
 	close_gates();
-	while (waitpid(-1, NULL, 0) > 0)
-		;
+	pid_wait_all();
 	return (status);
 }

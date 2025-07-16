@@ -14,10 +14,19 @@ int	setup_redirections(t_ast *ast);
 bool	is_pipe(t_ast *ast);
 int init_gates(t_ast *ast);
  int	setup_fds(t_ast *ast, int pipe_in, int pipe_out);
+
  /* Gates (Pipelines + redirections) */
 int setup_gates(t_ast *ast, int node_count);
 int restore_gates(void);
 int close_gates(void);
+
+
+/* Pids and processes management */
+int pid_wait_all(void);
+int pid_push(pid_t pid);
+int	pid_wait_last(void);
+void	pid_init(void);
+
 
 /* Executer functions */
 int	exec_builtin(t_ast *ast);
