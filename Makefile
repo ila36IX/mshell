@@ -1,6 +1,6 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -ggdb3 -g3 -fsanitize=address
-LINKERS = -lft -lreadline -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror -ggdb3 -g3 #-fsanitize=address
+LINKERS = -lft -lreadline #-fsanitize=address
 
 SRC_FILES= $(wildcard ./*.c ./exec/*.c ./exec/builtins/*.c ./parser/lexer/*.c ./parser/ast_build/*.c ./parser/ast_print/*.c ./dynamic_array/*.c)
 SRC_OBJ= $(SRC_FILES:%.c=%.o)

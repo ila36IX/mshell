@@ -27,6 +27,7 @@ int	main(int ac, const char **av, const char **envp)
 	{
 		add_history(line);
 		ast =ast_create(line);
+		/* print_ast(ast); */
 		exec(ast);
 	}
 	status = status_get();

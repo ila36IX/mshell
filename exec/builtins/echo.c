@@ -35,7 +35,7 @@ int	ft_echo(int ac, char **av)
 
 	if (av == NULL)
 		return (printf("NULL arguments\n"), ERR_NULL);
-	if (ac == 2)
+	if (ac == 1)
 	{
 		printf("\n");
 		return (SUCCESS);
