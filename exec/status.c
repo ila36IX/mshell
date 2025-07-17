@@ -1,4 +1,6 @@
 # include "../includes.h"
+#include "./builtins/environ.h"
+# include "../libft/libft.h"
 
 # define GET 0
 # define SET 1
@@ -38,5 +40,7 @@ int	status_get(void)
  */
 void	status_set(int status)
 {
+	environ_set("?", ft_itoa(status));
 	status_main(SET, &status);
+
 }

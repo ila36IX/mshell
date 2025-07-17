@@ -1,4 +1,5 @@
 # include "./exec.h"
+# include "../libft/libft.h"
 
 
  int	setup_fds(t_ast *ast, int pipe_in, int pipe_out)
@@ -27,6 +28,32 @@
 	return (SUCCESS);
 }
 
+bool	is_valid_executable(t_ast *ast)
+{
+	char	**av;
+	int	ac;
+	int	status;
+	char	*cmd_name;
+
+	if (ast == NULL)
+		return (ERR_NULL);
+	if (ast->simple_cmd.argv == NULL)
+		return (ERR_NULL);
+	av = ast->simple_cmd.argv;
+	ac = ast->simple_cmd.argc;
+	status = 0;
+	if (ft_strlen(av[0]) == 0)
+		return (false);
+	cmd_name = get_full_name(av[0]);
+	if (cmd_name == NULL)
+	{
+		dprintf(STDERR_FILENO, "%s: command not found\n", av[0]);
+		status_set(127);
+		return (false);
+	}
+	return (true);
+}
+
 int	exec_simple_command(t_ast *ast)
 {
 	int		status;
@@ -34,10 +61,14 @@ int	exec_simple_command(t_ast *ast)
 
 	if (ast == NULL)
 		return (ERR_NULL);
+	if (ast->simple_cmd.argv == NULL)
+		return (0);
 	status = 0;
 	ast_expand(ast);
 	if (is_builtin(ast) == true)
 		status = exec_builtin(ast);
+	else if (is_valid_executable(ast) == false)
+		return (status_get());
 	else
 	{
 		pid = fork();
@@ -47,11 +78,10 @@ int	exec_simple_command(t_ast *ast)
 		{
 			close_gates();
 			status = exec_executable(ast);
-			exit(status);
+			exit(status_get());
 		}
-		else
 			pid_push(pid);
-		status_set(status);
+			status_set(0);
 	}
 	return (status);
 }

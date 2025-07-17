@@ -14,6 +14,7 @@ int	setup_redirections(t_ast *ast);
 bool	is_pipe(t_ast *ast);
 int init_gates(t_ast *ast);
  int	setup_fds(t_ast *ast, int pipe_in, int pipe_out);
+char	*get_full_name(char *name);
 
  /* Gates (Pipelines + redirections) */
 int setup_gates(t_ast *ast, int node_count);
