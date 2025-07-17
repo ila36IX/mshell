@@ -80,8 +80,8 @@ int	exec_simple_command(t_ast *ast)
 			status = exec_executable(ast);
 			exit(status_get());
 		}
-		else
 			pid_push(pid);
+			status_set(0);
 	}
 	return (status);
 }
