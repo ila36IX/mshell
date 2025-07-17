@@ -5,7 +5,7 @@
 
 # define ERR_NOT_FOUND 127
 
-static char	*get_full_name(char *name)
+char	*get_full_name(char *name)
 {
 	char	**list;
 	const char	*env;
@@ -54,12 +54,6 @@ int exec_executable(t_ast *ast)
 	if (ft_strlen(av[0]) == 0)
 		return (status);
 	cmd_name = get_full_name(av[0]);
-	if (cmd_name == NULL)
-	{
-		dprintf(STDERR_FILENO, "%s: command not found\n", av[0]);
-		status_set(ERR_NOT_FOUND);
-		return (ERR_NOT_FOUND);
-	}
 	envp = environ_array_execve();
 	if (execve(cmd_name, av, envp) == FAIL)
 		return (EXIT_FAILURE);

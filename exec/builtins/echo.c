@@ -1,5 +1,6 @@
 # include "../../libft/libft.h"
 # include "../../includes.h"
+# include "../status.h"
 
 
 /**
@@ -34,7 +35,7 @@ int	ft_echo(int ac, char **av)
 	bool	newline;
 
 	if (av == NULL)
-		return (printf("NULL arguments\n"), ERR_NULL);
+		return (ERR_NULL);
 	if (ac == 1)
 	{
 		printf("\n");

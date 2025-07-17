@@ -65,7 +65,6 @@ int	exec(t_ast *ast)
 			{
 				close_gates();
 				status = exec(ast->subshell);
-				/* while (waitpid()) */
 				exit(status);
 			}
 			else
@@ -80,5 +79,5 @@ int	exec(t_ast *ast)
 	}
 	close_gates();
 	pid_wait_all();
-	return (status);
+	return (status_get());
 }
