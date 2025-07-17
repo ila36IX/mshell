@@ -31,7 +31,7 @@ int pid_wait_all(void)
 	{
 		waitpid(processes[i], &status, 0);
 		if (WEXITSTATUS(status) !=  0)
-			return (status);
+			return (status_set(WEXITSTATUS(status)), status);
 		i++;
 	}
 	return (status);
