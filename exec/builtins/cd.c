@@ -22,7 +22,7 @@ int	ft_cd(int ac, char **av)
 		av[1] = (char *)environ_get("HOME");
 	if (ac > 2)
 	{
-		dprintf(STDERR_FILENO, "minishell: cd: to many arguments\n");
+		dprintf(STDERR_FILENO, "minishell: cd: too many arguments\n");
 		status_set(EXIT_FAILURE);
 		return (EXIT_FAILURE);
 	}
@@ -37,7 +37,7 @@ int	ft_cd(int ac, char **av)
 	if (status != EXIT_SUCCESS)
 	{
 		status_set(EXIT_FAILURE);
-		dprintf(STDERR_FILENO, "%s\n", strerror(errno));
+		dprintf(STDERR_FILENO, " %s\n", strerror(errno));
 		return (EXIT_FAILURE);
 	}
 	if (getcwd(newdir, MAX_WD_SIZE) ==  NULL)

@@ -2,6 +2,7 @@
 # include "./status.h"
 # include "./builtins/environ.h"
 # include "../libft/libft.h"
+# include <dirent.h>
 
 # define ERR_NOT_FOUND 127
 
@@ -14,8 +15,28 @@ char	*get_full_name(char *name)
 
 	if (!name)
 		return (NULL);
+	if (opendir(name) != NULL)
+	{
+		if (ft_strchr(name, '/'))
+		{
+			status_set(126);
+			dprintf(STDERR_FILENO, "minishell: %s: Is a directory\n", name);
+		}
+		else
+		{
+			status_set(127);
+			dprintf(STDERR_FILENO, "%s: command not found\n", name);
+		}
+		return (NULL);
+	}
 	if (access(name, F_OK | X_OK) == 0)
 		return (name);
+	else if (access(name, F_OK) == 0 && ft_strchr(name, '/'))
+	{
+		status_set(126);
+		dprintf(STDERR_FILENO, "minishell: %s: Permission denied\n", name);
+		return (NULL);
+	}
 	env = environ_get("PATH");
 	if (!env)
 		return (NULL);
@@ -33,6 +54,11 @@ char	*get_full_name(char *name)
 		i++;
 	}
 	ft_gc_remove_ft_split(list);
+	if (ft_strchr(name, '/'))
+		dprintf(STDERR_FILENO, "%s: No such file or directory\n", name);
+	else
+		dprintf(STDERR_FILENO, "%s: command not found\n", name);
+	status_set(ERR_NOT_FOUND);
 	return (NULL);
 }
 
