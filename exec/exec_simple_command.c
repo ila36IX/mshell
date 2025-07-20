@@ -63,7 +63,6 @@ int	exec_simple_command(t_ast *ast)
 	if (ast->simple_cmd.argv == NULL)
 		return (0);
 	status = 0;
-	ast_expand(ast);
 	if (is_builtin(ast) == true)
 		status = exec_builtin(ast);
 	else if (is_valid_executable(ast) == false)

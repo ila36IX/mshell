@@ -48,10 +48,11 @@ int	exec(t_ast *ast)
 	while (ast)
 	{
 		if (ast->type != AST_CONNECTOR)
+		{
 			ast_expand(ast);
-		if (ast->type != AST_CONNECTOR)
 			setup_gates(ast, node_count);
-		if (ast->type == AST_SIMPLE_COMMAND)
+		}
+		if (ast->type == AST_SIMPLE_COMMAND && ast->simple_cmd.argv[0] != NULL)
 		{
 			exec_simple_command(ast);
 			node_count += 1;
