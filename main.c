@@ -3,10 +3,24 @@
 # include "./exec/status.h"
 # define PROMPT "\033[0;33m[User@Debian]$ \033[0m"
 
+void signal_handler(int sig)
+{
+	(void)sig;
+	if (sig == SIGINT)
+	{
+		printf("\n");
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		rl_redisplay();
+	}
+}
+
 static char	*ft_readline(const char *prompt)
 {
 	char	*line;
 
+	if (isatty(STDIN_FILENO) == false)
+		prompt = NULL;
 	line = readline(prompt);
 	if (!line)
 		return (NULL);
@@ -22,6 +36,8 @@ int	main(int ac, const char **av, const char **envp)
 	(void)(ac);
 	(void)(av);
 
+	/* signal(SIGINT, signal_handler);
+	signal(SIGQUIT, signal_handler); */
 	environ_init(envp);
 	while ((line = ft_readline(PROMPT)))
 	{

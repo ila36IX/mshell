@@ -50,7 +50,8 @@ int	exec(t_ast *ast)
 		if (ast->type != AST_CONNECTOR)
 		{
 			ast_expand(ast);
-			setup_gates(ast, node_count);
+			if (setup_gates(ast, node_count) != SUCCESS)
+				return (status_set(1), 1);
 		}
 		if (ast->type == AST_SIMPLE_COMMAND && ast->simple_cmd.argv[0] != NULL)
 		{
@@ -79,6 +80,7 @@ int	exec(t_ast *ast)
 			ast = ast->next;
 	}
 	close_gates();
-	pid_wait_all();
+	while (waitpid(-1, &status, 0) > 0)
+		;
 	return (status_get());
 }

@@ -66,6 +66,7 @@ int setup_gates(t_ast *ast, int node_count)
 		pipe_input = pipes[node_count - 1][0];
 	}
 	status = setup_fds(ast, pipe_input, pipe_output);
+	if (status == FAIL)
 		return (EXIT_FAILURE);
 	return (status);
 }
