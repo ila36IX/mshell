@@ -1,8 +1,30 @@
-# include "../../includes.h"
+#include "../../includes.h"
 #include "../status.h"
-# include "./environ.h"
+#include "./environ.h"
 
+#define ERR_NO_PARENT "cd: No such file or directory"
 
+int	checker(int ac, char **av)
+{
+	char	newdir[MAX_WD_SIZE];
+
+	if (av == NULL)
+		return (ERR_NULL);
+	if (ac == 1)
+		av[1] = (char *)environ_get("HOME");
+	if (ac > 2)
+	{
+		dprintf(STDERR_FILENO, "minishell: cd: too many arguments\n");
+		status_set(EXIT_FAILURE);
+		return (EXIT_FAILURE);
+	}
+	if (getcwd(newdir, MAX_WD_SIZE) == NULL)
+	{
+		dprintf(STDERR_FILENO, " %s\n", ERR_NO_PARENT);
+		return (EXIT_FAILURE);
+	}
+	return (SUCCESS);
+}
 
 /*
  * cd - changes the current working directory
@@ -12,21 +34,10 @@
  */
 int	ft_cd(int ac, char **av)
 {
-	int	status;
+	int		status;
 	char	newdir[MAX_WD_SIZE];
 
-
-	if (av == NULL)
-		return (ERR_NULL);
-	if (ac == 1)
-		av[1] = (char *)environ_get("HOME");
-	if (ac > 2)
-	{
-		dprintf(STDERR_FILENO, "minishell: cd: to many arguments\n");
-		status_set(EXIT_FAILURE);
-		return (EXIT_FAILURE);
-	}
-	if (getcwd(newdir, MAX_WD_SIZE) ==  NULL)
+	if (checker(ac, av) != SUCCESS)
 		return (EXIT_FAILURE);
 	if (av[1] && ft_strlen(av[1]) == 0)
 	{
@@ -37,11 +48,12 @@ int	ft_cd(int ac, char **av)
 	status = chdir(av[1]);
 	if (status != EXIT_SUCCESS)
 	{
-		dprintf(STDERR_FILENO, "%s\n", strerror(errno));
 		status_set(EXIT_FAILURE);
+		dprintf(STDERR_FILENO, " %s\n", strerror(errno));
 		return (EXIT_FAILURE);
 	}
-	if (getcwd(newdir, MAX_WD_SIZE) ==  NULL)
+	environ_set("OLDPWD", newdir);
+	if (getcwd(newdir, MAX_WD_SIZE) == NULL)
 		return (EXIT_FAILURE);
 	environ_set("PWD", newdir);
 	status_set(SUCCESS);

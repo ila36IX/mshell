@@ -1,5 +1,6 @@
 # include "./exec.h"
 # include "../libft/libft.h"
+# include <dirent.h>
 
 
  int	setup_fds(t_ast *ast, int pipe_in, int pipe_out)
@@ -47,8 +48,6 @@ bool	is_valid_executable(t_ast *ast)
 	cmd_name = get_full_name(av[0]);
 	if (cmd_name == NULL)
 	{
-		dprintf(STDERR_FILENO, "%s: command not found\n", av[0]);
-		status_set(127);
 		return (false);
 	}
 	return (true);
@@ -64,7 +63,6 @@ int	exec_simple_command(t_ast *ast)
 	if (ast->simple_cmd.argv == NULL)
 		return (0);
 	status = 0;
-	ast_expand(ast);
 	if (is_builtin(ast) == true)
 		status = exec_builtin(ast);
 	else if (is_valid_executable(ast) == false)

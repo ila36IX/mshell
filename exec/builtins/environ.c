@@ -1,8 +1,9 @@
 #include "./environ.h"
 #include "../../main.h"
-# include "../../libft/libft.h"
+#include "../../libft/libft.h"
 
-# define ENV_SIZE 1024
+#define ENV_SIZE 1024
+
 t_dict	*g_environ_head = NULL;
 
 const char	*environ_get(const char *key)
@@ -103,7 +104,7 @@ int	environ_print(void)
 
 void	environ_init(const char **envp)
 {
-	int	i;
+	int		i;
 	char	**list;
 
 	i = 0;
