@@ -1,5 +1,6 @@
 #include "../../includes.h"
 #include "./environ.h"
+#include "../status.h"
 
 int	ft_env(int ac, char **av)
 {
