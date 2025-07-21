@@ -40,46 +40,35 @@ static int	setup_redir_out(t_redirect *redir)
 	return (SUCCESS);
 }
 
-static int	get_herdoc_file(void)
-{
-	int		rand_value;
-	int		fd;
-	char	*filename;
-
-	rand_value = 42;
-	filename = ft_strjoin("/tmp/", ft_itoa(rand_value));
-	if (filename == NULL)
-		return (FAIL);
-	while ( (access(filename, F_OK) == 0) )
-	{
-		rand_value += 1;
-		filename = ft_strjoin("/tmp/", ft_itoa(rand_value));
-	}
-	printf("Found a filename at [%s]\n", filename);
-	fd = open(filename, O_RDWR | O_CREAT);
-	if (fd == -1)
-		return (FAIL);
-	return (fd);
-
-}
-
 static int	setup_redir_heredoc(t_redirect *redir)
 {
-	int	fd;
+	int		fd;
+	char	*filename;
+	int		file_count;
 
 	if (!redir)
 		return (FAIL);
 	if (redir->target == NULL)
 		return (ERR_NULL);
-	fd = get_herdoc_file();
+	file_count = 42;
+	filename = ft_itoa(file_count);
+	if (filename == NULL)
+		return (FAIL);
+	while ( (access(filename, F_OK) == 0) )
+	{
+		file_count += 1;
+		filename = ft_itoa(file_count);
+	}
+	fd = open(filename, O_WRONLY | O_CREAT , 0644);
 	if (fd == FAIL)
 		return (FAIL);
 	if (write(fd, redir->target, ft_strlen(redir->target)) == ERR_OPEN)
 		return (FAIL);
-	printf("Wrote to the file \n");
+	fd = open(filename, O_RDONLY, 0644);
 	if (dup2(fd, STDIN_FILENO) == ERR_OPEN)
 		return (FAIL);
 	close(fd);
+	unlink(filename);
 	return (SUCCESS);
 }
 
@@ -99,7 +88,7 @@ int	setup_redirections(t_ast *ast)
 		if (redir[i].type == REDIR_TYPE_IN)
 			if (setup_redir_in(redir + i) == FAIL)
 				return (FAIL);
-		if (redir[i].type == REDIR_TYPE_OUT || redir->type == REDIR_TYPE_APPEND)
+		if (redir[i].type == REDIR_TYPE_OUT || redir[i].type == REDIR_TYPE_APPEND)
 			if (setup_redir_out(redir + i) == FAIL)
 				return (FAIL);
 		if (redir[i].type == REDIR_TYPE_HEREDOC)
