@@ -1,6 +1,12 @@
+<<<<<<< Updated upstream
 # include "../../includes.h"
 #include "../status.h"
 # include "./environ.h"
+=======
+#include "../../includes.h"
+#include "./environ.h"
+#include "../status.h"
+>>>>>>> Stashed changes
 
 int	ft_env(int ac, char **av)
 {
