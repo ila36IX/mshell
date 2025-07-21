@@ -74,8 +74,6 @@ int	exec_simple_command(t_ast *ast)
 			return (EXIT_FAILURE);
 		if (pid == 0)
 		{
-			/* signal(SIGINT, exit);
-			signal(SIGQUIT, exit); */
 			close_gates();
 			status = exec_executable(ast);
 			exit(status_get());

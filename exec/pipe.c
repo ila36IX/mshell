@@ -5,6 +5,7 @@ int	pipe_in;
 int	pipe_out;
 int		pipes[MAX_PIPES_COUNT][PIPE_SIZE];
 int		pipe_count;
+int		current_pipe;
 
 
 int	pipe_init(void)
@@ -30,6 +31,7 @@ int init_gates(t_ast *ast)
 {
 
 	pipe_count  = 0;
+	current_pipe = 0;
 	if (ast == NULL)
 		return (FAIL);
 	while (ast)
@@ -58,12 +60,19 @@ int setup_gates(t_ast *ast, int node_count)
 	if (node_count == 0)
 	{
 		if (is_pipe_next(ast))
-			pipe_output = pipes[node_count][1];
+		{
+			pipe_output = pipes[current_pipe][1];
+			current_pipe += 1;
+		}
 	}
-	else {
+	else
+	{
+		pipe_input = pipes[current_pipe - 1][0];
 		if (is_pipe_next(ast))
-			pipe_output = pipes[node_count][1];
-		pipe_input = pipes[node_count - 1][0];
+		{
+			pipe_output = pipes[current_pipe][1];
+			current_pipe += 1;
+		}
 	}
 	status = setup_fds(ast, pipe_input, pipe_output);
 	if (status == FAIL)

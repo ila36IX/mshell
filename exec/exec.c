@@ -8,6 +8,7 @@ static t_ast	*exec_connector(t_ast *ast, int *node_count)
 
 	if (ast == NULL)
 		return (NULL);
+	status = 0;
 	connector = ast->connector;
 	if (connector == CONNECTOR_AND)
 	{
@@ -15,23 +16,22 @@ static t_ast	*exec_connector(t_ast *ast, int *node_count)
 			;
 		*node_count = 0;
 		if (status_get() == SUCCESS)
-			return (ast);
+			return (status_set(WEXITSTATUS(status)), ast);
 		else
 				return (ast->next);
 	}
 	if (connector == CONNECTOR_OR)
 	{
-		while (waitpid(-1, &status, 0) > 0)
-			;
+		pid_wait_all();
 		*node_count = 0;
 		if (status_get() != SUCCESS)
-			return (ast);
+			return (status_set(WEXITSTATUS(status)), ast);
 		else
 			return (ast->next);
 	}
 	else if (connector == CONNECTOR_PIPE)
-		return (ast);
-	return (NULL);
+		return (status_set(WEXITSTATUS(status)), ast);
+	return (status_set(WEXITSTATUS(status)), NULL);
 }
 
 int	exec(t_ast *ast)
@@ -45,6 +45,7 @@ int	exec(t_ast *ast)
 	status =  0;
 	node_count = 0;
 	init_gates(ast);
+	pid_init();
 	while (ast)
 	{
 		if (ast->type != AST_CONNECTOR)
@@ -81,6 +82,6 @@ int	exec(t_ast *ast)
 	}
 	close_gates();
 	while (waitpid(-1, &status, 0) > 0)
-		;
+		status_set(WEXITSTATUS(status));
 	return (status_get());
 }
