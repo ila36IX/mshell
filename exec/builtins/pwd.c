@@ -1,5 +1,6 @@
 #include "../../includes.h"
 # include "./environ.h"
+# include "../status.h"
 
 
 int	ft_pwd(void)
@@ -13,13 +14,13 @@ int	ft_pwd(void)
 	if (current_dir_env)
 	{
 		printf("%s\n", current_dir_env);
-		return (status);
+		return (status_set(status), status);
 	}
 	else if (getcwd(current_working_dir, MAX_WD_SIZE) == SUCCESS)
 	{
 		printf("%s\n", current_working_dir);
-		return (status);
+		return (status_set(status), status);
 	}
 	status = EXIT_FAILURE;
-	return (status);
+	return (status_set(status), status);
 }

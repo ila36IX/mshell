@@ -35,11 +35,11 @@ int	ft_echo(int ac, char **av)
 	bool	newline;
 
 	if (av == NULL)
-		return (ERR_NULL);
+		return (status_set(ERR_NULL), ERR_NULL);
 	if (ac == 1)
 	{
 		printf("\n");
-		return (SUCCESS);
+		return (status_set(SUCCESS), SUCCESS);
 	}
 	i = 1;
 	newline = true;

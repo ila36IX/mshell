@@ -2,6 +2,7 @@
 #include "environ.h"
 #include "../status.h"
 
+
 static int	export_print(void)
 {
 	t_dict	*walk;
@@ -67,8 +68,9 @@ int	ft_export(int ac, char **av)
 {
 	int	i;
 
+	status_set(0);
 	if (av == NULL)
-		return (ERR_NULL);
+		return (status_set(EXIT_FAILURE), ERR_NULL);
 	if (ac == 1)
 		return (export_print());
 	else
@@ -80,10 +82,11 @@ int	ft_export(int ac, char **av)
 			{
 				dprintf(STDERR_FILENO,
 				"minishell: export: '%s': not a valid identifier\n", av[i]);
+				status_set(EXIT_FAILURE);
 			}
 			i++;
 		}
 	}
 
-	return (EXIT_SUCCESS);
+	return (status_get());
 }

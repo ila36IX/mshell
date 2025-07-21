@@ -42,6 +42,7 @@ int	ft_cd(int ac, char **av)
 	if (av[1] && ft_strlen(av[1]) == 0)
 	{
 		printf("%s\n", newdir);
+		status_set(EXIT_SUCCESS);
 		return (EXIT_SUCCESS);
 	}
 	status = chdir(av[1]);
@@ -55,5 +56,6 @@ int	ft_cd(int ac, char **av)
 	if (getcwd(newdir, MAX_WD_SIZE) == NULL)
 		return (EXIT_FAILURE);
 	environ_set("PWD", newdir);
+	status_set(SUCCESS);
 	return (SUCCESS);
 }
