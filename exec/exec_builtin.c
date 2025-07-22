@@ -1,12 +1,12 @@
-# include "./exec.h"
-# include "../includes.h"
-# include "../libft/libft.h"
-# include "./builtins/builtins.h"
+#include "./exec.h"
+#include "../includes.h"
+#include "../libft/libft.h"
+#include "./builtins/builtins.h"
 
-int exec_builtin(t_ast *ast)
+int	exec_builtin(t_ast *ast)
 {
 	char	**av;
-	int	ac;
+	int		ac;
 
 	if (ast == NULL)
 		return (ERR_NULL);
