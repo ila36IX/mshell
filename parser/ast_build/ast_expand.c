@@ -11,6 +11,63 @@
 /* ************************************************************************** */
 #include "ast_parser.h"
 
+bool word_is_file_pattern(char *word)
+{
+	int i;
+	char quote;
+	char is_pattern;
+
+	i = 0;
+	is_pattern = false;
+	while (word[i])
+	{
+		if (word[i] == '"' || word[i] == '\'')
+		{
+			quote = word[i];
+			i++;
+			while (word[i] && word[i] != quote)
+			{
+				if (word[i] == '*')
+					return (false);
+				i++;
+			}
+			if (word[i] == quote)
+				i++;
+		}
+		else if (word[i] == '*')
+		{
+			is_pattern = true;
+			i++;
+		}
+		else
+			i++;
+	}
+	return (is_pattern);
+}
+
+void read_word_into_argv(char *word, t_simple_cmd *argv)
+{
+	char **fields;
+	size_t i;
+
+	fields = field_splitting(word);
+	i = 0;
+	while (fields[i])
+	{
+		if (word_is_file_pattern(word))
+		{
+			quote_removal(fields[i], ft_strlen(fields[i]));
+			expand_asterisk_into_argv(fields[i], argv);
+		}
+		else
+		{
+			quote_removal(fields[i], ft_strlen(fields[i]));
+			args_append(argv, fields[i]);
+		}
+		i++;
+	}
+}
+
 /**
  * ast_expand_argv - helper for `ast_expand` function, it expands the argv of an
  * ast node
@@ -33,15 +90,9 @@ void	ast_expand_argv(t_ast *ast)
 		word = ast->simple_cmd.tok_argv.buff[i];
 		arg = expand_string(word.text, word.len);
 		if (ft_strlen(arg) > 0)
-		{
-			quote_removal(arg, ft_strlen(arg));
-			args_append(&ast->simple_cmd, arg);
-		}
+			read_word_into_argv(arg, &ast->simple_cmd);
 		i++;
 	}
-	i = ast->simple_cmd.argc;
-	args_append(&ast->simple_cmd, NULL);
-	ast->simple_cmd.argc = i;
 }
 
 bool word_contains_quote(t_word word)
@@ -59,9 +110,10 @@ bool word_contains_quote(t_word word)
 }
 
 /**
- * ast_expand_redirections - ast the functions says
+ * ast_expand_redirections - as the functions says:
  * it performs quote removal and expanding in the redirection target, if
- * redirection is herdoc, the target is the content of the herdoc
+ * redirection is herdoc, the target is the content of the herdoc and the quote
+ * removel is not performed
  *
  * @ast: one node of ast
  */
