@@ -23,6 +23,7 @@ int	checker(int ac, char **av)
 		dprintf(STDERR_FILENO, " %s\n", ERR_NO_PARENT);
 		return (EXIT_FAILURE);
 	}
+	environ_set("OLDPWD", newdir);
 	return (SUCCESS);
 }
 
@@ -39,12 +40,6 @@ int	ft_cd(int ac, char **av)
 
 	if (checker(ac, av) != SUCCESS)
 		return (EXIT_FAILURE);
-	if (av[1] && ft_strlen(av[1]) == 0)
-	{
-		printf("%s\n", newdir);
-		status_set(EXIT_SUCCESS);
-		return (EXIT_SUCCESS);
-	}
 	status = chdir(av[1]);
 	if (status != EXIT_SUCCESS)
 	{
@@ -52,7 +47,6 @@ int	ft_cd(int ac, char **av)
 		dprintf(STDERR_FILENO, " %s\n", strerror(errno));
 		return (EXIT_FAILURE);
 	}
-	environ_set("OLDPWD", newdir);
 	if (getcwd(newdir, MAX_WD_SIZE) == NULL)
 		return (EXIT_FAILURE);
 	environ_set("PWD", newdir);
