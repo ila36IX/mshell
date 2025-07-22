@@ -1,18 +1,13 @@
-# include "./exec.h"
-# include "./status.h"
-# include "./builtins/environ.h"
-# include "../libft/libft.h"
-# include <dirent.h>
+#include "./exec.h"
+#include "./status.h"
+#include "./builtins/environ.h"
+#include "../libft/libft.h"
+#include <dirent.h>
 
-# define ERR_NOT_FOUND 127
+#define ERR_NOT_FOUND 127
 
-char	*get_full_name(char *name)
+static char	*checker(char *name)
 {
-	char	**list;
-	const char	*env;
-	char	*final_path;
-	int	i;
-
 	if (!name)
 		return (NULL);
 	if (opendir(name) != NULL)
@@ -29,14 +24,22 @@ char	*get_full_name(char *name)
 		}
 		return (NULL);
 	}
-	if (access(name, F_OK | X_OK) == 0)
-		return (name);
-	else if (access(name, F_OK) == 0 && ft_strchr(name, '/'))
+	if (access(name, F_OK) == 0 && ft_strchr(name, '/'))
 	{
 		status_set(126);
 		dprintf(STDERR_FILENO, "minishell: %s: Permission denied\n", name);
 		return (NULL);
 	}
+	return (name);
+}
+
+static char	*get_from_env(char *name)
+{
+	char		**list;
+	const char	*env;
+	char		*final_path;
+	int			i;
+
 	env = environ_get("PATH");
 	if (!env)
 		return (NULL);
@@ -54,6 +57,20 @@ char	*get_full_name(char *name)
 		i++;
 	}
 	ft_gc_remove_ft_split(list);
+	return (NULL);
+}
+
+char	*get_full_name(char *name)
+{
+	char		*final_path;
+
+	if (access(name, F_OK | X_OK) == 0 && opendir(name) == NULL)
+		return (name);
+	if (checker(name) == NULL)
+		return (NULL);
+	final_path = get_from_env(name);
+	if (final_path)
+		return (final_path);
 	if (ft_strchr(name, '/'))
 		dprintf(STDERR_FILENO, "%s: No such file or directory\n", name);
 	else
@@ -62,11 +79,11 @@ char	*get_full_name(char *name)
 	return (NULL);
 }
 
-int exec_executable(t_ast *ast)
+int	exec_executable(t_ast *ast)
 {
 	char	**av;
-	int	ac;
-	int	status;
+	int		ac;
+	int		status;
 	char	*cmd_name;
 	char	**envp;
 
@@ -83,6 +100,5 @@ int exec_executable(t_ast *ast)
 	envp = environ_array_execve();
 	if (execve(cmd_name, av, envp) == FAIL)
 		return (EXIT_FAILURE);
-
 	return (status);
 }
