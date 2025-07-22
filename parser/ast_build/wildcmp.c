@@ -36,7 +36,7 @@ bool	wildcmp(char *s, size_t ssz, char *p, size_t psz)
 	return (false);
 }
 
-DIR	*get_sorted_files(char **nodes, int *size, char *pattern,
+bool	get_sorted_files(char **nodes, int *size, char *pattern,
 		size_t pattern_size)
 {
 	DIR				*dir_obj;
@@ -44,6 +44,8 @@ DIR	*get_sorted_files(char **nodes, int *size, char *pattern,
 
 	dir_obj = opendir(".");
 	*size = 0;
+	if (!dir_obj)
+		return (false);
 	while (dir_obj)
 	{
 		dir = readdir(dir_obj);
@@ -51,13 +53,14 @@ DIR	*get_sorted_files(char **nodes, int *size, char *pattern,
 			break ;
 		if (wildcmp(dir->d_name, ft_strlen(dir->d_name), pattern, pattern_size))
 		{
-			nodes[*size] = dir->d_name;
+			nodes[*size] = ft_strdup(dir->d_name);
 			*size += 1;
 		}
 		if (*size > MAX_FILES_IN_DIR - 1)
 			break ;
 	}
 	sort_filenames(nodes, *size);
+	closedir(dir_obj);
 	return (dir_obj);
 }
 
@@ -66,26 +69,53 @@ bool	expand_asterisk_into_argv(char *pattern, t_simple_cmd *argv)
 	char	*nodes[MAX_FILES_IN_DIR];
 	int		size;
 	int		i;
-	DIR		*dir_obj;
+	int		j;
 
-	dir_obj = get_sorted_files(nodes, &size, pattern, ft_strlen(pattern));
-	if (!dir_obj)
-		return (false);
+	get_sorted_files(nodes, &size, pattern, ft_strlen(pattern));
 	i = 0;
+	j = 0;
 	while (i < size)
 	{
-		if (pattern[0] == '.' && nodes[i][0] == '.')
-			args_append(argv, ft_strdup(nodes[i]));
-		if (pattern[0] != '.' && nodes[i][0] != '.')
-			args_append(argv, ft_strdup(nodes[i]));
-		printf(".");
+		if ((pattern[0] == '.' && nodes[i][0] == '.') || (pattern[0] != '.'
+				&& nodes[i][0] != '.'))
+		{
+			args_append(argv, nodes[i]);
+			j++;
+		}
 		i++;
 	}
-	closedir(dir_obj);
-	if (size == 0)
+	if (j == 0)
 	{
 		args_append(argv, pattern);
 		return (true);
 	}
 	return (true);
+}
+
+char	*expand_asterisk_for_redir(char *pattern)
+{
+	char	*nodes[MAX_FILES_IN_DIR];
+	int		size;
+	int		i;
+	int		j;
+	char	*file;
+
+	get_sorted_files(nodes, &size, pattern, ft_strlen(pattern));
+	i = 0;
+	j = 0;
+	while (i < size)
+	{
+		if ((pattern[0] == '.' && nodes[i][0] == '.') || (pattern[0] != '.'
+				&& nodes[i][0] != '.'))
+		{
+			file = nodes[i];
+			j++;
+		}
+		i++;
+	}
+	if (size == 0)
+		return (pattern);
+	if (j == 1)
+		return (file);
+	return (NULL);
 }

@@ -52,5 +52,7 @@ void	skip_quotes(char *word, size_t *i);
 bool	needs_field_splitting(char *word);
 void	sort_filenames(char **arr, int n);
 bool	word_is_file_pattern(char *word);
+bool	ast_expand_redirections(t_ast *ast);
+char	*expand_asterisk_for_redir(char *pattern);
 
 #endif
