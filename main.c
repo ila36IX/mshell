@@ -25,8 +25,6 @@ static char	*ft_readline(const char *prompt)
 {
 	char	*line;
 
-	/* if (isatty(STDIN_FILENO) == false)
-		prompt = NULL; */
 	line = readline(prompt);
 	if (!line)
 		return (NULL);

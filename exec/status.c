@@ -40,7 +40,6 @@ int	status_get(void)
  */
 void	status_set(int status)
 {
-	environ_set("?", ft_itoa(status));
 	status_main(SET, &status);
 
 }

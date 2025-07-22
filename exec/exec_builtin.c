@@ -1,5 +1,4 @@
 # include "./exec.h"
-# include "../parser/parser.h"
 # include "../includes.h"
 # include "../libft/libft.h"
 # include "./builtins/builtins.h"
@@ -21,7 +20,7 @@ int exec_builtin(t_ast *ast)
 		return (ft_cd(ac, av));
 	if (ft_strcmp(av[0], "pwd") == SUCCESS)
 		return (ft_pwd(ac, av));
-	if (ft_strcmp(av[0], "export") == SUCCESS)
+	if (ft_strcmp(av[0], "export") == SUCCESS && !is_pipe_next(ast))
 		return (ft_export(ac, av));
 	if (ft_strcmp(av[0], "unset") == SUCCESS)
 		return (ft_unset(ac, av));
