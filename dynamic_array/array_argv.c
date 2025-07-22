@@ -28,11 +28,10 @@ static int	words_ensure_capacity(t_simple_cmd *scmd)
 	new_capacity = scmd->capacity * 2;
 	if (new_capacity < required_capacity)
 		new_capacity = required_capacity;
-	new_buff = malloc(new_capacity * sizeof(char *));
+	new_buff = ft_malloc(new_capacity, sizeof(char *));
 	if (!new_buff)
 		return (-1);
 	ft_memcpy(new_buff, scmd->argv, scmd->argc * sizeof(char *));
-	free(scmd->argv);
 	scmd->argv = new_buff;
 	scmd->capacity = new_capacity;
 	return (0);

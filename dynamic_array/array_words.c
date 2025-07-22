@@ -25,11 +25,10 @@ static int	words_ensure_capacity(t_words *words)
 	if (words->capacity >= required_capacity)
 		return (0);
 	new_capacity = words->capacity * 2;
-	new_buff = malloc(new_capacity * sizeof(t_word));
+	new_buff = ft_malloc(new_capacity, sizeof(t_word));
 	if (!new_buff)
 		return (-1);
 	ft_memcpy(new_buff, words->buff, words->length * sizeof(t_word));
-	free(words->buff);
 	words->buff = new_buff;
 	words->capacity = new_capacity;
 	return (0);
@@ -47,6 +46,6 @@ t_words	words_init(void)
 
 	words.length = 0;
 	words.capacity = INIT_WORDS_ARRAY_SIZE;
-	words.buff = malloc(words.capacity * sizeof(t_word));
+	words.buff = ft_malloc(words.capacity, sizeof(t_word));
 	return (words);
 }
