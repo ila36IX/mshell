@@ -11,17 +11,14 @@
 /* ************************************************************************** */
 
 #include "./ast_parser.h"
-#include <dirent.h>
-#define SORTED_CHARS " !\"#%&'()*+,:;<=>?@[\\]^_`{|}~$"
-#define MAX_FILES_IN_DIR 4242
 
-bool wildcmp(char *s, size_t ssz, char *p, size_t psz)
+bool	wildcmp(char *s, size_t ssz, char *p, size_t psz)
 {
-	int i;
+	size_t	i;
 
-	if (psz == 0) 
+	if (psz == 0)
 		return (ssz == 0);
-	if (p[0] == '*') 
+	if (p[0] == '*')
 	{
 		i = 0;
 		while (i <= ssz)
@@ -39,67 +36,11 @@ bool wildcmp(char *s, size_t ssz, char *p, size_t psz)
 	return (false);
 }
 
-unsigned int char_lexecal_rank(char c)
+DIR	*get_sorted_files(char **nodes, int *size, char *pattern,
+		size_t pattern_size)
 {
-	int i;
-
-	if (c >= 'a' && c <= 'z')
-		return (300 + (c - 'a') * 2);
-	if (c >= 'A' && c <= 'Z')
-		return (300 + (c - 'A') * 2 + 1);
-	if (ft_isdigit(c))
-		return (200 + c - '0');
-	i = 0;
-	while (i < ft_strlen(SORTED_CHARS))
-	{
-		if (SORTED_CHARS[i] == c)
-			return (i + 100);
-		i++;
-	}
-	return (c);
-}
-
-int lexical_strcmp(const char *a, const char *b)
-{
-	int i = 0;
-	while (a[i] && b[i])
-	{
-		if (a[i] != b[i])
-			return (char_lexecal_rank(a[i]) - char_lexecal_rank(b[i]));
-
-		i++;
-	}
-	return (char_lexecal_rank(a[i]) - char_lexecal_rank(b[i]));
-}
-
-void sort_strings(char **arr, int n)
-{
-	char *temp;
-	int i;
-	int j;
-
-	i = 0;
-	while (i < n - 1)
-	{
-		j = 0;
-		while (j < n - i - 1)
-		{
-			if (lexical_strcmp(arr[j], arr[j + 1]) > 0)
-			{
-				temp = arr[j];
-				arr[j] = arr[j + 1];
-				arr[j + 1] = temp;
-			}
-			j++;
-		}
-		i++;
-	}
-}
-
-DIR *get_sorted_files(char **nodes, int *size, char *pattern, size_t pattern_size)
-{	
-	DIR	      *dir_obj;
-	struct dirent *dir;
+	DIR				*dir_obj;
+	struct dirent	*dir;
 
 	dir_obj = opendir(".");
 	*size = 0;
@@ -116,16 +57,16 @@ DIR *get_sorted_files(char **nodes, int *size, char *pattern, size_t pattern_siz
 		if (*size > MAX_FILES_IN_DIR - 1)
 			break ;
 	}
-	sort_strings(nodes, *size);
+	sort_filenames(nodes, *size);
 	return (dir_obj);
 }
 
-bool expand_asterisk_into_argv(char *pattern, t_simple_cmd *argv)
+bool	expand_asterisk_into_argv(char *pattern, t_simple_cmd *argv)
 {
-	char *nodes[MAX_FILES_IN_DIR];
-	int size;
-	int i;
-	DIR	      *dir_obj;
+	char	*nodes[MAX_FILES_IN_DIR];
+	int		size;
+	int		i;
+	DIR		*dir_obj;
 
 	dir_obj = get_sorted_files(nodes, &size, pattern, ft_strlen(pattern));
 	if (!dir_obj)

@@ -24,25 +24,6 @@ void	skip_quotes(char *word, size_t *i)
 		(*i)++;
 }
 
-static bool	needs_field_splitting(char *word)
-{
-	size_t	i;
-
-	i = 0;
-	while (word && word[i])
-	{
-		if (word[i] == '"' || word[i] == '\'')
-			skip_quotes(word, &i);
-		else
-		{
-			if (is_whitespace(word[i]))
-				return (true);
-			i++;
-		}
-	}
-	return (false);
-}
-
 static size_t	count_fields(char *word)
 {
 	size_t	j;

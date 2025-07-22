@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ast_parse_redirec.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/22 16:19:14 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/22 16:19:14 by aljbari          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "ast_parser.h"
 
 void	ast_redirct_realloc(t_ast *ast)
@@ -18,11 +30,11 @@ void	ast_redirct_realloc(t_ast *ast)
 	ast->redir_capacity = buff_size;
 }
 
-char *read_from_herdoc(t_word word)
+char	*read_from_herdoc(t_word word)
 {
-	t_string str;
-	char *delim;
-	char *line;
+	t_string	str;
+	char		*delim;
+	char		*line;
 
 	str = string_init();
 	delim = ft_substr(word.text, 0, word.len);
@@ -31,11 +43,11 @@ char *read_from_herdoc(t_word word)
 	{
 		line = readline("> ");
 		if (line == NULL)
-			break;
+			break ;
 		if (ft_strcmp(line, delim) == 0)
 		{
 			free(line);
-			break;
+			break ;
 		}
 		string_append_cstr(&str, line);
 		string_append_cstr(&str, "\n");

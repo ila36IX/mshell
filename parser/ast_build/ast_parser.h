@@ -14,7 +14,10 @@
 # include "../../dynamic_array/arrays.h"
 # include "../../exec/builtins/environ.h"
 # include "../lexer/lexer.h"
+# include <dirent.h>
 # define ARRAY_INIT_SIZE 4
+# define SORTED_CHARS " !\"#%&'()*+,:;<=>?@[\\]^_`{|}~$"
+# define MAX_FILES_IN_DIR 4242
 
 void	skip_nested_parens(t_lexer *lexer);
 t_lexer	subshell_new_lexer(t_lexer *lexer);
@@ -42,8 +45,12 @@ char	*expand_string(const char *str, size_t size);
 bool	quote_removal(char *str, size_t size);
 bool	ast_check_errors(t_ast *ast);
 
-bool wildcmp(char *s, size_t ssz, char *p, size_t psz);
+bool	wildcmp(char *s, size_t ssz, char *p, size_t psz);
 char	**field_splitting(char *word);
-bool expand_asterisk_into_argv(char *pattern, t_simple_cmd *argv);
+bool	expand_asterisk_into_argv(char *pattern, t_simple_cmd *argv);
+void	skip_quotes(char *word, size_t *i);
+bool	needs_field_splitting(char *word);
+void	sort_filenames(char **arr, int n);
+bool	word_is_file_pattern(char *word);
 
 #endif

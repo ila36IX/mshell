@@ -11,44 +11,10 @@
 /* ************************************************************************** */
 #include "ast_parser.h"
 
-bool word_is_file_pattern(char *word)
+void	read_word_into_argv(char *word, t_simple_cmd *argv)
 {
-	int i;
-	char quote;
-	char is_pattern;
-
-	i = 0;
-	is_pattern = false;
-	while (word[i])
-	{
-		if (word[i] == '"' || word[i] == '\'')
-		{
-			quote = word[i];
-			i++;
-			while (word[i] && word[i] != quote)
-			{
-				if (word[i] == '*')
-					return (false);
-				i++;
-			}
-			if (word[i] == quote)
-				i++;
-		}
-		else if (word[i] == '*')
-		{
-			is_pattern = true;
-			i++;
-		}
-		else
-			i++;
-	}
-	return (is_pattern);
-}
-
-void read_word_into_argv(char *word, t_simple_cmd *argv)
-{
-	char **fields;
-	size_t i;
+	char	**fields;
+	size_t	i;
 
 	fields = field_splitting(word);
 	i = 0;
@@ -95,9 +61,9 @@ void	ast_expand_argv(t_ast *ast)
 	}
 }
 
-bool word_contains_quote(t_word word)
+bool	word_contains_quote(t_word word)
 {
-	size_t i;
+	size_t	i;
 
 	i = 0;
 	while (i < word.len)
@@ -132,7 +98,7 @@ void	ast_expand_redirections(t_ast *ast)
 		if (ast->redir[i].type == REDIR_TYPE_HEREDOC)
 		{
 			if (!word_contains_quote(word))
-				ast->redir[i].target = expand_string(target, ft_strlen(target));;
+				ast->redir[i].target = expand_string(target, ft_strlen(target));
 		}
 		else
 		{
@@ -155,7 +121,6 @@ void	ast_expand_redirections(t_ast *ast)
  */
 void	ast_expand(t_ast *ast)
 {
-
 	if (!ast)
 		return ;
 	if (ast->type == AST_CONNECTOR || ast->type == AST_INVALID)
