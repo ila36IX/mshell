@@ -4,19 +4,17 @@
 static t_ast	*exec_connector(t_ast *ast, int *node_count)
 {
 	t_connector	connector;
-	int			status;
 
 	if (ast == NULL)
 		return (NULL);
-	status = 0;
 	connector = ast->connector;
 	if (connector == CONNECTOR_AND)
 	{
-		while (waitpid(-1, &status, 0) > 0)
+		while (waitpid(-1, NULL, 0) > 0)
 			;
 		*node_count = 0;
 		if (status_get() == SUCCESS)
-			return (status_set(WEXITSTATUS(status)), ast);
+			return (ast);
 		else
 				return (ast->next);
 	}
@@ -25,13 +23,13 @@ static t_ast	*exec_connector(t_ast *ast, int *node_count)
 		pid_wait_all();
 		*node_count = 0;
 		if (status_get() != SUCCESS)
-			return (status_set(WEXITSTATUS(status)), ast);
+			return (ast);
 		else
 			return (ast->next);
 	}
 	else if (connector == CONNECTOR_PIPE)
-		return (status_set(WEXITSTATUS(status)), ast);
-	return (status_set(WEXITSTATUS(status)), NULL);
+		return (ast);
+	return (NULL);
 }
 
 int	exec(t_ast *ast)
@@ -49,25 +47,24 @@ int	exec(t_ast *ast)
 	while (ast)
 	{
 		if (ast->type != AST_CONNECTOR)
-		{
 			ast_expand(ast);
-			if (setup_gates(ast, node_count) != SUCCESS)
-				return (status_set(1), 1);
-		}
 		if (ast->type == AST_SIMPLE_COMMAND && ast->simple_cmd.argv[0] != NULL)
 		{
-			exec_simple_command(ast);
+			if (setup_gates(ast, node_count) == SUCCESS)
+				exec_simple_command(ast);
 			node_count += 1;
 		}
 		if (ast->type == AST_SUBSHELL)
 		{
 			subshell = fork();
 			if (subshell == FAIL)
-				return (status);
+				return (status_get());
 			if (subshell  == 0)
 			{
+				signal(SIGINT,child_signal_handler);
 				close_gates();
-				status = exec(ast->subshell);
+				if (setup_gates(ast, node_count) != SUCCESS)
+					status = exec(ast->subshell);
 				exit(status);
 			}
 			else
@@ -82,6 +79,6 @@ int	exec(t_ast *ast)
 	}
 	close_gates();
 	while (waitpid(-1, &status, 0) > 0)
-		status_set(WEXITSTATUS(status));
+		;
 	return (status_get());
 }

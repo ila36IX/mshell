@@ -28,6 +28,7 @@
 
 # define TEXT_RESET "\033[0m"
 
+void	child_signal_handler(int sig);
 /* Regular Colors */
 
 # define TEXT_BLACK "\033[0;30m"

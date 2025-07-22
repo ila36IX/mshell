@@ -5,7 +5,6 @@
 
 void signal_handler(int sig)
 {
-	(void)sig;
 	if (sig == SIGINT)
 	{
 		printf("\n");
@@ -13,14 +12,21 @@ void signal_handler(int sig)
 		rl_on_new_line();
 		rl_redisplay();
 	}
+	status_set(130);
+}
+
+void	child_signal_handler(int sig)
+{
+	if (sig == SIGINT)
+		exit(130);
 }
 
 static char	*ft_readline(const char *prompt)
 {
 	char	*line;
 
-	if (isatty(STDIN_FILENO) == false)
-		prompt = NULL;
+	/* if (isatty(STDIN_FILENO) == false)
+		prompt = NULL; */
 	line = readline(prompt);
 	if (!line)
 		return (NULL);
@@ -36,8 +42,8 @@ int	main(int ac, const char **av, const char **envp)
 	(void)(ac);
 	(void)(av);
 
-	/* signal(SIGINT, signal_handler);
-	signal(SIGQUIT, signal_handler); */
+	signal(SIGINT, signal_handler);
+	/* signal(SIGQUIT, signal_handler); */
 	environ_init(envp);
 	while ((line = ft_readline(PROMPT)))
 	{

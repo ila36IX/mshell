@@ -14,6 +14,11 @@ int	pipe_init(void)
 	pipe_out = dup(STDOUT_FILENO);
 	if (pipe_in != FAIL || pipe_out != FAIL)
 		return (SUCCESS);
+	for (int i = 0; i < MAX_PIPES_COUNT; i++)
+	{
+		pipes[i][0] = -1;
+		pipes[i][1] = -1;
+	}
 	return (EXIT_FAILURE);
 }
 
@@ -76,8 +81,8 @@ int setup_gates(t_ast *ast, int node_count)
 	}
 	status = setup_fds(ast, pipe_input, pipe_output);
 	if (status == FAIL)
-		return (EXIT_FAILURE);
-	return (status);
+		return (status_set(1), EXIT_FAILURE);
+	return (0);
 }
 
 int restore_gates(void)
