@@ -6,33 +6,6 @@
 
 #define ERR_NOT_FOUND 127
 
-static char	*checker(char *name)
-{
-	if (!name)
-		return (NULL);
-	if (opendir(name) != NULL)
-	{
-		if (ft_strchr(name, '/'))
-		{
-			status_set(126);
-			dprintf(STDERR_FILENO, "minishell: %s: Is a directory\n", name);
-		}
-		else
-		{
-			status_set(127);
-			dprintf(STDERR_FILENO, "%s: command not found\n", name);
-		}
-		return (NULL);
-	}
-	if (access(name, F_OK) == 0 && ft_strchr(name, '/'))
-	{
-		status_set(126);
-		dprintf(STDERR_FILENO, "minishell: %s: Permission denied\n", name);
-		return (NULL);
-	}
-	return (name);
-}
-
 static char	*get_from_env(char *name)
 {
 	char		**list;
@@ -66,15 +39,10 @@ char	*get_full_name(char *name)
 
 	if (access(name, F_OK | X_OK) == 0 && opendir(name) == NULL)
 		return (name);
-	if (checker(name) == NULL)
-		return (NULL);
 	final_path = get_from_env(name);
 	if (final_path)
 		return (final_path);
-	if (ft_strchr(name, '/'))
-		dprintf(STDERR_FILENO, "%s: No such file or directory\n", name);
-	else
-		dprintf(STDERR_FILENO, "%s: command not found\n", name);
+	dprintf(STDERR_FILENO, "%s: command not found\n", name);
 	status_set(ERR_NOT_FOUND);
 	return (NULL);
 }
