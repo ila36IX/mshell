@@ -32,7 +32,7 @@ static bool	is_valid_token(const char *token)
 
 	if (token == NULL)
 		return (true);
-	if (!ft_isalpha(token[0]) && token[0] !=  '-')
+	if (!ft_isalpha(token[0]) && token[0] !=  '_')
 		return (false);
 	i = 0;
 	while (token[i])
