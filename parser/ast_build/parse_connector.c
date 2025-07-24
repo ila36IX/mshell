@@ -37,7 +37,7 @@ t_ast	*ast_add_connector(t_ast **ast_head, t_lexer *lexer)
 	if (!connector_is_valid(ast_head, lexer))
 		return (NULL);
 	token = lexer_next_token(lexer);
-	ast = ft_calloc(1, sizeof(t_ast));
+	ast = ft_malloc(1, sizeof(t_ast));
 	ast->next = NULL;
 	ast->type = AST_CONNECTOR;
 	if (token.kind == TOKEN_OR)

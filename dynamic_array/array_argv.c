@@ -22,17 +22,16 @@ static int	words_ensure_capacity(t_simple_cmd *scmd)
 	size_t	new_capacity;
 	char	**new_buff;
 
-	required_capacity = scmd->argc + 1;
+	required_capacity = scmd->argc + 2;
 	if (scmd->capacity >= required_capacity)
 		return (0);
 	new_capacity = scmd->capacity * 2;
 	if (new_capacity < required_capacity)
 		new_capacity = required_capacity;
-	new_buff = malloc(new_capacity * sizeof(char *));
+	new_buff = ft_malloc(new_capacity, sizeof(char *));
 	if (!new_buff)
 		return (-1);
 	ft_memcpy(new_buff, scmd->argv, scmd->argc * sizeof(char *));
-	free(scmd->argv);
 	scmd->argv = new_buff;
 	scmd->capacity = new_capacity;
 	return (0);
@@ -42,6 +41,7 @@ void	args_append(t_simple_cmd *scmd, char *arg)
 {
 	words_ensure_capacity(scmd);
 	scmd->argv[scmd->argc++] = arg;
+	scmd->argv[scmd->argc] = NULL;
 }
 
 void	init_argv(t_simple_cmd *scmd)

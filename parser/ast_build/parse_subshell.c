@@ -49,10 +49,10 @@ t_ast	*init_ast_subshell(void)
 {
 	t_ast	*ast;
 
-	ast = ft_calloc(1, sizeof(t_ast));
+	ast = ft_malloc(1, sizeof(t_ast));
 	ast->type = AST_SUBSHELL;
 	ast->redir_size = 0;
-	ast->redir = ft_calloc(ARRAY_INIT_SIZE, sizeof(t_redirect));
+	ast->redir = ft_malloc(ARRAY_INIT_SIZE, sizeof(t_redirect));
 	ast->redir_capacity = ARRAY_INIT_SIZE;
 	return (ast);
 }
