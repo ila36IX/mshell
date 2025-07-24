@@ -12,110 +12,82 @@
 
 #include "./ast_parser.h"
 
-bool	wildcmp(char *s, size_t ssz, char *p, size_t psz)
+char *ft_strstr(char *str, char *sub, size_t subsz)
 {
-	size_t	i;
+	size_t i;
+	size_t j;
 
-	if (psz == 0)
-		return (ssz == 0);
-	if (p[0] == '*')
-	{
-		i = 0;
-		while (i <= ssz)
-		{
-			if (wildcmp(s + i, ssz - i, p + 1, psz - 1))
-				return (true);
-			i++;
-		}
-		return (false);
-	}
-	else if (ssz > 0 && s[0] == p[0])
-	{
-		return (wildcmp(s + 1, ssz - 1, p + 1, psz - 1));
-	}
-	return (false);
-}
-
-bool	get_sorted_files(char **nodes, int *size, char *pattern,
-		size_t pattern_size)
-{
-	DIR				*dir_obj;
-	struct dirent	*dir;
-
-	dir_obj = opendir(".");
-	*size = 0;
-	if (!dir_obj)
-		return (false);
-	while (dir_obj)
-	{
-		dir = readdir(dir_obj);
-		if (!dir)
-			break ;
-		if (wildcmp(dir->d_name, ft_strlen(dir->d_name), pattern, pattern_size))
-		{
-			nodes[*size] = ft_strdup(dir->d_name);
-			*size += 1;
-		}
-		if (*size > MAX_FILES_IN_DIR - 1)
-			break ;
-	}
-	sort_filenames(nodes, *size);
-	closedir(dir_obj);
-	return (dir_obj);
-}
-
-bool	expand_asterisk_into_argv(char *pattern, t_simple_cmd *argv)
-{
-	char	*nodes[MAX_FILES_IN_DIR];
-	int		size;
-	int		i;
-	int		j;
-
-	get_sorted_files(nodes, &size, pattern, ft_strlen(pattern));
+	if (*sub == '\0')
+		return (str);
 	i = 0;
-	j = 0;
-	while (i < size)
+	while (str && str[i])
 	{
-		if ((pattern[0] == '.' && nodes[i][0] == '.') || (pattern[0] != '.'
-				&& nodes[i][0] != '.'))
-		{
-			args_append(argv, nodes[i]);
+		j = 0;
+		while (sub && str[i + j] == sub[j] && j < subsz)
 			j++;
-		}
+		if (j == subsz)
+			return (&str[i]);
 		i++;
 	}
-	if (j == 0)
+	return (NULL);
+}
+
+bool ends_with_substr(char *str, char *endian, size_t subsz)
+{
+	if (strlen(str) < subsz)
+		return (false);
+	while (str && *str)
+		str++;
+	str--;
+	while (subsz > 0)
 	{
-		args_append(argv, pattern);
-		return (true);
+		subsz--;
+		if (*str != endian[subsz])
+			return (false);
+		str--;
 	}
 	return (true);
 }
 
-char	*expand_asterisk_for_redir(char *pattern)
-{
-	char	*nodes[MAX_FILES_IN_DIR];
-	int		size;
-	int		i;
-	int		j;
-	char	*file;
 
-	get_sorted_files(nodes, &size, pattern, ft_strlen(pattern));
-	i = 0;
-	j = 0;
-	while (i < size)
+static bool _wildcmp_help(char *str, char *pattern)
+{
+	size_t subsz;
+
+	while (*pattern)
 	{
-		if ((pattern[0] == '.' && nodes[i][0] == '.') || (pattern[0] != '.'
-				&& nodes[i][0] != '.'))
+		while (*pattern == '*')
 		{
-			file = nodes[i];
-			j++;
+			if (!*(++pattern))
+				return (true);
 		}
-		i++;
+		subsz = 0;
+		while (pattern[subsz] != '*' && pattern[subsz])
+			subsz++;
+		if (subsz > 0 && !pattern[subsz])
+			return (ends_with_substr(str, pattern, subsz));
+		str = ft_strstr(str, pattern, subsz);
+		if (!str)
+			return (false);
+		pattern += subsz;
+		str += subsz;
 	}
-	if (size == 0)
-		return (pattern);
-	if (j == 1)
-		return (file);
-	return (NULL);
+	return (true);
+}
+
+bool wildcmp(char *str, char *pattern)
+{
+
+	while (*pattern && *pattern != '*')
+	{
+		if (*str != *pattern)
+			return (false);
+		str++;
+		pattern++;
+	}
+	if (!*pattern && *str)
+		return (false);
+	if (!*pattern && !*str)
+		return (true);
+	return (_wildcmp_help(str, pattern));
 }

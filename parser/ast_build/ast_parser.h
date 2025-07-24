@@ -45,7 +45,7 @@ char	*expand_string(const char *str, size_t size);
 bool	quote_removal(char *str, size_t size);
 bool	ast_check_errors(t_ast *ast);
 
-bool	wildcmp(char *s, size_t ssz, char *p, size_t psz);
+bool wildcmp(char *str, char *pattern);
 char	**field_splitting(char *word);
 bool	expand_asterisk_into_argv(char *pattern, t_simple_cmd *argv);
 void	skip_quotes(char *word, size_t *i);
