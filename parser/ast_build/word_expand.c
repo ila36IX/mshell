@@ -30,7 +30,6 @@ const char	*environ_get_ncstr(const char *s, size_t size)
 	string = string_init();
 	string_append_str(&string, s, size);
 	value = environ_get(string.buff);
-	free(string.buff);
 	return (value);
 }
 

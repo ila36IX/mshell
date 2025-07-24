@@ -57,7 +57,7 @@ t_ast	*ast_add_error(t_ast **ast_head, const char *tok, size_t size)
 	t_ast		*ast;
 	t_parse_err	err;
 
-	ast = ft_calloc(1, sizeof(t_ast));
+	ast = ft_malloc(1, sizeof(t_ast));
 	ast->type = AST_INVALID;
 	err.format = SHELL_NAME ": syntax error near unexpected token `";
 	if (size == 0)

@@ -1,22 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.h                                           :+:      :+:    :+:   */
+/*   ast_fields_splitting_utils.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/05 16:19:48 by aljbari           #+#    #+#             */
-/*   Updated: 2025/07/05 17:17:41 by aljbari          ###   ########.fr       */
+/*   Created: 2025/07/22 17:46:56 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/22 17:46:56 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "./ast_parser.h"
 
-#ifndef PARSER_H
-# define PARSER_H
+bool	needs_field_splitting(char *word)
+{
+	size_t	i;
 
-# include "../types.h"
-
-t_ast	*ast_create(char *line);
-bool		ast_expand(t_ast *ast);
-void		print_ast(t_ast *ast);
-
-#endif
+	i = 0;
+	while (word && word[i])
+	{
+		if (word[i] == '"' || word[i] == '\'')
+			skip_quotes(word, &i);
+		else
+		{
+			if (is_whitespace(word[i]))
+				return (true);
+			i++;
+		}
+	}
+	return (false);
+}
