@@ -4,13 +4,18 @@
 
 #define ENV_SIZE 1024
 
-t_dict	*g_environ_head = NULL;
+
+t_dict	**get_static_env_head(void)
+{
+	static t_dict	*s_environ_head;
+	return (&s_environ_head);
+}
 
 const char	*environ_get(const char *key)
 {
 	t_dict	*walk;
 
-	walk = g_environ_head;
+	walk = *get_static_env_head();
 	while (walk)
 	{
 		if (ft_strcmp(walk->key, key) == 0)
@@ -25,7 +30,7 @@ int	environ_unset(const char *key)
 	t_dict	**cur;
 	t_dict	*tmp;
 
-	cur = &g_environ_head;
+	cur = get_static_env_head();
 	while (*cur)
 	{
 		if (ft_strcmp((*cur)->key, key) == 0)
@@ -55,12 +60,12 @@ void	environ_set(const char *key, const char *value)
 	else
 		node->value = NULL;
 	node->next = NULL;
-	if (!g_environ_head)
+	if (!*get_static_env_head())
 	{
-		g_environ_head = node;
+		*get_static_env_head() = node;
 		return ;
 	}
-	walk = g_environ_head;
+	walk = *get_static_env_head();
 	while (walk->next)
 		walk = walk->next;
 	walk->next = node;
@@ -71,7 +76,7 @@ void	environ_free(void)
 	t_dict	*walk;
 	t_dict	*tmp;
 
-	walk = g_environ_head;
+	walk = *get_static_env_head();
 	while (walk)
 	{
 		tmp = walk->next;
@@ -80,19 +85,19 @@ void	environ_free(void)
 		free(walk);
 		walk = tmp;
 	}
-	g_environ_head = NULL;
+	*get_static_env_head() = NULL;
 }
 
 int	environ_print(void)
 {
 	t_dict	*walk;
 
-	if (!g_environ_head)
+	if (!*get_static_env_head())
 	{
 		printf("(nil)\n");
 		return (EXIT_SUCCESS);
 	}
-	walk = g_environ_head;
+	walk = *get_static_env_head();
 	while (walk)
 	{
 		if (walk->key && walk->value)
@@ -125,7 +130,7 @@ char	**environ_array_execve(void)
 	t_dict	*temp;
 	char	*str_temp;
 
-	temp = g_environ_head;
+	temp = *get_static_env_head();
 	list = ft_malloc(ENV_SIZE, sizeof(char *));
 	if (!list)
 		return (NULL);
@@ -146,5 +151,5 @@ char	**environ_array_execve(void)
 }
 t_dict	*environ_get_head(void)
 {
-	return (g_environ_head);
+	return (*get_static_env_head());
 }
