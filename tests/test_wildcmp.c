@@ -1,3 +1,4 @@
+#include <dirent.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +8,7 @@ bool	cmp_str(char *test_case, const char *got, const char *exp, char *detail);
 bool	cmp_nstr(char *test_case, const char *got, const char *exp, size_t n, char *detail);
 bool	cmp_int(char *test_case, int got, int exp, char *detail);
 bool	cmp_bool(char *test_case, int got, int exp, char *detail);
-bool wildcmp(char *s1, size_t sz1, char *s2, size_t sz2);
+bool wildcmp(char *string, char *pattern);
 
 typedef struct {
     char  *desc;
@@ -63,26 +64,134 @@ WildCmpTestCases_t tests_cases[] = {
     {"43", "main.c", ".*", false},
     {"44", ".git", ".", false},
     {"45", "aabcdefgh", "abcd*", false},
+    {"46", "main.c", "*****************************************************.", false},
 };
 
+char *ft_strstr(char *str, char *sub, size_t subsz)
+{
+	int i;
+	int j;
+
+
+	printf("LOOK FOR `%.*s` in `%s`\n", (int)subsz, sub, str);
+	if (*sub == '\0')
+		return (str);
+	i = 0;
+	while (str && str[i])
+	{
+		j = 0;
+		while (sub && str[i + j] == sub[j] && j < subsz)
+			j++;
+		if (j == subsz)
+			return (&str[i]);
+		i++;
+	}
+	return (NULL);
+}
+
+bool ends_with_substr(char *str, char *endian, size_t subsz)
+{
+	printf("DOES `%s` ENDS WITH `%s`\n", str, endian);
+	if (strlen(str) < subsz)
+		return (false);
+	while (str && *str)
+		str++;
+	str--;
+	while (subsz > 0)
+	{
+		subsz--;
+		printf("%c == %c ?\n", *str, endian[subsz]);
+		if (*str != endian[subsz])
+		{
+			printf("NOT: %c != %c ?\n", *str, endian[subsz]);
+			return (false);
+		}
+		str--;
+	}
+	return (true);
+}
+
+
+bool _wildcmp_help(char *str, char *pattern)
+{
+	size_t subsz;
+
+	while (*pattern)
+	{
+		while (*pattern == '*')
+		{
+			if (!*(++pattern))
+				return (true);
+		}
+		subsz = 0;
+		while (pattern[subsz] != '*' && pattern[subsz])
+			subsz++;
+		if (subsz > 0 && !pattern[subsz])
+			return (ends_with_substr(str, pattern, subsz));
+		str = ft_strstr(str, pattern, subsz);
+		if (!str)
+			return (false);
+		pattern += subsz;
+		str += subsz;
+	}
+	return (true);
+}
+
+bool wildcmp(char *str, char *pattern)
+{
+
+	printf("WILDCOMP: `%s` WITH `%s`\n", str, pattern);
+	while (*pattern && *pattern != '*')
+	{
+		if (*str != *pattern)
+			return (false);
+		str++;
+		pattern++;
+	}
+	if (!*pattern && *str)
+		return (false);
+	if (!*pattern && !*str)
+		return (true);
+	return (_wildcmp_help(str, pattern));
+}
+
+void print_files(char *pattern)
+{
+	DIR	      *dir;
+	struct dirent *ent;
+	dir = opendir(".");
+
+	while ((ent = readdir(dir)) != NULL)
+	{
+		if (wildcmp(ent->d_name, pattern))
+			printf("anass: %s\n", ent->d_name);
+	}
+	closedir(dir);
+}
 int main()
 {
-    WildCmpTestCases_t test;
-    bool r;
-
-    for (int i = 0; i < sizeof(tests_cases) / sizeof(tests_cases[0]); i++)
-    {
-	test = tests_cases[i];
-	r = wildcmp(test.text, strlen(test.text), test.pattern, strlen(test.pattern));
-	if (cmp_bool(test.desc, r, test.expexted, NULL))
-	    printf("✅ %s\n", test.desc);
-	else 
+	WildCmpTestCases_t test;
+	bool r;
+	char *str = ".git";
+	char *pattern = ".";
+	printf("STRING : %s\n", str);
+	printf("PATTERN: %s\n", pattern);
+	r = wildcmp(str, pattern);
+	printf("%s\n", r ? "Yes" : "No");
+	for (int i = 0; i < sizeof(tests_cases) / sizeof(tests_cases[0]); i++)
 	{
-	    printf("IN (INPUT): `%s`\n", test.text);
-	    printf("IN (PASTERN): `%s`\n", test.pattern);
-	    return (1);
+		test = tests_cases[i];
+		r = wildcmp(test.text, test.pattern);
+		if (cmp_bool(test.desc, r, test.expexted, NULL))
+			printf("✅ %s\n", test.desc);
+		else 
+		{
+			printf("IN (INPUT): `%s`\n", test.text);
+			printf("IN (PASTERN): `%s`\n", test.pattern);
+			return (1);
+		}
 	}
-    }
-    return (0);
+	print_files("*.c");
+	return (0);
 }
 
