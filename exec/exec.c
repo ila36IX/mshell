@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:11:14 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:11:15 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "./exec.h"
 #define PIPE_SIZE 2
 
@@ -56,7 +68,8 @@ int	exec(t_ast *ast)
 	while (ast)
 	{
 		if (ast->type != AST_CONNECTOR)
-			ast_expand(ast);
+			if (ast_expand(ast) == false)
+				exit(1);
 		if (ast->type == AST_SIMPLE_COMMAND)
 			case_simple_command(ast, &node_count);
 		if (ast->type == AST_SUBSHELL)

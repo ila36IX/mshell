@@ -1,7 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:10:31 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:10:34 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../libft/libft.h"
 #include "environ.h"
 #include "../status.h"
-
 
 static int	export_print(void)
 {
@@ -32,7 +43,7 @@ static bool	is_valid_token(const char *token)
 
 	if (token == NULL)
 		return (true);
-	if (!ft_isalpha(token[0]) && token[0] !=  '_')
+	if (!ft_isalpha(token[0]) && token[0] != '_')
 		return (false);
 	i = 0;
 	while (token[i])
@@ -60,9 +71,8 @@ static int	try_insert(const char *expr)
 		return (EXIT_FAILURE);
 	}
 	environ_set(list[0], list[1]);
-		return (EXIT_SUCCESS);
+	return (EXIT_SUCCESS);
 }
-
 
 int	ft_export(int ac, char **av)
 {
@@ -81,12 +91,11 @@ int	ft_export(int ac, char **av)
 			if (try_insert(av[i]) == EXIT_FAILURE)
 			{
 				dprintf(STDERR_FILENO,
-				"minishell: export: '%s': not a valid identifier\n", av[i]);
+					"minishell: export: '%s': not a valid identifier\n", av[i]);
 				status_set(EXIT_FAILURE);
 			}
 			i++;
 		}
 	}
-
 	return (status_get());
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipe.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:13:53 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:14:07 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "./exec.h"
 
 int	pipe_init(void)
@@ -83,6 +95,7 @@ int	restore_gates(void)
 	dup2(get_pipe_out(), STDOUT_FILENO);
 	return (status);
 }
+
 int	close_gates(void)
 {
 	int	status;
