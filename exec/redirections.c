@@ -1,11 +1,22 @@
-# include "./exec.h"
-# include "../libft/libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirections.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:14:18 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:14:19 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "./exec.h"
+#include "../libft/libft.h"
 
-# define ERR_OPEN -1
-# define ERR_FILE_NOT_FOUND -2
-# define ERR_NULL 1
-# define PIPE_SIZE 2
+#define ERR_OPEN -1
+#define ERR_FILE_NOT_FOUND -2
+#define ERR_NULL 1
+#define PIPE_SIZE 2
 
 static int	setup_redir_in(t_redirect *redir)
 {
@@ -17,7 +28,8 @@ static int	setup_redir_in(t_redirect *redir)
 	if (target == ERR_OPEN)
 	{
 		status_set(ERR_NULL);
-		dprintf(STDERR_FILENO, "minishell: %s: No such file or directory\n", redir->target);
+		dprintf(STDERR_FILENO,
+			"minishell: %s: No such file or directory\n", redir->target);
 		target = open("/dev/null", O_RDONLY);
 		dup2(target, STDIN_FILENO);
 		return (FAIL);
@@ -39,7 +51,8 @@ static int	setup_redir_out(t_redirect *redir)
 	else
 		target = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (target == ERR_OPEN)
-		return (dprintf(STDERR_FILENO, "mshell: %s: %s\n", strerror(errno), redir->target), FAIL);
+		return (dprintf(STDERR_FILENO,
+				"mshell: %s: %s\n", strerror(errno), redir->target), FAIL);
 	if (dup2(target, STDOUT_FILENO) == ERR_OPEN)
 		return (FAIL);
 	close(target);
@@ -72,7 +85,7 @@ int	setup_redirections(t_ast *ast)
 
 	if (!ast)
 		return (FAIL);
-	i  = 0;
+	i = 0;
 	redir = ast->redir;
 	if (!redir)
 		return (FAIL);

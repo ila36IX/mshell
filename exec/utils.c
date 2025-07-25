@@ -1,6 +1,17 @@
-# include "../includes.h"
-# include "../parser/parser.h"
-# include "../libft/libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:14:37 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:14:41 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../includes.h"
+#include "../libft/libft.h"
 
 bool	is_builtin(t_ast *ast)
 {

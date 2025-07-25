@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:11:14 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:11:15 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "./exec.h"
 #define PIPE_SIZE 2
 
@@ -12,8 +24,7 @@ static int	case_simple_command(t_ast *ast, int *node_count)
 			&& ast->simple_cmd.argv[0] != NULL)
 		{
 			status = exec_simple_command(ast);
-			if (status)
-				return (status);
+			status_set(status);
 		}
 		(*node_count) += 1;
 	}
@@ -57,11 +68,12 @@ int	exec(t_ast *ast)
 	while (ast)
 	{
 		if (ast->type != AST_CONNECTOR)
-			ast_expand(ast);
+			if (ast_expand(ast) == false)
+				exit(1);
 		if (ast->type == AST_SIMPLE_COMMAND)
-			status_set(case_simple_command(ast, &node_count));
+			case_simple_command(ast, &node_count);
 		if (ast->type == AST_SUBSHELL)
-			status_set(case_subshell(ast, &node_count));
+			case_subshell(ast, &node_count);
 		else if (ast->type == AST_CONNECTOR)
 			ast = exec_connector(ast, &node_count);
 		restore_gates();
