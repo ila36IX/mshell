@@ -12,10 +12,10 @@
 
 #include "./ast_parser.h"
 
-char *ft_strstr(char *str, char *sub, size_t subsz)
+static char	*ft_strstr(char *str, char *sub, size_t subsz)
 {
-	size_t i;
-	size_t j;
+	size_t	i;
+	size_t	j;
 
 	if (*sub == '\0')
 		return (str);
@@ -32,9 +32,9 @@ char *ft_strstr(char *str, char *sub, size_t subsz)
 	return (NULL);
 }
 
-bool ends_with_substr(char *str, char *endian, size_t subsz)
+static bool	ends_with_substr(char *str, char *endian, size_t subsz)
 {
-	if (strlen(str) < subsz)
+	if (ft_strlen(str) < subsz)
 		return (false);
 	while (str && *str)
 		str++;
@@ -49,10 +49,9 @@ bool ends_with_substr(char *str, char *endian, size_t subsz)
 	return (true);
 }
 
-
-static bool _wildcmp_help(char *str, char *pattern)
+static bool	_wildcmp_help(char *str, char *pattern)
 {
-	size_t subsz;
+	size_t	subsz;
 
 	while (*pattern)
 	{
@@ -75,9 +74,8 @@ static bool _wildcmp_help(char *str, char *pattern)
 	return (true);
 }
 
-bool wildcmp(char *str, char *pattern)
+bool	wildcmp(char *str, char *pattern)
 {
-
 	while (*pattern && *pattern != '*')
 	{
 		if (*str != *pattern)
