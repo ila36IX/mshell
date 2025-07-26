@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/24 12:13:53 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:14:07 by sboukiou         ###   ########.fr       */
+/*   Created: 2025/07/26 21:59:26 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/26 22:14:22 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,11 @@ int	pipe_init(void)
 	int	i;
 	int	**pipes;
 
-	pipes = pipes_act(GET, NULL);
+	pipes = pipes_act(GET);
 	pipe_in_act(SET, dup(STDIN_FILENO));
 	pipe_out_act(SET, dup(STDOUT_FILENO));
-	if (get_pipe_in() != FAIL || get_pipe_out() != FAIL)
-		return (SUCCESS);
+	if (get_pipe_in() == FAIL || get_pipe_out() == FAIL)
+		return (ERR_NULL);
 	i = 0;
 	while (i < MAX_PIPES_COUNT)
 	{
@@ -29,59 +29,56 @@ int	pipe_init(void)
 		pipes[i][1] = -1;
 		i++;
 	}
+	set_pipe_count(0);
+	set_current_pipe(0);
 	return (EXIT_FAILURE);
 }
 
 int	init_gates(t_ast *ast)
 {
 	int	**pipes;
+	int	pipe_count;
 
-	pipes = pipes_act(GET, NULL);
-	set_pipe_count(0);
-	set_current_pipe(0);
-	if (ast == NULL)
-		return (FAIL);
+	pipe_init();
+	pipes = pipes_act(GET);
+	pipe_count = 0;
+	if (pipes == NULL || ast == NULL)
+		return (ERR_NULL);
 	while (ast)
 	{
 		if (is_pipe(ast))
 		{
-			if (pipe(pipes[get_pipe_count()]) == FAIL)
+			if (pipe(pipes[pipe_count]) == FAIL)
 				return (FAIL);
-			set_pipe_count(get_pipe_count() + 1);
+			pipe_count += 1;
 		}
 		ast = ast->next;
 	}
-	return (get_pipe_count());
+	set_pipe_count(pipe_count);
+	return (pipe_count);
 }
 
 int	setup_gates(t_ast *ast, int node_count)
 {
-	int	g_pipe_input;
-	int	g_pipe_output;
+	int	pipe_in;
+	int	pipe_out;
 	int	**pipes;
+	int	current_pipe;
 
-	pipes = pipes_act(GET, NULL);
-	g_pipe_input = -1;
-	g_pipe_output = -1;
-	pipe_init();
-	if (node_count == 0)
+	pipes = pipes_act(GET);
+	if (pipes == NULL)
+		return (ERR_NULL);
+	current_pipe = get_current_pipe();
+	pipe_in = -1;
+	pipe_out = -1;
+	if (node_count)
+		pipe_in = pipes[current_pipe - 1][0];
+	if (is_pipe_next(ast))
 	{
-		if (is_pipe_next(ast))
-		{
-			g_pipe_output = pipes[get_current_pipe()][1];
-			set_current_pipe(get_current_pipe() + 1);
-		}
+		pipe_out = pipes[current_pipe][1];
+		set_current_pipe(current_pipe + 1);
 	}
-	else
-	{
-		g_pipe_input = pipes[get_current_pipe() - 1][0];
-		if (is_pipe_next(ast))
-		{
-			g_pipe_output = pipes[get_current_pipe()][1];
-			set_current_pipe(get_current_pipe() + 1);
-		}
-	}
-	if (setup_fds(ast, g_pipe_input, g_pipe_output))
+	if (setup_fds(ast, pipe_in, pipe_out))
 		return (status_set(1), EXIT_FAILURE);
 	return (0);
 }
@@ -100,18 +97,19 @@ int	close_gates(void)
 {
 	int	status;
 	int	i;
-	int	g_pipe_count;
+	int	pipe_count;
 	int	**pipes;
 
-	pipes = pipes_act(GET, NULL);
-	g_pipe_count = get_pipe_count();
+	pipes = pipes_act(GET);
+	pipe_count = get_pipe_count();
 	status = 0;
 	i = 0;
-	while (i < g_pipe_count)
+	while (i < pipe_count)
 	{
 		close(pipes[i][0]);
 		close(pipes[i][1]);
 		i++;
 	}
+	pipes_act(SET);
 	return (status);
 }

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/24 12:11:14 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:11:15 by sboukiou         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "./exec.h"
 #define PIPE_SIZE 2
 
@@ -18,16 +6,13 @@ static int	case_simple_command(t_ast *ast, int *node_count)
 	int	status;
 
 	status = 0;
-	if (ast->type == AST_SIMPLE_COMMAND)
+	if (setup_gates(ast, *node_count) == SUCCESS
+		&& ast->simple_cmd.argc)
 	{
-		if (setup_gates(ast, *node_count) == SUCCESS
-			&& ast->simple_cmd.argv[0] != NULL)
-		{
-			status = exec_simple_command(ast);
-			status_set(status);
-		}
-		(*node_count) += 1;
+		status = exec_simple_command(ast);
+		status_set(status);
 	}
+	(*node_count) += 1;
 	return (SUCCESS);
 }
 
@@ -37,6 +22,8 @@ static int	case_subshell(t_ast *ast, int *node_count)
 	int		status;
 
 	status = 0;
+	if (setup_gates(ast, *node_count) != SUCCESS)
+		return (ERR_NULL);
 	if (ast->type == AST_SUBSHELL)
 	{
 		subshell = fork();
@@ -46,8 +33,7 @@ static int	case_subshell(t_ast *ast, int *node_count)
 		{
 			signal(SIGINT, child_signal_handler);
 			close_gates();
-			if (setup_gates(ast, *node_count) != SUCCESS)
-				status = exec(ast->subshell);
+			status = exec(ast->subshell);
 			exit(status);
 		}
 		else
@@ -69,10 +55,10 @@ int	exec(t_ast *ast)
 	{
 		if (ast->type != AST_CONNECTOR)
 			if (ast_expand(ast) == false)
-				exit(1);
+				return (ERR_NULL);
 		if (ast->type == AST_SIMPLE_COMMAND)
 			case_simple_command(ast, &node_count);
-		if (ast->type == AST_SUBSHELL)
+		else if (ast->type == AST_SUBSHELL)
 			case_subshell(ast, &node_count);
 		else if (ast->type == AST_CONNECTOR)
 			ast = exec_connector(ast, &node_count);

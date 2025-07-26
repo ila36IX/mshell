@@ -23,6 +23,8 @@ static int	call_builtins(t_ast *ast)
 
 	av = ast->simple_cmd.argv;
 	ac = ast->simple_cmd.argc;
+	if (ac == 0)
+		return (ERR_NULL);
 	if (ft_strcmp(av[0], "echo") == SUCCESS)
 		status = ft_echo(ac, av);
 	if (ft_strcmp(av[0], "cd") == SUCCESS)
@@ -47,7 +49,7 @@ int	exec_builtin(t_ast *ast)
 
 	if (ast == NULL)
 		return (ERR_NULL);
-	if (ast->simple_cmd.argv == NULL)
+	if (ast->simple_cmd.argc == 0)
 		return (ERR_NULL);
 	pid = 0;
 	status = 0;

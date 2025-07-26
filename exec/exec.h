@@ -21,6 +21,7 @@
 # define PIPE_SIZE 2
 # define GET 0
 # define SET 1
+# define CLEAR 2
 
 /* Utils */
 bool	is_builtin(t_ast *ast);
@@ -60,6 +61,6 @@ int		pipe_in_act(int action, int hold);
 int		pipe_out_act(int action, int hold);
 int		current_pipe_act(int action, int hold);
 int		pipe_count_act(int action, int hold);
-int		**pipes_act(int action, int **hold);
+int		**pipes_act(int action);
 
 #endif /* EXEC_H */

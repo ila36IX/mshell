@@ -49,6 +49,7 @@ int	main(int ac, const char **av, const char **envp)
 		ast = ast_create(line);
 		exec(ast);
 		ft_gc_clear();
+		line = ft_readline(PROMPT);
 	}
 	status = status_get();
 	return (status);
