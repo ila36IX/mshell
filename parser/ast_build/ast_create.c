@@ -32,7 +32,7 @@ t_ast	*ast_create(char *line)
 	ast = ast_parse_tree(&lexer);
 	if (ast_check_errors(ast) == false)
 	{
-		status_set(2);
+		status_set(PARSE_ERROR_STATUS_CODE);
 		return (NULL);
 	}
 	return (ast);
