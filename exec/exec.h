@@ -21,6 +21,7 @@
 # define PIPE_SIZE 2
 # define GET 0
 # define SET 1
+# define CLEAR 2
 
 /* Utils */
 bool	is_builtin(t_ast *ast);
