@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:14:18 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:14:19 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/26 22:12:18 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,8 @@ int	setup_redirections(t_ast *ast)
 		if (redir[i].type == REDIR_TYPE_IN)
 			if (setup_redir_in(redir + i) == FAIL)
 				return (FAIL);
-		if (redir[i].type == REDIR_TYPE_OUT || redir->type == REDIR_TYPE_APPEND)
+		if (redir[i].type == REDIR_TYPE_OUT
+			|| redir[i].type == REDIR_TYPE_APPEND)
 			if (setup_redir_out(redir + i) == FAIL)
 				return (FAIL);
 		if (redir[i].type == REDIR_TYPE_HEREDOC)

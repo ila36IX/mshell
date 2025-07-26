@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:13:38 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:13:38 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/26 22:15:16 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,13 +69,11 @@ int	exec_executable(t_ast *ast)
 
 	if (ast == NULL)
 		return (ERR_NULL);
-	if (ast->simple_cmd.argv == NULL)
+	if (ast->simple_cmd.argc == 0)
 		return (ERR_NULL);
 	av = ast->simple_cmd.argv;
 	ac = ast->simple_cmd.argc;
 	status = 0;
-	if (ft_strlen(av[0]) == 0)
-		return (status);
 	cmd_name = get_full_name(av[0]);
 	envp = environ_array_execve();
 	if (execve(cmd_name, av, envp) == FAIL)

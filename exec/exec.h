@@ -61,6 +61,6 @@ int		pipe_in_act(int action, int hold);
 int		pipe_out_act(int action, int hold);
 int		current_pipe_act(int action, int hold);
 int		pipe_count_act(int action, int hold);
-int		**pipes_act(int action, int **hold);
+int		**pipes_act(int action);
 
 #endif /* EXEC_H */

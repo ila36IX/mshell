@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:14:24 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:14:25 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/26 22:06:28 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,16 @@ int	pipe_count_act(int action, int hold)
 	return (pipe_count);
 }
 
-int	**pipes_act(int action, int **hold)
+int	**pipes_act(int action)
 {
 	static int	**pipes;
 	int			i;
 
-	(void)hold;
+	if (action == SET)
+	{
+		pipes = NULL;
+		return (NULL);
+	}
 	if (pipes == NULL)
 	{
 		pipes = ft_malloc(sizeof(int *), MAX_PIPES_COUNT);
@@ -77,7 +81,5 @@ int	**pipes_act(int action, int **hold)
 			i++;
 		}
 	}
-	if (action == GET)
-		return (pipes);
 	return (pipes);
 }

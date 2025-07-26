@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "./exec.h"
-#include "../libft/libft.h"
 
 #define MAX_PID_COUNT 1024
 
@@ -48,5 +47,6 @@ int	pid_wait_all(void)
 	int	status;
 
 	waitpid(last_pid_act(GET, SUCCESS), &status, 0);
+	last_pid_act(CLEAR, FAIL);
 	return (WEXITSTATUS(status));
 }

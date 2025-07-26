@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:13:44 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:13:45 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/26 22:13:39 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,18 +49,14 @@ bool	is_valid_executable(t_ast *ast)
 
 	if (ast == NULL)
 		return (ERR_NULL);
-	if (ast->simple_cmd.argv == NULL)
+	if (ast->simple_cmd.argc == 0)
 		return (ERR_NULL);
 	av = ast->simple_cmd.argv;
 	ac = ast->simple_cmd.argc;
 	status = 0;
-	if (ft_strlen(av[0]) == 0)
-		return (false);
 	cmd_name = get_full_name(av[0]);
 	if (cmd_name == NULL)
-	{
 		return (false);
-	}
 	return (true);
 }
 
@@ -69,7 +65,7 @@ int	exec_simple_command(t_ast *ast)
 	int		status;
 	pid_t	pid;
 
-	if (ast == NULL || ast->simple_cmd.argv == NULL)
+	if (ast == NULL || ast->simple_cmd.argc == 0)
 		return (ERR_NULL);
 	status = 0;
 	if (is_builtin(ast) == true)
