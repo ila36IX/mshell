@@ -44,8 +44,6 @@ int	ft_exit(int ac, char **av)
 	int	stat;
 	int	val;
 
-	ft_gc_clear();
-	environ_free();
 	stat = check_multiple_args(ac, av);
 	if (stat)
 		return (stat);
@@ -57,10 +55,14 @@ int	ft_exit(int ac, char **av)
 			ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
 			ft_putstr_fd(av[1], STDERR_FILENO);
 			ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
+			ft_gc_clear();
+			environ_free();
 			exit(ERR_NNUM_VAL);
 		}
 		exit(val);
 	}
 	stat = status_get();
+	ft_gc_clear();
+	environ_free();
 	exit(stat);
 }
