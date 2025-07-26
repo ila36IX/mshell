@@ -86,13 +86,6 @@ t_ast	*ast_add_error(t_ast **ast_head, const char *tok, size_t size)
  */
 bool	ast_check_errors(t_ast *ast)
 {
-	t_ast	*ast_tail;
-
-	ast_tail = last_ast(ast);
-	if (!ast)
-		return (true);
-	if (ast_tail->type == AST_CONNECTOR)
-		ast_add_error(&ast, "nil", 3);
 	if (ast_has_parse_error(ast))
 	{
 		ast_print_error(ast);
