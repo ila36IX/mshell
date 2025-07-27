@@ -61,7 +61,7 @@ t_ast	*execute_pipeline(t_ast *ast)
 					return (NULL);
 				if (ast->type != AST_CONNECTOR)
 					if (setup_redirections(ast) != SUCCESS)
-						return (NULL);
+						exit(ERR_NULL);
 				if (ast->type == AST_SIMPLE_COMMAND)
 					status = exec_simple_command(ast);
 				else if (ast->type == AST_SUBSHELL)

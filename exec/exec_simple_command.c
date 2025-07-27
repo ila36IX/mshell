@@ -51,7 +51,7 @@ bool	is_valid_executable(t_ast *ast)
 	if (ast == NULL)
 		return (ERR_NULL);
 	if (ast->simple_cmd.argc == 0)
-		return (ERR_NULL);
+		return (SUCCESS);
 	av = ast->simple_cmd.argv;
 	ac = ast->simple_cmd.argc;
 	status = 0;
@@ -67,7 +67,7 @@ int	exec_simple_command(t_ast *ast)
 	pid_t	pid;
 
 	if (ast == NULL || ast->simple_cmd.argc == 0)
-		return (status_set(ERR_NULL), ERR_NULL);
+		return (status_set(SUCCESS), SUCCESS);
 	status = 0;
 	if (is_builtin(ast) == true)
 		exec_builtin(ast);

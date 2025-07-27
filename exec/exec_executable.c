@@ -69,7 +69,7 @@ int	exec_executable(t_ast *ast)
 	if (ast == NULL)
 		return (ERR_NULL);
 	if (ast->simple_cmd.argc == 0)
-		return (ERR_NULL);
+		return (SUCCESS);
 	av = ast->simple_cmd.argv;
 	ac = ast->simple_cmd.argc;
 	cmd_name = get_full_name(av[0]);
