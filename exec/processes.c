@@ -1,50 +1,52 @@
-# include "./exec.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   processes.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:14:14 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:14:14 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-# define MAX_PID_COUNT 1024
+#include "./exec.h"
 
-pid_t	processes[MAX_PID_COUNT];
-static int		pid_count = 0;
+#define MAX_PID_COUNT 1024
 
-
-void	pid_init(void)
+static int	last_pid_act(int action, int value)
 {
-	pid_count = 0;
+	static pid_t	last_pid;
+
+	if (action == CLEAR)
+		last_pid = FAIL;
+	else if (action == SET)
+		last_pid = value;
+	return (last_pid);
 }
 
-int pid_push(pid_t pid)
+int	pid_count_act(int action, int hold)
 {
-	if (pid == FAIL)
-		return (EXIT_FAILURE);
-	processes[pid_count] = pid;
-	pid_count += 1;
-	return (EXIT_SUCCESS);
+	static int	pid_count;
+
+	if (action == GET)
+		return (pid_count);
+	if (action == SET)
+		pid_count = hold;
+	return (pid_count);
 }
 
-int pid_wait_all(void)
+int	pid_push(pid_t pid)
 {
-	int	i;
+	last_pid_act(SET, pid);
+	return (pid);
+}
+
+int	pid_wait_all(void)
+{
 	int	status;
 
-	i = 0;
-	status = 0;
-	while (i < pid_count)
-	{
-		waitpid(processes[i], &status, 0);
-		if (WEXITSTATUS(status) !=  0)
-			return (status_set(WEXITSTATUS(status)), WEXITSTATUS(status));
-		i++;
-	}
-	return (status);
-}
-
-int	pid_wait_last(void)
-{
-	int	status;
-
-	if (pid_count == 0)
-		return (EXIT_FAILURE);
-	status  = 0;
-	pid_count -= 1;
-	waitpid(processes[pid_count], &status, 0);
-	return (status);
+	waitpid(last_pid_act(GET, SUCCESS), &status, 0);
+	last_pid_act(CLEAR, FAIL);
+	return (WEXITSTATUS(status));
 }

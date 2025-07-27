@@ -1,11 +1,10 @@
-# include "./main.h"
-# include "./parser/parser.h"
-# include "./exec/status.h"
-# define PROMPT "\033[0;33m[User@Debian]$ \033[0m"
+#include "./main.h"
+#include "./parser/parser.h"
+#include "./exec/status.h"
+#define PROMPT "\033[0;33m[User@Debian]$ \033[0m"
 
-void signal_handler(int sig)
+void	signal_handler(int sig)
 {
-	(void)sig;
 	if (sig == SIGINT)
 	{
 		printf("\n");
@@ -13,14 +12,19 @@ void signal_handler(int sig)
 		rl_on_new_line();
 		rl_redisplay();
 	}
+	status_set(130);
 }
 
-static char	*ft_readline(const char *prompt)
+void	child_signal_handler(int sig)
+{
+	if (sig == SIGINT)
+		exit(130);
+}
+
+char	*ft_readline(const char *prompt)
 {
 	char	*line;
 
-	if (isatty(STDIN_FILENO) == false)
-		prompt = NULL;
 	line = readline(prompt);
 	if (!line)
 		return (NULL);
@@ -33,18 +37,19 @@ int	main(int ac, const char **av, const char **envp)
 	t_ast	*ast;
 	char	*line;
 	int		status;
+
 	(void)(ac);
 	(void)(av);
-
-	/* signal(SIGINT, signal_handler);
-	signal(SIGQUIT, signal_handler); */
+	signal(SIGINT, signal_handler);
 	environ_init(envp);
-	while ((line = ft_readline(PROMPT)))
+	line = ft_readline(PROMPT);
+	while (line)
 	{
 		add_history(line);
-		ast =ast_create(line);
-		/* print_ast(ast); */
+		ast = ast_create(line);
 		exec(ast);
+		ft_gc_clear();
+		line = ft_readline(PROMPT);
 	}
 	status = status_get();
 	return (status);

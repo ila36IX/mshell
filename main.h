@@ -15,16 +15,16 @@
 # include "./includes.h"
 # include "./parser/lexer/lexer.h"
 # include "./exec/exec.h"
-#include "./exec/builtins/builtins.h"
+# include "./exec/builtins/builtins.h"
 # include "./exec/builtins/builtins.h"
 # include "./exec/builtins/environ.h"
 # include "./prototypes.h"
 # include "./types.h"
 # include "libft/libft.h"
 # include "debug_macroc.h"
-#include "./parser/parser.h"
-#include "./exec/exec.h"
+# include "./parser/parser.h"
+# include "./exec/exec.h"
 
-
+char	*ft_readline(const char *prompt);
 char	*xgc_strdup(const char *src);
 #endif

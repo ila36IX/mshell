@@ -1,42 +1,30 @@
-# include "./exec.h"
-# include "./status.h"
-# include "./builtins/environ.h"
-# include "../libft/libft.h"
-# include <dirent.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_executable.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:13:38 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/26 22:15:16 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-# define ERR_NOT_FOUND 127
+#include "./exec.h"
+#include "./status.h"
+#include "./builtins/environ.h"
+#include "../libft/libft.h"
+#include <dirent.h>
 
-char	*get_full_name(char *name)
+#define ERR_NOT_FOUND 127
+
+static char	*get_from_env(char *name)
 {
-	char	**list;
+	char		**list;
 	const char	*env;
-	char	*final_path;
-	int	i;
+	char		*final_path;
+	int			i;
 
-	if (!name)
-		return (NULL);
-	if (opendir(name) != NULL)
-	{
-		if (ft_strchr(name, '/'))
-		{
-			status_set(126);
-			dprintf(STDERR_FILENO, "minishell: %s: Is a directory\n", name);
-		}
-		else
-		{
-			status_set(127);
-			dprintf(STDERR_FILENO, "%s: command not found\n", name);
-		}
-		return (NULL);
-	}
-	if (access(name, F_OK | X_OK) == 0)
-		return (name);
-	else if (access(name, F_OK) == 0 && ft_strchr(name, '/'))
-	{
-		status_set(126);
-		dprintf(STDERR_FILENO, "minishell: %s: Permission denied\n", name);
-		return (NULL);
-	}
 	env = environ_get("PATH");
 	if (!env)
 		return (NULL);
@@ -54,35 +42,42 @@ char	*get_full_name(char *name)
 		i++;
 	}
 	ft_gc_remove_ft_split(list);
-	if (ft_strchr(name, '/'))
-		dprintf(STDERR_FILENO, "%s: No such file or directory\n", name);
-	else
-		dprintf(STDERR_FILENO, "%s: command not found\n", name);
+	return (NULL);
+}
+
+char	*get_full_name(char *name)
+{
+	char		*final_path;
+
+	if (access(name, F_OK | X_OK) == 0 && opendir(name) == NULL)
+		return (name);
+	final_path = get_from_env(name);
+	if (final_path)
+		return (final_path);
+	dprintf(STDERR_FILENO, "%s: command not found\n", name);
 	status_set(ERR_NOT_FOUND);
 	return (NULL);
 }
 
-int exec_executable(t_ast *ast)
+int	exec_executable(t_ast *ast, int *node_count)
 {
 	char	**av;
-	int	ac;
-	int	status;
+	int		ac;
+	int		status;
 	char	*cmd_name;
 	char	**envp;
 
+	(void)node_count;
 	if (ast == NULL)
 		return (ERR_NULL);
-	if (ast->simple_cmd.argv == NULL)
+	if (ast->simple_cmd.argc == 0)
 		return (ERR_NULL);
 	av = ast->simple_cmd.argv;
 	ac = ast->simple_cmd.argc;
 	status = 0;
-	if (ft_strlen(av[0]) == 0)
-		return (status);
 	cmd_name = get_full_name(av[0]);
 	envp = environ_array_execve();
 	if (execve(cmd_name, av, envp) == FAIL)
 		return (EXIT_FAILURE);
-
 	return (status);
 }

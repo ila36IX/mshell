@@ -16,7 +16,7 @@
 # include "../types.h"
 
 t_ast	*ast_create(char *line);
-void	ast_expand(t_ast *ast);
+bool	ast_expand(t_ast *ast);
 void	print_ast(t_ast *ast);
 
 #endif

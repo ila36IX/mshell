@@ -1,10 +1,17 @@
-# include "../includes.h"
-#include "./builtins/environ.h"
-# include "../libft/libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   status.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:14:30 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:14:32 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-# define GET 0
-# define SET 1
-
+#define GET 0
+#define SET 1
 
 /**
  * status_main - Gets/Sets the global status value based on an action
@@ -30,6 +37,7 @@ static void	status_main(int action, int *status)
 int	status_get(void)
 {
 	int	status;
+
 	status_main(GET, &status);
 	return (status);
 }
@@ -40,7 +48,5 @@ int	status_get(void)
  */
 void	status_set(int status)
 {
-	environ_set("?", ft_itoa(status));
 	status_main(SET, &status);
-
 }

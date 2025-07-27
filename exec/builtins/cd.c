@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cd.c                                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:08:43 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:08:44 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes.h"
 #include "../status.h"
 #include "./environ.h"
@@ -23,6 +35,7 @@ int	checker(int ac, char **av)
 		dprintf(STDERR_FILENO, " %s\n", ERR_NO_PARENT);
 		return (EXIT_FAILURE);
 	}
+	environ_set("OLDPWD", newdir);
 	return (SUCCESS);
 }
 
@@ -39,12 +52,6 @@ int	ft_cd(int ac, char **av)
 
 	if (checker(ac, av) != SUCCESS)
 		return (EXIT_FAILURE);
-	if (av[1] && ft_strlen(av[1]) == 0)
-	{
-		printf("%s\n", newdir);
-		status_set(EXIT_SUCCESS);
-		return (EXIT_SUCCESS);
-	}
 	status = chdir(av[1]);
 	if (status != EXIT_SUCCESS)
 	{
@@ -52,7 +59,6 @@ int	ft_cd(int ac, char **av)
 		dprintf(STDERR_FILENO, " %s\n", strerror(errno));
 		return (EXIT_FAILURE);
 	}
-	environ_set("OLDPWD", newdir);
 	if (getcwd(newdir, MAX_WD_SIZE) == NULL)
 		return (EXIT_FAILURE);
 	environ_set("PWD", newdir);

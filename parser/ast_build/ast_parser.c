@@ -27,6 +27,20 @@ void	ast_add_back(t_ast **head, t_ast *new)
 	*head = new;
 }
 
+void	add_error_if_ends_with_connector(t_ast **ast, t_lexer *lexer,
+		t_token tok)
+{
+	t_token	token;
+	int		kind;
+
+	token = lexer_peek_next_token(lexer);
+	kind = tok.kind;
+	if (token.kind != TOKEN_NULL)
+		return ;
+	if (kind == TOKEN_AND || kind == TOKEN_OR || kind == TOKEN_PIPE)
+		ast_add_error(ast, tok.text, tok.text_len);
+}
+
 /**
  * ast_parse_tree - allocate the ast with invalid node included
  *
@@ -52,6 +66,7 @@ t_ast	*ast_parse_tree(t_lexer *lexer)
 			ast_add_subshell(&ast, lexer);
 		else
 			ast_add_error(&ast, token.text, token.text_len);
+		add_error_if_ends_with_connector(&ast, lexer, token);
 		if (ast_has_parse_error(ast))
 			break ;
 		token = lexer_peek_next_token(lexer);

@@ -1,31 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unset.c                                            :+:      :+:    :+:   */
+/*   ast_fields_splitting_utils.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: aljbari <jbariali002@gmail.com>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/24 12:10:48 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:10:49 by sboukiou         ###   ########.fr       */
+/*   Created: 2025/07/22 17:46:56 by aljbari           #+#    #+#             */
+/*   Updated: 2025/07/22 17:46:56 by aljbari          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+#include "./ast_parser.h"
 
-#include "../../includes.h"
-#include "./environ.h"
-
-int	ft_unset(int ac, char **av)
+bool	needs_field_splitting(char *word)
 {
-	int	i;
+	size_t	i;
 
-	if (ac == 1)
-		return (EXIT_SUCCESS);
-	if (av == NULL)
-		return (ERR_NULL);
 	i = 0;
-	while (av[i])
+	while (word && word[i])
 	{
-		environ_unset(av[i]);
-		i++;
+		if (word[i] == '"' || word[i] == '\'')
+			skip_quotes(word, &i);
+		else
+		{
+			if (is_whitespace(word[i]))
+				return (true);
+			i++;
+		}
 	}
-	return (0);
+	return (false);
 }

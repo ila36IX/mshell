@@ -24,12 +24,11 @@ static int	string_ensure_capacity(t_string *s, size_t add_size)
 	new_capacity = s->capacity * 2;
 	if (new_capacity < required_capacity)
 		new_capacity = required_capacity;
-	new_buff = malloc(new_capacity * sizeof(char));
+	new_buff = ft_malloc(new_capacity, sizeof(char));
 	if (!new_buff)
 		return (-1);
 	ft_memcpy(new_buff, s->buff, s->length);
 	new_buff[s->length] = '\0';
-	free(s->buff);
 	s->buff = new_buff;
 	s->capacity = new_capacity;
 	return (0);
@@ -58,7 +57,7 @@ t_string	string_init(void)
 
 	s.length = 0;
 	s.capacity = INIT_STR_ARRAY_SIZE;
-	s.buff = malloc(s.capacity * sizeof(char));
+	s.buff = ft_malloc(s.capacity, sizeof(char));
 	if (s.buff)
 		s.buff[0] = '\0';
 	return (s);

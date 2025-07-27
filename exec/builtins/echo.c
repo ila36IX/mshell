@@ -1,7 +1,17 @@
-# include "../../libft/libft.h"
-# include "../../includes.h"
-# include "../status.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/24 12:08:55 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:09:32 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include "../../includes.h"
+#include "../status.h"
 
 /**
 	* echo - Mimics the behavior of the echo command
@@ -18,7 +28,7 @@ bool	is_option(const char *opt)
 	if (opt == NULL)
 		return (ERR_NULL);
 	i = 0;
-	if (opt[i++] !=  '-')
+	if (opt[i++] != '-')
 		return (false);
 	while (opt[i])
 	{
@@ -31,16 +41,13 @@ bool	is_option(const char *opt)
 
 int	ft_echo(int ac, char **av)
 {
-	int	i;
+	int		i;
 	bool	newline;
 
 	if (av == NULL)
 		return (status_set(ERR_NULL), ERR_NULL);
 	if (ac == 1)
-	{
-		printf("\n");
-		return (status_set(SUCCESS), SUCCESS);
-	}
+		return (printf("\n"), status_set(SUCCESS), SUCCESS);
 	i = 1;
 	newline = true;
 	while (av[i] && is_option(av[i]) == true)
@@ -58,5 +65,4 @@ int	ft_echo(int ac, char **av)
 	if (newline == true)
 		printf("\n");
 	return (SUCCESS);
-
 }

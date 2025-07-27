@@ -1,23 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   status.h                                           :+:      :+:    :+:   */
+/*   gsetters.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/24 12:11:07 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:11:11 by sboukiou         ###   ########.fr       */
+/*   Created: 2025/07/24 12:11:03 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/24 12:11:04 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef STATUS_H
-# define STATUS_H
+#ifndef GSETTERS_H
+# define GSETTERS_H
 
-# define SUCCESS 0
-# define NOT_PERMITTED 1
-# define NO_SUCH_FILE 2
-# define NOT_FOUND 127
+/* Getters */
+int	get_pipe_in(void);
+int	get_pipe_out(void);
+int	get_pipe_count(void);
+int	get_current_pipe(void);
 
-int		status_get(void);
-void	status_set(int status);
-#endif /* STATUS_H */
+/* Setters */
+int	set_pipe_in(int value);
+int	set_pipe_out(int value);
+int	set_pipe_count(int value);
+int	set_current_pipe(int value);
+
+#endif /* GSETTERS_H */
