@@ -1,115 +1,48 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   pipe.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/26 21:59:26 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/26 22:14:22 by sboukiou         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "./exec.h"
+#include "../libft/libft.h"
 
-int	pipe_init(void)
+int	**init_pipes(int *number_of_nodes, t_ast *ast)
+{
+	int	**pipes;
+
+	*number_of_nodes = count_nodes(ast);
+	pipes = ft_malloc(sizeof(int *), *number_of_nodes - 1);
+	for (int i  = 0; i < *number_of_nodes - 1; i++)
+		pipes[i] = ft_malloc(sizeof(int), PIPE_SIZE);
+	for (int i = 0; i < *number_of_nodes - 1; i++)
+		pipe(pipes[i]);
+	return (pipes);
+}
+
+int	close_all_pipes(int **pipes, int count)
 {
 	int	i;
-	int	**pipes;
 
-	pipes = pipes_act(GET);
-	pipe_in_act(SET, dup(STDIN_FILENO));
-	pipe_out_act(SET, dup(STDOUT_FILENO));
-	if (get_pipe_in() == FAIL || get_pipe_out() == FAIL)
-		return (ERR_NULL);
-	i = 0;
-	while (i < MAX_PIPES_COUNT)
-	{
-		pipes[i][0] = -1;
-		pipes[i][1] = -1;
-		i++;
-	}
-	set_pipe_count(0);
-	set_current_pipe(0);
-	return (EXIT_FAILURE);
-}
-
-int	init_gates(t_ast *ast)
-{
-	int	**pipes;
-	int	pipe_count;
-
-	pipe_init();
-	pipes = pipes_act(GET);
-	pipe_count = 0;
-	if (pipes == NULL || ast == NULL)
-		return (ERR_NULL);
-	while (ast)
-	{
-		if (is_pipe(ast))
-		{
-			if (pipe(pipes[pipe_count]) == FAIL)
-				return (FAIL);
-			pipe_count += 1;
-		}
-		ast = ast->next;
-	}
-	set_pipe_count(pipe_count);
-	return (pipe_count);
-}
-
-int	setup_gates(t_ast *ast, int node_count)
-{
-	int	pipe_in;
-	int	pipe_out;
-	int	**pipes;
-	int	current_pipe;
-
-	pipes = pipes_act(GET);
 	if (pipes == NULL)
 		return (ERR_NULL);
-	current_pipe = get_current_pipe();
-	pipe_in = -1;
-	pipe_out = -1;
-	if (node_count)
-		pipe_in = pipes[current_pipe - 1][0];
-	if (is_pipe_next(ast))
-	{
-		pipe_out = pipes[current_pipe][1];
-		set_current_pipe(current_pipe + 1);
-	}
-	if (setup_fds(ast, pipe_in, pipe_out))
-		return (status_set(1), EXIT_FAILURE);
-	return (0);
-}
-
-int	restore_gates(void)
-{
-	int	status;
-
-	status = 0;
-	dup2(get_pipe_in(), STDIN_FILENO);
-	dup2(get_pipe_out(), STDOUT_FILENO);
-	return (status);
-}
-
-int	close_gates(void)
-{
-	int	status;
-	int	i;
-	int	pipe_count;
-	int	**pipes;
-
-	pipes = pipes_act(GET);
-	pipe_count = get_pipe_count();
-	status = 0;
 	i = 0;
-	while (i < pipe_count)
+	 while (i < count)
+	 {
+		 close(pipes[i][0]);
+		 close(pipes[i][1]);
+		 i++;
+	 }
+	 return (SUCCESS);
+}
+
+int	setup_pipes(int count, int **pipes, int number_of_nodes)
+{
+	if (pipes == NULL)
+		return (ERR_NULL);
+	if (count == 0)
+		dup2(pipes[0][1], STDOUT_FILENO);
+	else if (count < number_of_nodes - 1)
 	{
-		close(pipes[i][0]);
-		close(pipes[i][1]);
-		i++;
-	}
-	pipes_act(SET);
-	return (status);
+        dup2(pipes[count -1][0], STDIN_FILENO);
+        dup2(pipes[count][1], STDOUT_FILENO);
+    }
+	else
+		dup2(pipes[count - 1][0], STDIN_FILENO);
+	close_all_pipes(pipes, number_of_nodes - 1);
+	return (SUCCESS);
 }

@@ -12,13 +12,7 @@
 
 #include "./exec.h"
 
-static void	reset(int *node_count)
-{
-	pid_wait_all();
-	*node_count = 0;
-}
-
-t_ast	*exec_connector(t_ast *ast, int *node_count)
+t_ast	*exec_connector(t_ast *ast)
 {
 	t_connector	connector;
 
@@ -27,19 +21,27 @@ t_ast	*exec_connector(t_ast *ast, int *node_count)
 	connector = ast->connector;
 	if (connector == CONNECTOR_AND)
 	{
-		reset(node_count);
 		if (status_get() == SUCCESS)
-			return (ast);
-		else
 			return (ast->next);
+		else
+		{
+			ast = ast->next;
+			while (ast && is_logical_connector(ast) == false)
+				ast = ast->next;
+			return (ast);
+		}
 	}
 	if (connector == CONNECTOR_OR)
 	{
-		reset(node_count);
 		if (status_get() != SUCCESS)
-			return (ast);
-		else
 			return (ast->next);
+		else
+		{
+			ast = ast->next;
+			while (ast && is_logical_connector(ast) == false)
+				ast = ast->next;
+			return (ast);
+		}
 	}
 	else if (connector == CONNECTOR_PIPE)
 		return (ast);

@@ -62,3 +62,33 @@ bool	is_pipe(t_ast *ast)
 			return (true);
 	return (false);
 }
+
+bool	is_logical_connector(t_ast *ast)
+{
+	if (ast == NULL)
+		return (true);
+	if (ast->type == AST_CONNECTOR)
+	{
+		if (ast->connector == CONNECTOR_AND)
+			return (true);
+		if (ast->connector == CONNECTOR_OR)
+			return (true);
+	}
+	return (false);
+}
+
+int	count_nodes(t_ast *ast)
+{
+	int	count;
+
+	count = 0;
+	while (is_logical_connector(ast) == false)
+	{
+		if (ast->type == AST_SIMPLE_COMMAND
+			|| ast->type == AST_SUBSHELL)
+			count += 1;
+		ast = ast->next;
+	}
+	return (count);
+}
+

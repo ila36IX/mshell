@@ -61,20 +61,33 @@ static int	setup_redir_out(t_redirect *redir)
 
 static int	setup_redir_heredoc(t_redirect *redir)
 {
-	int	pipefd[PIPE_SIZE];
+	int		fd;
+	char	*filename;
+	int		file_count;
 
 	if (!redir)
 		return (FAIL);
 	if (redir->target == NULL)
 		return (ERR_NULL);
-	if (pipe(pipefd) == ERR_OPEN)
+	file_count = 42;
+	filename = ft_itoa(file_count);
+	if (filename == NULL)
 		return (FAIL);
-	if (write(pipefd[1], redir->target, ft_strlen(redir->target)) == ERR_OPEN)
+	while ( (access(filename, F_OK) == 0) )
+	{
+		file_count += 1;
+		filename = ft_itoa(file_count);
+	}
+	fd = open(filename, O_WRONLY | O_CREAT , 0644);
+	if (fd == FAIL)
 		return (FAIL);
-	close(pipefd[1]);
-	if (dup2(pipefd[0], STDIN_FILENO) == ERR_OPEN)
+	if (write(fd, redir->target, ft_strlen(redir->target)) == ERR_OPEN)
 		return (FAIL);
-	close(pipefd[0]);
+	fd = open(filename, O_RDONLY, 0644);
+	if (dup2(fd, STDIN_FILENO) == ERR_OPEN)
+		return (FAIL);
+	close(fd);
+	unlink(filename);
 	return (SUCCESS);
 }
 
@@ -87,8 +100,8 @@ int	setup_redirections(t_ast *ast)
 		return (FAIL);
 	i = 0;
 	redir = ast->redir;
-	if (!redir)
-		return (FAIL);
+	if (!redir || ast->redir_size == 0)
+		return (SUCCESS);
 	while (i < ast->redir_size)
 	{
 		if (redir[i].type == REDIR_TYPE_IN)

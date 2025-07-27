@@ -18,6 +18,7 @@ int	setup_fds(t_ast *ast, int pipe_in, int pipe_out)
 {
 	int	redirect;
 
+	/* dprintf(get_pipe_in(), "Going into the redirecionts settings\n"); */
 	if (ast == NULL)
 		return (-1);
 	if (pipe_out != -1)
@@ -50,7 +51,7 @@ bool	is_valid_executable(t_ast *ast)
 	if (ast == NULL)
 		return (ERR_NULL);
 	if (ast->simple_cmd.argc == 0)
-		return (ERR_NULL);
+		return (SUCCESS);
 	av = ast->simple_cmd.argv;
 	ac = ast->simple_cmd.argc;
 	status = 0;
@@ -66,25 +67,26 @@ int	exec_simple_command(t_ast *ast)
 	pid_t	pid;
 
 	if (ast == NULL || ast->simple_cmd.argc == 0)
-		return (ERR_NULL);
+		return (status_set(SUCCESS), SUCCESS);
 	status = 0;
 	if (is_builtin(ast) == true)
-		status = exec_builtin(ast);
+		exec_builtin(ast);
 	else if (is_valid_executable(ast) == false)
-		return (status_get());
+		return (status_set(NOT_FOUND), ERR_NULL);
 	else
 	{
 		pid = fork();
 		if (pid == FAIL)
-			return (EXIT_FAILURE);
+			return (status_set(ERR_NULL), ERR_NULL);
 		if (pid == 0)
 		{
 			signal(SIGINT, child_signal_handler);
-			close_gates();
-			status = exec_executable(ast);
+			exec_executable(ast);
 			exit(status_get());
 		}
-		pid_push(pid);
+		else
+			waitpid(pid, &status, 0);
+		status_set(WEXITSTATUS(status));
 	}
-	return (status);
+	return (status_get());
 }

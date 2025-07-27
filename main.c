@@ -51,6 +51,8 @@ int	main(int ac, const char **av, const char **envp)
 		ft_gc_clear();
 		line = ft_readline(PROMPT);
 	}
+	ft_gc_clear();
+	environ_free();
 	status = status_get();
 	return (status);
 }

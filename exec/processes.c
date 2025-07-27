@@ -42,11 +42,18 @@ int	pid_push(pid_t pid)
 	return (pid);
 }
 
+pid_t	pid_get(void)
+{
+	return (last_pid_act(GET, 0));
+}
+
 int	pid_wait_all(void)
 {
 	int	status;
 
 	waitpid(last_pid_act(GET, SUCCESS), &status, 0);
 	last_pid_act(CLEAR, FAIL);
+	while (waitpid(-1, NULL, 0) > 0)
+		;
 	return (WEXITSTATUS(status));
 }
