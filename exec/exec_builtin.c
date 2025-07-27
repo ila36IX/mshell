@@ -24,7 +24,8 @@ static int	call_builtins(t_ast *ast)
 	av = ast->simple_cmd.argv;
 	ac = ast->simple_cmd.argc;
 	if (ac == 0)
-		return (ERR_NULL);
+		return (status_set(ERR_NULL), ERR_NULL);
+	status = 0;
 	if (ft_strcmp(av[0], "echo") == SUCCESS)
 		status = ft_echo(ac, av);
 	if (ft_strcmp(av[0], "cd") == SUCCESS)
@@ -39,7 +40,7 @@ static int	call_builtins(t_ast *ast)
 		status = ft_env(ac, av);
 	if (ft_strcmp(av[0], "exit") == SUCCESS)
 		status = ft_exit(ac, av);
-	return (status);
+	return (status_set(status), status);
 }
 
 int	exec_builtin(t_ast *ast)
@@ -51,7 +52,5 @@ int	exec_builtin(t_ast *ast)
 	if (ast->simple_cmd.argc == 0)
 		return (ERR_NULL);
 	status = call_builtins(ast);
-	if (status)
-		return (status);
-	return (SUCCESS);
+	return (status);
 }

@@ -43,7 +43,7 @@ int		exec_builtin(t_ast *ast);
 int		exec_simple_command(t_ast *ast);
 int		exec_executable(t_ast *ast);
 int		exec(t_ast *ast);
-t_ast	*exec_connector(t_ast *ast, int *node_count);
+t_ast	*exec_connector(t_ast *ast);
 
 
 /* Static declarations settings */

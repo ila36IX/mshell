@@ -67,26 +67,26 @@ int	exec_simple_command(t_ast *ast)
 	pid_t	pid;
 
 	if (ast == NULL || ast->simple_cmd.argc == 0)
-		return (ERR_NULL);
+		return (status_set(ERR_NULL), ERR_NULL);
 	status = 0;
 	if (is_builtin(ast) == true)
-		status = exec_builtin(ast);
+		exec_builtin(ast);
 	else if (is_valid_executable(ast) == false)
-		return (status_get());
+		return (status_set(ERR_NULL), ERR_NULL);
 	else
 	{
 		pid = fork();
 		if (pid == FAIL)
-			return (EXIT_FAILURE);
+			return (status_set(ERR_NULL), ERR_NULL);
 		if (pid == 0)
 		{
-			/* dprintf(get_pipe_out(), "forked and ready to run\n"); */
 			signal(SIGINT, child_signal_handler);
-			status = exec_executable(ast);
+			exec_executable(ast);
 			exit(status_get());
 		}
 		else
-			waitpid(pid, NULL, 0);
+			waitpid(pid, &status, 0);
+		status_set(WEXITSTATUS(status));
 	}
-	return (status);
+	return (status_get());
 }

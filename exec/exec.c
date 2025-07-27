@@ -5,30 +5,32 @@
 int	handle_single_command(t_ast *ast)
 {
 	pid_t	pid;
+	int		status;
 
 	if (ast->type == AST_SUBSHELL)
 	{
 		pid = fork();
+		if (pid == FAIL)
+			return (status_set(ERR_NULL), ERR_NULL);
 		if (pid == 0)
 		{
-			ast_expand(ast);
+			if (ast_expand(ast) == false)
+				return (status_set(ERR_NULL), ERR_NULL);
 			if (setup_redirections(ast) != SUCCESS)
-				return (ERR_NULL);
+				return (status_set(ERR_NULL), ERR_NULL);
 			exec(ast->subshell);
-			exit(0);
+			exit(status_get());
 		}
 		else
-			waitpid(pid, NULL, 0);
-		return (SUCCESS);
+			waitpid(pid, &status, 0);
+		return (status_set(WEXITSTATUS(status)), WEXITSTATUS(status));
 	}
-	ast_expand(ast);
+	if (ast_expand(ast) == false)
+		return (status_set(ERR_NULL), ERR_NULL);
 	if (setup_redirections(ast) != SUCCESS)
-		return (ERR_NULL);
-	/* dprintf(get_pipe_out(), "Setting the redirections succeeded\n"); */
+		return (status_set(ERR_NULL), ERR_NULL);
 	exec_simple_command(ast);
-	while (waitpid(-1, NULL, 0) > 0)
-		;
-	return (SUCCESS);
+	return (status_get());
 }
 
 t_ast	*execute_pipeline(t_ast *ast)
@@ -37,15 +39,17 @@ t_ast	*execute_pipeline(t_ast *ast)
 	int		**pipes;
 	pid_t	pid;
 	int		count;
+	int		status;
 
 	if (ast == NULL)
 		return (ast);
 	count = 0;
+	status = 0;
 	pipes = init_pipes(&number_of_nodes, ast);
 	if (number_of_nodes == 1)
 	{
-		/* dprintf(get_pipe_out(), "Handling a single command\n"); */
-		handle_single_command(ast);
+		status = handle_single_command(ast);
+		status_set(status);
 		return (ast->next);
 	}
 	while (ast && is_logical_connector(ast) == false)
@@ -61,19 +65,21 @@ t_ast	*execute_pipeline(t_ast *ast)
 					if (setup_redirections(ast) != SUCCESS)
 						return (NULL);
 				if (ast->type == AST_SIMPLE_COMMAND)
-					exec_simple_command(ast);
+					status = exec_simple_command(ast);
 				else if (ast->type == AST_SUBSHELL)
-				{
-					exec(ast->subshell);
-				}
-				exit(0);
+					status = exec(ast->subshell);
+				exit(status);
 			}
+			else
+				pid_push(pid);
 		}
 		if (ast->type != AST_CONNECTOR)
 			count += 1;
 		ast = ast->next;
 	}
 	close_all_pipes(pipes, number_of_nodes - 1);
+	waitpid(pid_get(), &status, 0);
+	status_set(WEXITSTATUS(status));
 	while (waitpid(-1, NULL, 0) > 0)
 		;
 	return (ast);
@@ -81,8 +87,6 @@ t_ast	*execute_pipeline(t_ast *ast)
 
 int	exec(t_ast *ast)
 {
-	int		node_count;
-
 	if (ast == NULL)
 		return (ERR_NULL);
 	set_pipe_in(dup(STDIN_FILENO));
@@ -93,7 +97,7 @@ int	exec(t_ast *ast)
 			|| ast->type == AST_SUBSHELL)
 			ast = execute_pipeline(ast);
 		else if (ast->type == AST_CONNECTOR)
-			ast = exec_connector(ast, &node_count);
+			ast = exec_connector(ast);
 		if (ast)
 			ast = ast->next;
 	}

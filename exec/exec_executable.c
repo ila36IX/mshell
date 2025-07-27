@@ -63,7 +63,6 @@ int	exec_executable(t_ast *ast)
 {
 	char	**av;
 	int		ac;
-	int		status;
 	char	*cmd_name;
 	char	**envp;
 
@@ -73,10 +72,9 @@ int	exec_executable(t_ast *ast)
 		return (ERR_NULL);
 	av = ast->simple_cmd.argv;
 	ac = ast->simple_cmd.argc;
-	status = 0;
 	cmd_name = get_full_name(av[0]);
 	envp = environ_array_execve();
-	if (execve(cmd_name, av, envp) == FAIL)
-		return (EXIT_FAILURE);
-	return (status);
+	if (execve(cmd_name, av, envp))
+		status_set(errno);
+	return (status_get());
 }
