@@ -1,63 +1,85 @@
 #include "./exec.h"
+#include "../libft/libft.h"
 #define PIPE_SIZE 2
 
-static int	case_simple_command(t_ast *ast, int *node_count)
+int	handle_single_command(t_ast *ast)
 {
-	int		status;
 	pid_t	pid;
 
-	status = 0;
-	/* dprintf(get_pipe_in(), "Simple command\n"); */
-	if (*node_count || is_pipe_next(ast))
+	if (ast->type == AST_SUBSHELL)
 	{
-		/* dprintf(get_pipe_in(), "Forking for the command in pipline\n"); */
 		pid = fork();
 		if (pid == 0)
 		{
-			if (ast->simple_cmd.argc)
-			{
-				status = exec_simple_command(ast, node_count);
-				status_set(status);
-			}
-			exit(status);
+			ast_expand(ast);
+			if (setup_redirections(ast) != SUCCESS)
+				return (ERR_NULL);
+			exec(ast->subshell);
+			exit(0);
 		}
 		else
-		set_current_pipe(get_current_pipe() + 1);
+			waitpid(pid, NULL, 0);
+		return (SUCCESS);
 	}
-	else
-	{
-		if (ast->simple_cmd.argc)
-		{
-			status = exec_simple_command(ast, node_count);
-			status_set(status);
-		}
-	}
-	(*node_count) += 1;
+	ast_expand(ast);
+	if (setup_redirections(ast) != SUCCESS)
+		return (ERR_NULL);
+	exec_simple_command(ast);
+	dup2(get_pipe_in(), STDIN_FILENO);
+	dup2(get_pipe_out(), STDOUT_FILENO);
 	return (SUCCESS);
 }
 
-static int	case_subshell(t_ast *ast, int *node_count)
+t_ast	*execute_pipeline(t_ast *ast)
 {
-	pid_t	subshell;
-	int		status;
+	int		number_of_nodes;
+	int		**pipes;
+	pid_t	pid;
+	int		count;
 
-	status = 0;
-	if (ast->type == AST_SUBSHELL)
+	if (ast == NULL)
+		return (ast);
+	set_pipe_in(dup(STDIN_FILENO));
+	set_pipe_out(dup(STDOUT_FILENO));
+	number_of_nodes = count_nodes(ast);
+	if (number_of_nodes == 1)
 	{
-		subshell = fork();
-		if (subshell == FAIL)
-			return (status_get());
-		if (subshell == 0)
-		{
-			signal(SIGINT, child_signal_handler);
-			if (setup_gates(ast, *node_count) != SUCCESS)
-				return (ERR_NULL);
-			status = exec(ast->subshell);
-			exit(status);
-		}
-		(*node_count) += 1;
+		handle_single_command(ast);
+		return (ast->next);
 	}
-	return (status);
+	pipes = ft_malloc(sizeof(int *), number_of_nodes - 1);
+	for (int i  = 0; i < number_of_nodes - 1; i++)
+		pipes[i] = ft_malloc(sizeof(int), PIPE_SIZE);
+	for (int i = 0; i < number_of_nodes - 1; i++)
+		pipe(pipes[i]);
+	count = 0;
+	while (ast && is_logical_connector(ast) == false)
+	{
+		/* dprintf(get_pipe_out(), "in the loop\n"); */
+		pid = fork();
+		if (pid == 0)
+		{
+			setup_pipes(count, pipes, number_of_nodes);
+			if (ast->type != AST_CONNECTOR)
+				if (setup_redirections(ast) != SUCCESS)
+					return (ast->next);
+			if (ast->type == AST_SIMPLE_COMMAND)
+				exec_simple_command(ast);
+			else if (ast->type == AST_SUBSHELL)
+			{
+				dprintf(get_pipe_out(), "in subshell\n");
+				exec(ast->subshell);
+			}
+			exit(0);
+		}
+		if (ast->type != AST_CONNECTOR)
+			count += 1;
+		ast = ast->next;
+	}
+	close_all_pipes(pipes, number_of_nodes - 1);
+	while (waitpid(-1, NULL, 0) > 0)
+		;
+	return (ast);
 }
 
 int	exec(t_ast *ast)
@@ -66,25 +88,15 @@ int	exec(t_ast *ast)
 
 	if (ast == NULL)
 		return (ERR_NULL);
-	node_count = 0;
-	init_gates(ast);
 	while (ast)
 	{
-		if (ast->type != AST_CONNECTOR)
-			if (ast_expand(ast) == false)
-				return (ERR_NULL);
-		if (ast->type == AST_SIMPLE_COMMAND)
-			case_simple_command(ast, &node_count);
-		else if (ast->type == AST_SUBSHELL)
-			case_subshell(ast, &node_count);
+		if (ast->type == AST_SIMPLE_COMMAND
+			|| ast->type == AST_SUBSHELL)
+			ast = execute_pipeline(ast);
 		else if (ast->type == AST_CONNECTOR)
 			ast = exec_connector(ast, &node_count);
-		restore_gates();
 		if (ast)
 			ast = ast->next;
 	}
-	close_gates();
-	while(waitpid(-1, NULL, 0) > 0)
-		;
 	return (status_get());
 }

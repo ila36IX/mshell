@@ -61,16 +61,17 @@ bool	is_valid_executable(t_ast *ast)
 	return (true);
 }
 
-int	exec_simple_command(t_ast *ast, int *node_count)
+int	exec_simple_command(t_ast *ast)
 {
 	int		status;
 	pid_t	pid;
 
+	ast_expand(ast);
 	if (ast == NULL || ast->simple_cmd.argc == 0)
 		return (ERR_NULL);
 	status = 0;
 	if (is_builtin(ast) == true)
-		status = exec_builtin(ast, node_count);
+		status = exec_builtin(ast);
 	else if (is_valid_executable(ast) == false)
 		return (status_get());
 	else
@@ -80,16 +81,12 @@ int	exec_simple_command(t_ast *ast, int *node_count)
 			return (EXIT_FAILURE);
 		if (pid == 0)
 		{
-			if (setup_gates(ast, *node_count) != SUCCESS)
-				return (ERR_NULL);
-			close_gates();
 			signal(SIGINT, child_signal_handler);
-			status = exec_executable(ast, node_count);
+			status = exec_executable(ast);
 			exit(status_get());
 		}
 		else
 			waitpid(pid, NULL, 0);
-		pid_push(pid);
 	}
 	return (status);
 }

@@ -42,13 +42,11 @@ static int	call_builtins(t_ast *ast)
 	return (status);
 }
 
-int	exec_builtin(t_ast *ast, int *node_count)
+int	exec_builtin(t_ast *ast)
 {
 	int		status;
 
 	if (ast == NULL)
-		return (ERR_NULL);
-	if (setup_gates(ast, *node_count) != SUCCESS)
 		return (ERR_NULL);
 	if (ast->simple_cmd.argc == 0)
 		return (ERR_NULL);

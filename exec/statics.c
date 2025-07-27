@@ -71,6 +71,7 @@ int	**pipes_act(int action)
 	}
 	if (pipes == NULL)
 	{
+		/* printf("[ALLOCATING PIPES WITH SIZE %d]\n", MAX_PIPES_COUNT); */
 		pipes = ft_malloc(sizeof(int *), MAX_PIPES_COUNT);
 		if (!pipes)
 			exit(0);
@@ -80,6 +81,13 @@ int	**pipes_act(int action)
 			pipes[i] = ft_malloc(sizeof(int), PIPE_SIZE);
 			if (!pipes[i])
 				exit(0);
+			i++;
+		}
+		i = 0;
+		while (i < MAX_PIPES_COUNT)
+		{
+			pipes[i][0] = -1;
+			pipes[i][1] = -1;
 			i++;
 		}
 	}

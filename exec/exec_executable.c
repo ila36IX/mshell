@@ -59,7 +59,7 @@ char	*get_full_name(char *name)
 	return (NULL);
 }
 
-int	exec_executable(t_ast *ast, int *node_count)
+int	exec_executable(t_ast *ast)
 {
 	char	**av;
 	int		ac;
@@ -67,7 +67,6 @@ int	exec_executable(t_ast *ast, int *node_count)
 	char	*cmd_name;
 	char	**envp;
 
-	(void)node_count;
 	if (ast == NULL)
 		return (ERR_NULL);
 	if (ast->simple_cmd.argc == 0)
