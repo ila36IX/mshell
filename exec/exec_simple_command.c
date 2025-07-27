@@ -66,7 +66,6 @@ int	exec_simple_command(t_ast *ast)
 	int		status;
 	pid_t	pid;
 
-	ast_expand(ast);
 	if (ast == NULL || ast->simple_cmd.argc == 0)
 		return (ERR_NULL);
 	status = 0;
@@ -81,6 +80,7 @@ int	exec_simple_command(t_ast *ast)
 			return (EXIT_FAILURE);
 		if (pid == 0)
 		{
+			/* dprintf(get_pipe_out(), "forked and ready to run\n"); */
 			signal(SIGINT, child_signal_handler);
 			status = exec_executable(ast);
 			exit(status_get());

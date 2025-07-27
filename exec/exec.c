@@ -24,11 +24,10 @@ int	handle_single_command(t_ast *ast)
 	ast_expand(ast);
 	if (setup_redirections(ast) != SUCCESS)
 		return (ERR_NULL);
+	/* dprintf(get_pipe_out(), "Setting the redirections succeeded\n"); */
 	exec_simple_command(ast);
-	dup2(get_pipe_in(), STDIN_FILENO);
-	dup2(get_pipe_out(), STDOUT_FILENO);
-	close(get_pipe_in());
-	close(get_pipe_out());
+	while (waitpid(-1, NULL, 0) > 0)
+		;
 	return (SUCCESS);
 }
 
@@ -45,6 +44,7 @@ t_ast	*execute_pipeline(t_ast *ast)
 	pipes = init_pipes(&number_of_nodes, ast);
 	if (number_of_nodes == 1)
 	{
+		/* dprintf(get_pipe_out(), "Handling a single command\n"); */
 		handle_single_command(ast);
 		return (ast->next);
 	}
@@ -86,6 +86,8 @@ int	exec(t_ast *ast)
 
 	if (ast == NULL)
 		return (ERR_NULL);
+	set_pipe_in(dup(STDIN_FILENO));
+	set_pipe_out(dup(STDOUT_FILENO));
 	while (ast)
 	{
 		if (ast->type == AST_SIMPLE_COMMAND
@@ -96,5 +98,9 @@ int	exec(t_ast *ast)
 		if (ast)
 			ast = ast->next;
 	}
+	dup2(get_pipe_in(), STDIN_FILENO);
+	dup2(get_pipe_out(), STDOUT_FILENO);
+	close(get_pipe_in());
+	close(get_pipe_out());
 	return (status_get());
 }
