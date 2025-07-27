@@ -27,6 +27,8 @@ int	handle_single_command(t_ast *ast)
 	exec_simple_command(ast);
 	dup2(get_pipe_in(), STDIN_FILENO);
 	dup2(get_pipe_out(), STDOUT_FILENO);
+	close(get_pipe_in());
+	close(get_pipe_out());
 	return (SUCCESS);
 }
 
@@ -39,38 +41,34 @@ t_ast	*execute_pipeline(t_ast *ast)
 
 	if (ast == NULL)
 		return (ast);
-	set_pipe_in(dup(STDIN_FILENO));
-	set_pipe_out(dup(STDOUT_FILENO));
-	number_of_nodes = count_nodes(ast);
+	count = 0;
+	pipes = init_pipes(&number_of_nodes, ast);
 	if (number_of_nodes == 1)
 	{
 		handle_single_command(ast);
 		return (ast->next);
 	}
-	pipes = ft_malloc(sizeof(int *), number_of_nodes - 1);
-	for (int i  = 0; i < number_of_nodes - 1; i++)
-		pipes[i] = ft_malloc(sizeof(int), PIPE_SIZE);
-	for (int i = 0; i < number_of_nodes - 1; i++)
-		pipe(pipes[i]);
-	count = 0;
 	while (ast && is_logical_connector(ast) == false)
 	{
-		/* dprintf(get_pipe_out(), "in the loop\n"); */
-		pid = fork();
-		if (pid == 0)
+		if (ast->type != AST_CONNECTOR)
 		{
-			setup_pipes(count, pipes, number_of_nodes);
-			if (ast->type != AST_CONNECTOR)
-				if (setup_redirections(ast) != SUCCESS)
-					return (ast->next);
-			if (ast->type == AST_SIMPLE_COMMAND)
-				exec_simple_command(ast);
-			else if (ast->type == AST_SUBSHELL)
+			pid = fork();
+			if (pid == 0)
 			{
-				dprintf(get_pipe_out(), "in subshell\n");
-				exec(ast->subshell);
+				ast_expand(ast);
+				setup_pipes(count, pipes, number_of_nodes);
+				if (ast->type != AST_CONNECTOR)
+					if (setup_redirections(ast) != SUCCESS)
+						return (NULL);
+				if (ast->type == AST_SIMPLE_COMMAND)
+					exec_simple_command(ast);
+				else if (ast->type == AST_SUBSHELL)
+				{
+					dprintf(get_pipe_out(), "in subshell\n");
+					exec(ast->subshell);
+				}
+				exit(0);
 			}
-			exit(0);
 		}
 		if (ast->type != AST_CONNECTOR)
 			count += 1;

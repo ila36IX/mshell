@@ -100,8 +100,8 @@ int	setup_redirections(t_ast *ast)
 		return (FAIL);
 	i = 0;
 	redir = ast->redir;
-	if (!redir)
-		return (FAIL);
+	if (!redir || ast->redir_size == 0)
+		return (SUCCESS);
 	while (i < ast->redir_size)
 	{
 		if (redir[i].type == REDIR_TYPE_IN)

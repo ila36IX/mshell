@@ -1,4 +1,20 @@
 #include "./exec.h"
+#include "../libft/libft.h"
+
+int	**init_pipes(int *number_of_nodes, t_ast *ast)
+{
+	int	**pipes;
+
+	set_pipe_in(dup(STDIN_FILENO));
+	set_pipe_out(dup(STDOUT_FILENO));
+	*number_of_nodes = count_nodes(ast);
+	pipes = ft_malloc(sizeof(int *), *number_of_nodes - 1);
+	for (int i  = 0; i < *number_of_nodes - 1; i++)
+		pipes[i] = ft_malloc(sizeof(int), PIPE_SIZE);
+	for (int i = 0; i < *number_of_nodes - 1; i++)
+		pipe(pipes[i]);
+	return (pipes);
+}
 
 int	close_all_pipes(int **pipes, int count)
 {
@@ -29,6 +45,6 @@ int	setup_pipes(int count, int **pipes, int number_of_nodes)
     }
 	else
 		dup2(pipes[count - 1][0], STDIN_FILENO);
-	close_all_pipes(pipes, count - 1);
+	close_all_pipes(pipes, number_of_nodes - 1);
 	return (SUCCESS);
 }

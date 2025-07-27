@@ -63,6 +63,7 @@ int		pipe_count_act(int action, int hold);
 int		**pipes_act(int action);
 
 /* New implementation of the pipes */
+int	**init_pipes(int *number_of_nodes, t_ast *ast);
 int	setup_pipes(int count, int **pipes, int number_of_nodes);
 int	close_all_pipes(int **pipes, int count);
 #endif /* EXEC_H */
