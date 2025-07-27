@@ -64,7 +64,6 @@ t_ast	*execute_pipeline(t_ast *ast)
 					exec_simple_command(ast);
 				else if (ast->type == AST_SUBSHELL)
 				{
-					dprintf(get_pipe_out(), "in subshell\n");
 					exec(ast->subshell);
 				}
 				exit(0);
