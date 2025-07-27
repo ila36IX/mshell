@@ -72,7 +72,7 @@ int	exec_simple_command(t_ast *ast)
 	if (is_builtin(ast) == true)
 		exec_builtin(ast);
 	else if (is_valid_executable(ast) == false)
-		return (status_set(ERR_NULL), ERR_NULL);
+		return (status_set(NOT_FOUND), ERR_NULL);
 	else
 	{
 		pid = fork();
