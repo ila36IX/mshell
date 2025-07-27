@@ -22,7 +22,7 @@ t_ast	*exec_connector(t_ast *ast)
 	if (connector == CONNECTOR_AND)
 	{
 		if (status_get() == SUCCESS)
-			return (ast);
+			return (ast->next);
 		else
 		{
 			ast = ast->next;
@@ -34,7 +34,7 @@ t_ast	*exec_connector(t_ast *ast)
 	if (connector == CONNECTOR_OR)
 	{
 		if (status_get() != SUCCESS)
-			return (ast);
+			return (ast->next);
 		else
 		{
 			ast = ast->next;

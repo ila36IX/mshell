@@ -53,5 +53,7 @@ int	pid_wait_all(void)
 
 	waitpid(last_pid_act(GET, SUCCESS), &status, 0);
 	last_pid_act(CLEAR, FAIL);
+	while (waitpid(-1, NULL, 0) > 0)
+		;
 	return (WEXITSTATUS(status));
 }

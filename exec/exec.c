@@ -47,11 +47,7 @@ t_ast	*execute_pipeline(t_ast *ast)
 	status = 0;
 	pipes = init_pipes(&number_of_nodes, ast);
 	if (number_of_nodes == 1)
-	{
-		status = handle_single_command(ast);
-		status_set(status);
-		return (ast->next);
-	}
+		return (handle_single_command(ast), ast->next);
 	while (ast && is_logical_connector(ast) == false)
 	{
 		if (ast->type != AST_CONNECTOR)
@@ -59,8 +55,10 @@ t_ast	*execute_pipeline(t_ast *ast)
 			pid = fork();
 			if (pid == 0)
 			{
-				ast_expand(ast);
-				setup_pipes(count, pipes, number_of_nodes);
+				if (ast_expand(ast) == false)
+					return (status_set(ERR_NULL), NULL);
+				if (setup_pipes(count, pipes, number_of_nodes))
+					return (NULL);
 				if (ast->type != AST_CONNECTOR)
 					if (setup_redirections(ast) != SUCCESS)
 						return (NULL);
@@ -78,10 +76,7 @@ t_ast	*execute_pipeline(t_ast *ast)
 		ast = ast->next;
 	}
 	close_all_pipes(pipes, number_of_nodes - 1);
-	waitpid(pid_get(), &status, 0);
-	status_set(WEXITSTATUS(status));
-	while (waitpid(-1, NULL, 0) > 0)
-		;
+	status_set(pid_wait_all());
 	return (ast);
 }
 
@@ -98,7 +93,7 @@ int	exec(t_ast *ast)
 			ast = execute_pipeline(ast);
 		else if (ast->type == AST_CONNECTOR)
 			ast = exec_connector(ast);
-		if (ast)
+		else if (ast)
 			ast = ast->next;
 	}
 	dup2(get_pipe_in(), STDIN_FILENO);
