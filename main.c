@@ -28,15 +28,18 @@ int	main(int ac, const char **av, const char **envp)
 	line = ft_readline(PROMPT);
 	while (line)
 	{
+		set_pipe_in(dup(STDIN_FILENO));
+		set_pipe_out(dup(STDOUT_FILENO));
 		g_stop_herdoc = false;
 		add_history(line);
 		ast = ast_create(line);
 		exec(ast);
 		ft_gc_clear();
 		line = ft_readline(PROMPT);
+		close(get_pipe_in());
+		close(get_pipe_out());
 	}
-	ft_gc_clear();
-	environ_free();
+	ft_clean();
 	status = status_get();
 	return (status);
 }
