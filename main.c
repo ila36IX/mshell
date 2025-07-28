@@ -19,11 +19,11 @@ int	main(int ac, const char **av, const char **envp)
 {
 	t_ast	*ast;
 	char	*line;
-	int		status;
 
 	(void)(ac);
 	(void)(av);
 	signal(SIGINT, ft_sigint_handler_prompt);
+	signal(SIGQUIT, SIG_IGN);
 	environ_init(envp);
 	line = ft_readline(PROMPT);
 	while (line)
@@ -40,6 +40,5 @@ int	main(int ac, const char **av, const char **envp)
 		close(get_pipe_out());
 	}
 	ft_clean();
-	status = status_get();
-	return (status);
+	return (status_get());
 }
