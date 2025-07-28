@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 #include "./signal_handler.h"
 
-bool g_stop_herdoc = false;
+bool	g_stop_herdoc = false;
 
 void	ft_sigint_handler_herdoc(int signal)
 {

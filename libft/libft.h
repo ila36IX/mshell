@@ -80,5 +80,6 @@ t_list				*ft_lstmap(t_list *l, void *(*f)(void *),
 void				ft_lstremove(t_list **head,
 						void *data, void (*del)(void *));
 char				*xgc_strdup(const char *src);
+char				*ft_readline(const char *prompt);
 
 #endif

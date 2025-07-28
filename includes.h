@@ -25,6 +25,8 @@
 # include <sys/wait.h>
 # include <unistd.h>
 # include <errno.h>
+# include <dirent.h>
+# include <sys/ioctl.h>
 
 # define TEXT_RESET "\033[0m"
 
