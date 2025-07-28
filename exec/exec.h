@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:10:55 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:10:55 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/28 02:18:25 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # define PIPE_SIZE 2
 # define GET 0
 # define SET 1
-# define CLEAR 2
+# define CLEAN 2
 
 /* Utils */
 bool	is_builtin(t_ast *ast);
@@ -30,8 +30,7 @@ int		setup_redirections(t_ast *ast);
 bool	is_pipe(t_ast *ast);
 char	*get_full_name(char *name);
 bool	is_logical_connector(t_ast *ast);
-int	count_nodes(t_ast *ast);
-
+int		count_nodes(t_ast *ast);
 
 /* Pids and processes management */
 int		pid_wait_all(void);
@@ -45,13 +44,12 @@ int		exec_executable(t_ast *ast);
 int		exec(t_ast *ast);
 t_ast	*exec_connector(t_ast *ast);
 
-
 /* Static declarations settings */
 int		pipe_in_act(int action, int hold);
 int		pipe_out_act(int action, int hold);
 
 /* implementation of the pipes --> pipe.c */
-int	**init_pipes(int *number_of_nodes, t_ast *ast);
-int	setup_pipes(int count, int **pipes, int number_of_nodes);
-int	close_all_pipes(int **pipes, int count);
+int		**init_pipes(int *number_of_nodes, t_ast *ast);
+int		setup_pipes(int count, int **pipes, int number_of_nodes);
+int		close_all_pipes(int **pipes, int count);
 #endif /* EXEC_H */

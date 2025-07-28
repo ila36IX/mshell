@@ -26,7 +26,7 @@ int	environ_print(void)
 	while (walk)
 	{
 		if (walk->key && walk->value)
-			printf("[%s] = %s\n", walk->key, walk->value);
+			printf("%s=%s\n", walk->key, walk->value);
 		walk = walk->next;
 	}
 	return (EXIT_SUCCESS);

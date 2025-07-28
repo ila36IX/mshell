@@ -1,14 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   memory.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/28 02:14:47 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/28 02:16:39 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "./libft.h"
-# include "../includes.h"
 
-typedef enum s_act
-{
-	CLEAR,
-	INSERT,
-	REMOVE,
-	PRINT,
-}	t_act;
-
+/**
+ * debug - Debugging printer for the gc
+ * @gc: Head of the cache list
+ */
 static void	debug(t_list *gc)
 {
 	printf("-------------\n");
@@ -20,11 +27,16 @@ static void	debug(t_list *gc)
 	printf("-------------\n");
 }
 
-
-static void	ft_gc_act(void *addr, t_act action)
+/**
+ * ft_gc_act - Takes an action
+ * on the gc list
+ * @addr: new node to insert or removed
+ * @action: Action to take
+ */
+void	ft_gc_act(void *addr, t_act action)
 {
 	static t_list	*gc;
-	t_list	*gc_node;
+	t_list			*gc_node;
 
 	if (action == CLEAR)
 	{
@@ -44,17 +56,30 @@ static void	ft_gc_act(void *addr, t_act action)
 		debug(gc);
 }
 
+/**
+ * ft_gcprint - Prints the list of gc
+ */
 void	ft_gcprint(void)
 {
 	ft_gc_act(NULL, PRINT);
 }
 
+/**
+ * ft_gcadd_back - inserts a new address
+ * allocated into the linked list
+ * @addr: The address to add
+ */
 void	ft_gcadd_back(void *addr)
 {
 	if (addr)
 		ft_gc_act(addr, INSERT);
 }
 
+/**
+ * ft_malloc - A costum malloc
+ * allocates and adds the address allocated
+ * to the gc-cache to free it later
+ */
 void	*ft_malloc(size_t	size, size_t unit)
 {
 	void	*addr;
@@ -63,27 +88,3 @@ void	*ft_malloc(size_t	size, size_t unit)
 	ft_gcadd_back(addr);
 	return (addr);
 }
-
-void	ft_gc_clear(void)
-{
-	ft_gc_act(NULL, CLEAR);
-}
-
-void	ft_gc_remove(void *addr)
-{
-	ft_gc_act(addr, REMOVE);
-}
-
-void ft_gc_remove_ft_split(char **list)
-{
-	int	i;
-
-	i = 0;
-	while (list[i])
-	{
-		ft_gc_remove(list[i]);
-		i++;
-	}
-	ft_gc_remove(list);
-}
-

@@ -11,8 +11,13 @@
 /* ************************************************************************** */
 #include "./signal_handler.h"
 
-bool g_stop_herdoc = false;
+bool	g_stop_herdoc = false;
 
+/**
+ 	* ft_sigint_handler_herdoc - Handles the SIGINT (CTRL-C)
+ 	* signal for the herdoc reading process
+	* @signal: The number of the signal received
+ */
 void	ft_sigint_handler_herdoc(int signal)
 {
 	(void) signal;
@@ -22,6 +27,11 @@ void	ft_sigint_handler_herdoc(int signal)
 	ioctl(STDIN_FILENO, TIOCSTI, "\n");
 }
 
+/**
+ 	* ft_sigint_handler_prompt - Handles the SIGINT (CTRL-C)
+ 	* signal for the parent process
+	* @signal: The number of the signal received
+ */
 void	ft_sigint_handler_prompt(int signal)
 {
 	(void) signal;
@@ -33,8 +43,15 @@ void	ft_sigint_handler_prompt(int signal)
 	status_set(EXIT_STATUS_SIGINT);
 }
 
+/**
+ 	* child_signal_handler - Handles the SIGINT and SIGQUIT
+ 	* signals for the children processes
+	* @signal: The number of the signal received
+ */
 void	child_signal_handler(int sig)
 {
 	if (sig == SIGINT)
 		exit(EXIT_STATUS_SIGINT);
+	else if (sig == SIGQUIT)
+		exit(EXIT_STATUS_SIGQUIT);
 }

@@ -1,12 +1,12 @@
-
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   main.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/05/15 13:29:51 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/05/15 13:29:52 by sboukiou         ###   ########.fr       */
+/*   Created: 2025/07/28 02:11:20 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/28 02:11:21 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include "./parser/lexer/lexer.h"
 # include "./exec/exec.h"
 # include "./exec/builtins/builtins.h"
-# include "./exec/builtins/builtins.h"
 # include "./exec/builtins/environ.h"
 # include "./prototypes.h"
 # include "./types.h"
@@ -24,6 +23,7 @@
 # include "debug_macroc.h"
 # include "./parser/parser.h"
 # include "./exec/exec.h"
+# include "./signals/signal_handler.h"
 
 char	*ft_readline(const char *prompt);
 char	*xgc_strdup(const char *src);

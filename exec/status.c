@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "builtins/environ.h"
+#include "gsetters.h"
 #define GET 0
 #define SET 1
 
@@ -49,4 +51,14 @@ int	status_get(void)
 void	status_set(int status)
 {
 	status_main(SET, &status);
+}
+
+void	ft_clean(void)
+{
+	if (get_pipe_in())
+		close(get_pipe_in());
+	if (get_pipe_out())
+		close(get_pipe_out());
+	ft_gc_clear();
+	environ_free();
 }

@@ -1,12 +1,32 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/28 01:38:04 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/28 01:38:05 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "./exec.h"
 #include "../libft/libft.h"
 #define PIPE_SIZE 2
 
+/**
+ * handle_single_command - Runs a single command
+ * or a single subshell
+ * @ast: The node containing the metadata
+ * for the command
+ * Return: Status of the executed node
+ */
 int	handle_single_command(t_ast *ast)
 {
 	pid_t	pid;
 	int		status;
 
+	status = 0;
 	if (ast->type == AST_SUBSHELL)
 	{
 		pid = fork();
@@ -14,65 +34,82 @@ int	handle_single_command(t_ast *ast)
 			return (status_set(ERR_NULL), ERR_NULL);
 		if (pid == 0)
 		{
-			if (ast_expand(ast) == false)
-				return (status_set(ERR_NULL), ERR_NULL);
-			if (setup_redirections(ast) != SUCCESS)
+			if (ast_expand(ast) == false || setup_redirections(ast) != SUCCESS)
 				return (status_set(ERR_NULL), ERR_NULL);
 			exec(ast->subshell);
+			ft_clean();
 			exit(status_get());
 		}
 		else
 			waitpid(pid, &status, 0);
 		return (status_set(WEXITSTATUS(status)), WEXITSTATUS(status));
 	}
-	if (ast_expand(ast) == false)
-		return (status_set(ERR_NULL), ERR_NULL);
-	if (setup_redirections(ast) != SUCCESS)
+	if (ast_expand(ast) == false || setup_redirections(ast) != SUCCESS)
 		return (status_set(ERR_NULL), ERR_NULL);
 	exec_simple_command(ast);
 	return (status_get());
 }
 
+/**
+ * handle_single_node - Runs a single node
+ * command or a subshell withing the pipeline
+ * @ast: Node to run
+ * @pipes: pipes to redirect input or output
+ * @count: The command index/count
+ * @number_of_nodes: Number of commands
+ * within the pipeline
+ * Return: The executed node address
+ */
+static t_ast	*handle_single_node(t_ast *ast,
+		int **pipes, int *count, int number_of_nodes)
+{
+	pid_t	pid;
+	int		status;
+
+	status = 0;
+	pid = fork();
+	if (pid == 0)
+	{
+		if (ast_expand(ast) == false
+			|| setup_pipes(*count, pipes, number_of_nodes))
+			return (status_set(ERR_NULL), NULL);
+		if (ast->type != AST_CONNECTOR)
+			if (setup_redirections(ast) != SUCCESS)
+				exit(ERR_NULL);
+		if (ast->type == AST_SIMPLE_COMMAND)
+			status = exec_simple_command(ast);
+		else if (ast->type == AST_SUBSHELL)
+			status = exec(ast->subshell);
+		ft_clean();
+		exit(status_get());
+	}
+	pid_push(pid);
+	*count += 1;
+	return (ast);
+}
+
+/**
+ * execute_pipeline -  executes a whole pipeline
+ * of commands and subshells
+ * @ast: The head of the pipeline
+ * Return: last executed node in the pipeline
+ */
 t_ast	*execute_pipeline(t_ast *ast)
 {
 	int		number_of_nodes;
 	int		**pipes;
-	pid_t	pid;
 	int		count;
-	int		status;
 
 	if (ast == NULL)
 		return (ast);
 	count = 0;
-	status = 0;
 	pipes = init_pipes(&number_of_nodes, ast);
 	if (number_of_nodes == 1)
 		return (handle_single_command(ast), ast->next);
 	while (ast && is_logical_connector(ast) == false)
 	{
 		if (ast->type != AST_CONNECTOR)
-		{
-			pid = fork();
-			if (pid == 0)
-			{
-				if (ast_expand(ast) == false)
-					return (status_set(ERR_NULL), NULL);
-				if (setup_pipes(count, pipes, number_of_nodes))
-					return (NULL);
-				if (ast->type != AST_CONNECTOR)
-					if (setup_redirections(ast) != SUCCESS)
-						exit(ERR_NULL);
-				if (ast->type == AST_SIMPLE_COMMAND)
-					status = exec_simple_command(ast);
-				else if (ast->type == AST_SUBSHELL)
-					status = exec(ast->subshell);
-				exit(status);
-			}
-			else
-				pid_push(pid);
-		}
-		if (ast->type != AST_CONNECTOR)
-			count += 1;
+			ast = handle_single_node(ast, pipes, &count, number_of_nodes);
 		ast = ast->next;
 	}
 	close_all_pipes(pipes, number_of_nodes - 1);
@@ -80,12 +117,16 @@ t_ast	*execute_pipeline(t_ast *ast)
 	return (ast);
 }
 
+/**
+ * exec - Main execution function
+ * takes a parsed tree and executes it
+ * @ast: The head of the tree
+ * Return: The status of the execution
+ */
 int	exec(t_ast *ast)
 {
 	if (ast == NULL)
 		return (ERR_NULL);
-	set_pipe_in(dup(STDIN_FILENO));
-	set_pipe_out(dup(STDOUT_FILENO));
 	while (ast)
 	{
 		if (ast->type == AST_SIMPLE_COMMAND

@@ -6,12 +6,11 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:14:24 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/26 22:06:28 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/28 01:45:00 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "./exec.h"
-#include "../libft/libft.h"
 
 int	pipe_in_act(int action, int hold)
 {
