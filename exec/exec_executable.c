@@ -78,7 +78,7 @@ char	*get_full_name(char *name)
 	final_path = get_from_env(name);
 	if (final_path)
 		return (final_path);
-	dprintf(STDERR_FILENO, "%s: command not found\n", name);
+	ft_dprintf(STDERR_FILENO, "%s: command not found\n", name);
 	status_set(ERR_NOT_FOUND);
 	if (is_file_or_directory(name) == true)
 		status_set(ERR_IS_NOT_EXECUTABLE);

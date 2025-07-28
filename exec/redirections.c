@@ -28,7 +28,7 @@ static int	setup_redir_in(t_redirect *redir)
 	if (target == ERR_OPEN)
 	{
 		status_set(ERR_NULL);
-		dprintf(STDERR_FILENO,
+		ft_dprintf(STDERR_FILENO,
 			"minishell: %s: No such file or directory\n", redir->target);
 		target = open("/dev/null", O_RDONLY);
 		dup2(target, STDIN_FILENO);
@@ -51,7 +51,7 @@ static int	setup_redir_out(t_redirect *redir)
 	else
 		target = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (target == ERR_OPEN)
-		return (dprintf(STDERR_FILENO,
+		return (ft_dprintf(STDERR_FILENO,
 				"mshell: %s: %s\n", strerror(errno), redir->target), FAIL);
 	if (dup2(target, STDOUT_FILENO) == ERR_OPEN)
 		return (close(target), FAIL);

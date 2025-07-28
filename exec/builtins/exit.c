@@ -24,7 +24,7 @@ static int	check_multiple_args(int ac, char **av)
 	{
 		if (ft_atoi(av[1]) == -1 && ft_strcmp(av[1], "-1") != 0)
 		{
-			dprintf(STDERR_FILENO,
+			ft_dprintf(STDERR_FILENO,
 				"minishell: exit: %s: numeric argument required\n", av[1]);
 			status_set(ERR_NNUM_VAL);
 			ft_clean();

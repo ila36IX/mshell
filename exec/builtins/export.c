@@ -90,7 +90,7 @@ int	ft_export(int ac, char **av)
 		{
 			if (try_insert(av[i]) == EXIT_FAILURE)
 			{
-				dprintf(STDERR_FILENO,
+				ft_dprintf(STDERR_FILENO,
 					"minishell: export: '%s': not a valid identifier\n", av[i]);
 				status_set(EXIT_FAILURE);
 			}

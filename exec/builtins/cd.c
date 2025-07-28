@@ -24,19 +24,19 @@ int	checker(int ac, char **av)
 		return (ERR_NULL);
 	if (ac == 1)
 	{
-		dprintf(STDERR_FILENO, "minishell: cd: no argument was provided\n");
+		ft_dprintf(STDERR_FILENO, "minishell: cd: no argument was provided\n");
 		status_set(EXIT_FAILURE);
 		return (status_get());
 	}
 	if (ac > 2)
 	{
-		dprintf(STDERR_FILENO, "minishell: cd: too many arguments\n");
+		ft_dprintf(STDERR_FILENO, "minishell: cd: too many arguments\n");
 		status_set(EXIT_FAILURE);
 		return (EXIT_FAILURE);
 	}
 	if (getcwd(newdir, MAX_WD_SIZE) == NULL)
 	{
-		dprintf(STDERR_FILENO, " %s\n", ERR_NO_PARENT);
+		ft_dprintf(STDERR_FILENO, " %s\n", ERR_NO_PARENT);
 		return (EXIT_FAILURE);
 	}
 	environ_set("OLDPWD", newdir);
@@ -60,7 +60,7 @@ int	ft_cd(int ac, char **av)
 	if (status != EXIT_SUCCESS)
 	{
 		status_set(EXIT_FAILURE);
-		dprintf(STDERR_FILENO, " %s\n", strerror(errno));
+		ft_dprintf(STDERR_FILENO, " %s\n", strerror(errno));
 		return (EXIT_FAILURE);
 	}
 	if (getcwd(newdir, MAX_WD_SIZE) == NULL)
