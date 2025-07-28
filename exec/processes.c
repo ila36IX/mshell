@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:14:14 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:14:14 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/28 02:18:43 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ static int	last_pid_act(int action, int value)
 {
 	static pid_t	last_pid;
 
-	if (action == CLEAR)
+	if (action == CLEAN)
 		last_pid = FAIL;
 	else if (action == SET)
 		last_pid = value;
@@ -52,7 +52,7 @@ int	pid_wait_all(void)
 	int	status;
 
 	waitpid(last_pid_act(GET, SUCCESS), &status, 0);
-	last_pid_act(CLEAR, FAIL);
+	last_pid_act(CLEAN, FAIL);
 	while (waitpid(-1, NULL, 0) > 0)
 		;
 	return (WEXITSTATUS(status));

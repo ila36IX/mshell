@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 13:23:19 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/13 02:30:20 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/28 02:17:30 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,4 @@ void	child_signal_handler(int sig);
 # define ERR_NULL 1
 # define MAX_WD_SIZE 1024
 # define SHELL_NAME "minishell"
-# define UNSET(var) (void)(var);
-# define MARK(str) printf("(%s)(%s) [%s]", __LINE__, __FILE__, str);
 #endif

@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:10:55 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:10:55 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/28 02:18:25 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 # define PIPE_SIZE 2
 # define GET 0
 # define SET 1
-# define CLEAR 2
+# define CLEAN 2
 
 /* Utils */
 bool	is_builtin(t_ast *ast);
