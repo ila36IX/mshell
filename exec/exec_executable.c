@@ -57,12 +57,16 @@ static bool	is_file_or_directory(char *name)
 	dir = opendir(name);
 	if (dir != NULL)
 	{
+		ft_dprintf(STDERR_FILENO, "minishell: is a directory\n", name);
 		closedir(dir);
 		return (true);
 	}
 	closedir(dir);
 	if (access(name, F_OK) == 0)
+	{
+		ft_dprintf(STDERR_FILENO, "minishell: %s: Permission denied\n", name);
 		return (true);
+	}
 	return (false);
 }
 
@@ -78,10 +82,11 @@ char	*get_full_name(char *name)
 	final_path = get_from_env(name);
 	if (final_path)
 		return (final_path);
-	ft_dprintf(STDERR_FILENO, "%s: command not found\n", name);
 	status_set(ERR_NOT_FOUND);
 	if (is_file_or_directory(name) == true)
 		status_set(ERR_IS_NOT_EXECUTABLE);
+	else
+		ft_dprintf(STDERR_FILENO, "%s: command not found\n", name);
 	return (NULL);
 }
 
