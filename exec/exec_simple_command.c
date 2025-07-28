@@ -72,7 +72,7 @@ int	exec_simple_command(t_ast *ast)
 	if (is_builtin(ast) == true)
 		exec_builtin(ast);
 	else if (is_valid_executable(ast) == false)
-		return (status_set(NOT_FOUND), ERR_NULL);
+		return (ERR_NULL);
 	else
 	{
 		pid = fork();
@@ -82,6 +82,7 @@ int	exec_simple_command(t_ast *ast)
 		{
 			signal(SIGINT, child_signal_handler);
 			exec_executable(ast);
+			printf("Status is %d\n", status_get());
 			exit(status_get());
 		}
 		else
