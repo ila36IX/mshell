@@ -30,6 +30,11 @@ t_ast	*ast_create(char *line)
 		return (NULL);
 	lexer = lexer_new(line, ft_strlen(line));
 	ast = ast_parse_tree(&lexer);
+	if (g_stop_herdoc)
+	{
+		status_set(SIGINT_ERR_STATUS_CODE);
+		return (NULL);
+	}
 	if (ast_check_errors(ast) == false)
 	{
 		status_set(PARSE_ERROR_STATUS_CODE);

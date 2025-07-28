@@ -30,8 +30,6 @@ void	ast_redirct_realloc(t_ast *ast)
 	ast->redir_capacity = buff_size;
 }
 
-char	*ft_readline(const char *prompt);
-
 char	*read_from_herdoc(t_word word)
 {
 	t_string	str;
@@ -41,7 +39,8 @@ char	*read_from_herdoc(t_word word)
 	str = string_init();
 	delim = ft_substr(word.text, 0, word.len);
 	quote_removal(delim, ft_strlen(delim));
-	while (true)
+	signal(SIGINT, ft_sigint_handler_herdoc);
+	while (!g_stop_herdoc)
 	{
 		line = ft_readline("> ");
 		if (line == NULL)
@@ -51,6 +50,7 @@ char	*read_from_herdoc(t_word word)
 		string_append_cstr(&str, line);
 		string_append_cstr(&str, "\n");
 	}
+	signal(SIGINT, ft_sigint_handler_prompt);
 	return (str.buff);
 }
 

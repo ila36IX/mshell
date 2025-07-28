@@ -12,13 +12,18 @@
 #ifndef AST_PARSER_H
 # define AST_PARSER_H
 # include "../../dynamic_array/arrays.h"
-# include "../../exec/builtins/environ.h"
+# include "../../exec/exec.h"
 # include "../lexer/lexer.h"
-# include <dirent.h>
+# include "../../signals/signal_handler.h"
+# include "../../includes.h"
+#include "../../exec/status.h"
+#include "../../exec/builtins/environ.h"
+
 # define ARRAY_INIT_SIZE 4
 # define SORTED_CHARS " !\"#%&'()*+,:;<=>?@[\\]^_`{|}~$"
 # define MAX_FILES_IN_DIR 4242
 # define PARSE_ERROR_STATUS_CODE 2
+# define SIGINT_ERR_STATUS_CODE 130
 
 void	skip_nested_parens(t_lexer *lexer);
 t_lexer	subshell_new_lexer(t_lexer *lexer);
