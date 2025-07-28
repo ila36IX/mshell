@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:13:44 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/26 22:13:39 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/28 01:41:34 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@ int	setup_fds(t_ast *ast, int pipe_in, int pipe_out)
 {
 	int	redirect;
 
-	/* dprintf(get_pipe_in(), "Going into the redirecionts settings\n"); */
 	if (ast == NULL)
 		return (-1);
 	if (pipe_out != -1)
@@ -82,11 +81,9 @@ int	exec_simple_command(t_ast *ast)
 		{
 			signal(SIGINT, child_signal_handler);
 			exec_executable(ast);
-			printf("Status is %d\n", status_get());
 			exit(status_get());
 		}
-		else
-			waitpid(pid, &status, 0);
+		waitpid(pid, &status, 0);
 		status_set(WEXITSTATUS(status));
 	}
 	return (status_get());

@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:14:37 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/24 12:14:41 by sboukiou         ###   ########.fr       */
+/*   Updated: 2025/07/28 01:45:12 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,4 +91,3 @@ int	count_nodes(t_ast *ast)
 	}
 	return (count);
 }
-
