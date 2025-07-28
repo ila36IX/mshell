@@ -6,7 +6,7 @@
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/15 13:24:58 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/05 17:29:12 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/07/28 02:10:54 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,11 +102,12 @@ typedef struct s_simple_cmd
  * @tok: token that caused the parsing error
  * @tok_len: size of the token that caused the error
  */
-typedef struct s_parse_err {
-	const char *format;
-	const char *tok;
-	size_t tok_len;
-} t_parse_err;
+typedef struct s_parse_err
+{
+	const char	*format;
+	const char	*tok;
+	size_t		tok_len;
+}	t_parse_err;
 
 /*
  * NOTE: add docs here....
