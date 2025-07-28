@@ -23,7 +23,11 @@ int	checker(int ac, char **av)
 	if (av == NULL)
 		return (ERR_NULL);
 	if (ac == 1)
-		av[1] = (char *)environ_get("HOME");
+	{
+		dprintf(STDERR_FILENO, "minishell: cd: no argument was provided\n");
+		status_set(EXIT_FAILURE);
+		return (status_get());
+	}
 	if (ac > 2)
 	{
 		dprintf(STDERR_FILENO, "minishell: cd: too many arguments\n");
