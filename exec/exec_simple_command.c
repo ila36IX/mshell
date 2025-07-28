@@ -12,33 +12,7 @@
 
 #include "./exec.h"
 #include "../libft/libft.h"
-#include <dirent.h>
-
-int	setup_fds(t_ast *ast, int pipe_in, int pipe_out)
-{
-	int	redirect;
-
-	if (ast == NULL)
-		return (-1);
-	if (pipe_out != -1)
-	{
-		if (dup2(pipe_out, STDOUT_FILENO) == -1)
-			return (-1);
-		if (close(pipe_out) == -1)
-			return (-1);
-	}
-	if (pipe_in != -1)
-	{
-		if (dup2(pipe_in, STDIN_FILENO) == -1)
-			return (-1);
-		if (close(pipe_in) == -1)
-			return (-1);
-	}
-	redirect = setup_redirections(ast);
-	if (redirect == -1)
-		return (-1);
-	return (SUCCESS);
-}
+#include "../signals/signal_handler.h"
 
 bool	is_valid_executable(t_ast *ast)
 {
@@ -60,6 +34,22 @@ bool	is_valid_executable(t_ast *ast)
 	return (true);
 }
 
+static int	set_status_with_signals(int status)
+{
+	if (WIFSIGNALED(status))
+	{
+		if (WTERMSIG(status) == SIGINT)
+			status_set(EXIT_STATUS_SIGINT);
+		else if (WTERMSIG(status) == SIGQUIT)
+			status_set(EXIT_STATUS_SIGQUIT);
+		else
+			status_set(WEXITSTATUS(status));
+	}
+	else
+		status_set(WEXITSTATUS(status));
+	return (SUCCESS);
+}
+
 int	exec_simple_command(t_ast *ast)
 {
 	int		status;
@@ -79,12 +69,12 @@ int	exec_simple_command(t_ast *ast)
 			return (status_set(ERR_NULL), ERR_NULL);
 		if (pid == 0)
 		{
-			signal(SIGINT, child_signal_handler);
 			exec_executable(ast);
+			ft_clean();
 			exit(status_get());
 		}
 		waitpid(pid, &status, 0);
-		status_set(WEXITSTATUS(status));
+		set_status_with_signals(status);
 	}
 	return (status_get());
 }

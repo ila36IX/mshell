@@ -30,6 +30,7 @@ int	handle_single_command(t_ast *ast)
 			if (ast_expand(ast) == false || setup_redirections(ast) != SUCCESS)
 				return (status_set(ERR_NULL), ERR_NULL);
 			exec(ast->subshell);
+			ft_clean();
 			exit(status_get());
 		}
 		else
@@ -63,7 +64,8 @@ static t_ast	*handle_single_node(t_ast *ast,
 			status = exec_simple_command(ast);
 		else if (ast->type == AST_SUBSHELL)
 			status = exec(ast->subshell);
-		exit(status);
+		ft_clean();
+		exit(status_get());
 	}
 	pid_push(pid);
 	*count += 1;
@@ -97,8 +99,6 @@ int	exec(t_ast *ast)
 {
 	if (ast == NULL)
 		return (ERR_NULL);
-	set_pipe_in(dup(STDIN_FILENO));
-	set_pipe_out(dup(STDOUT_FILENO));
 	while (ast)
 	{
 		if (ast->type == AST_SIMPLE_COMMAND

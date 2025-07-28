@@ -92,6 +92,8 @@ int	exec_executable(t_ast *ast)
 	char	*cmd_name;
 	char	**envp;
 
+	signal(SIGINT, child_signal_handler);
+	signal(SIGQUIT, child_signal_handler);
 	if (ast == NULL)
 		return (ERR_NULL);
 	if (ast->simple_cmd.argc == 0)

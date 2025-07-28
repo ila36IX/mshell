@@ -15,6 +15,7 @@
 # include "../exec/exec.h"
 # include "../libft/libft.h"
 # define EXIT_STATUS_SIGINT 130
+# define EXIT_STATUS_SIGQUIT 131
 
 void	ft_sigint_handler_herdoc(int signal);
 void	ft_sigint_handler_prompt(int signal);

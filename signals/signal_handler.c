@@ -37,4 +37,6 @@ void	child_signal_handler(int sig)
 {
 	if (sig == SIGINT)
 		exit(EXIT_STATUS_SIGINT);
+	else if (sig == SIGQUIT)
+		exit(EXIT_STATUS_SIGQUIT);
 }

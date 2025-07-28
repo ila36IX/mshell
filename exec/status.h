@@ -20,4 +20,5 @@
 
 int		status_get(void);
 void	status_set(int status);
+void	ft_clean(void);
 #endif /* STATUS_H */

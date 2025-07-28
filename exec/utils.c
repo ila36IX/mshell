@@ -12,6 +12,8 @@
 
 #include "../includes.h"
 #include "../libft/libft.h"
+#include "./gsetters.h"
+#include "./builtins/environ.h"
 
 bool	is_builtin(t_ast *ast)
 {

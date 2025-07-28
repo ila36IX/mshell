@@ -32,10 +32,10 @@ static int	setup_redir_in(t_redirect *redir)
 			"minishell: %s: No such file or directory\n", redir->target);
 		target = open("/dev/null", O_RDONLY);
 		dup2(target, STDIN_FILENO);
-		return (FAIL);
+		return (close(target), FAIL);
 	}
 	if (dup2(target, STDIN_FILENO) == ERR_OPEN)
-		return (FAIL);
+		return (close(target), FAIL);
 	close(target);
 	return (SUCCESS);
 }
@@ -54,7 +54,7 @@ static int	setup_redir_out(t_redirect *redir)
 		return (dprintf(STDERR_FILENO,
 				"mshell: %s: %s\n", strerror(errno), redir->target), FAIL);
 	if (dup2(target, STDOUT_FILENO) == ERR_OPEN)
-		return (FAIL);
+		return (close(target), FAIL);
 	close(target);
 	return (SUCCESS);
 }
@@ -82,7 +82,7 @@ static int	setup_redir_heredoc(t_redirect *redir)
 	write(fd, redir->target, ft_strlen(redir->target));
 	fd = open(filename, O_RDONLY, 0644);
 	if (dup2(fd, STDIN_FILENO) == ERR_OPEN)
-		return (FAIL);
+		return (close(fd), FAIL);
 	close(fd);
 	unlink(filename);
 	return (SUCCESS);

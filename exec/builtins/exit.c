@@ -13,6 +13,7 @@
 #include "../../libft/libft.h"
 #include "../status.h"
 #include "environ.h"
+#include "../gsetters.h"
 #define FAIL -1
 #define ERR_NNUM_VAL 2
 #define ERR_TO_MANY_ARGS 1
@@ -26,6 +27,7 @@ static int	check_multiple_args(int ac, char **av)
 			dprintf(STDERR_FILENO,
 				"minishell: exit: %s: numeric argument required\n", av[1]);
 			status_set(ERR_NNUM_VAL);
+			ft_clean();
 			exit(ERR_NNUM_VAL);
 		}
 		else
@@ -55,14 +57,13 @@ int	ft_exit(int ac, char **av)
 			ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
 			ft_putstr_fd(av[1], STDERR_FILENO);
 			ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
-			ft_gc_clear();
-			environ_free();
+			ft_clean();
 			exit(ERR_NNUM_VAL);
 		}
+		ft_clean();
 		exit(val);
 	}
 	stat = status_get();
-	ft_gc_clear();
-	environ_free();
+	ft_clean();
 	exit(stat);
 }
