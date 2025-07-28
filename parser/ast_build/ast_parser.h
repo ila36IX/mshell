@@ -12,12 +12,12 @@
 #ifndef AST_PARSER_H
 # define AST_PARSER_H
 # include "../../dynamic_array/arrays.h"
+# include "../../exec/builtins/environ.h"
 # include "../../exec/exec.h"
-# include "../lexer/lexer.h"
-# include "../../signals/signal_handler.h"
+# include "../../exec/status.h"
 # include "../../includes.h"
-#include "../../exec/status.h"
-#include "../../exec/builtins/environ.h"
+# include "../../signals/signal_handler.h"
+# include "../lexer/lexer.h"
 
 # define ARRAY_INIT_SIZE 4
 # define SORTED_CHARS " !\"#%&'()*+,:;<=>?@[\\]^_`{|}~$"

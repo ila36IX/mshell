@@ -34,5 +34,6 @@ void		_tree_line_prefix(int indent, bool is_empty_line);
 const char	*ast_type_to_str(t_ast_type type);
 const char	*connector_type_to_str(t_connector type);
 const char	*redir_type_to_str(t_redirect_type type);
+void		print_ast_redir_tokens(t_ast *ast, int indent);
 
 #endif
