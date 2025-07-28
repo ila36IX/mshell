@@ -81,5 +81,6 @@ void				ft_lstremove(t_list **head,
 						void *data, void (*del)(void *));
 char				*xgc_strdup(const char *src);
 char				*ft_readline(const char *prompt);
+int	ft_dprintf(int fd, const char *buffer, ...);
 
 #endif
