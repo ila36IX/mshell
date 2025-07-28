@@ -6,7 +6,7 @@
 /*   By: aljbari <aljbari@student.1337.ma>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 19:25:38 by aljbari           #+#    #+#             */
-/*   Updated: 2025/03/03 22:06:46 by aljbari          ###   ########.fr       */
+/*   Updated: 2025/07/28 02:14:36 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <stdint.h>
 # include <stdlib.h>
 # include <unistd.h>
-#include "./memory.h"
+# include "./memory.h"
 
 # define BUFFER_SIZE 1024
 
@@ -74,10 +74,11 @@ void				ft_lstadd_back(t_list **lst, t_list *node);
 void				ft_lstdelone(t_list *lst, void (*del)(void *));
 void				ft_lstclear(t_list **lst, void (*del)(void *));
 void				ft_lstiter(t_list *lst, void (*f)(void *));
-bool	ft_lstismember(t_list *head, void *data);
+bool				ft_lstismember(t_list *head, void *data);
 t_list				*ft_lstmap(t_list *l, void *(*f)(void *),
 						void (*d)(void *));
-void	ft_lstremove(t_list **head, void *data, void (*del)(void *));
-char	*xgc_strdup(const char *src);
+void				ft_lstremove(t_list **head,
+						void *data, void (*del)(void *));
+char				*xgc_strdup(const char *src);
 
 #endif

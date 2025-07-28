@@ -1,38 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   xstrdup.c                                          :+:      :+:    :+:   */
+/*   memory_extra.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/28 02:16:51 by sboukiou          #+#    #+#             */
-/*   Updated: 2025/07/28 02:16:55 by sboukiou         ###   ########.fr       */
+/*   Created: 2025/07/28 02:16:02 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/28 02:16:34 by sboukiou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "./memory.h"
 
-/*
- * xstrdup - allocate duplication of string wihtout using gc
- *
- * @src: String to be duplicated
- *
- * Return: Pointer to allocated string
- **/
-char	*xgc_strdup(const char *src)
+void	ft_gc_clear(void)
 {
-	char	*str;
-	int		i;
+	ft_gc_act(NULL, CLEAR);
+}
+
+void	ft_gc_remove(void *addr)
+{
+	ft_gc_act(addr, REMOVE);
+}
+
+void	ft_gc_remove_ft_split(char **list)
+{
+	int	i;
 
 	i = 0;
-	while (src[i])
+	while (list[i])
+	{
+		ft_gc_remove(list[i]);
 		i++;
-	str = malloc(sizeof(char) * (i + 1));
-	if (!str)
-		return (NULL);
-	i = 0;
-	while (*src)
-		str[i++] = *src++;
-	str[i] = '\0';
-	return (str);
+	}
+	ft_gc_remove(list);
 }

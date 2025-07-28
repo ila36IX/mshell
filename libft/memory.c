@@ -1,13 +1,16 @@
-#include "./libft.h"
-# include "../includes.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   memory.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sboukiou <sboukiou@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/28 02:14:47 by sboukiou          #+#    #+#             */
+/*   Updated: 2025/07/28 02:16:39 by sboukiou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-typedef enum s_act
-{
-	CLEAR,
-	INSERT,
-	REMOVE,
-	PRINT,
-}	t_act;
+#include "./libft.h"
 
 static void	debug(t_list *gc)
 {
@@ -20,11 +23,10 @@ static void	debug(t_list *gc)
 	printf("-------------\n");
 }
 
-
-static void	ft_gc_act(void *addr, t_act action)
+void	ft_gc_act(void *addr, t_act action)
 {
 	static t_list	*gc;
-	t_list	*gc_node;
+	t_list			*gc_node;
 
 	if (action == CLEAR)
 	{
@@ -63,27 +65,3 @@ void	*ft_malloc(size_t	size, size_t unit)
 	ft_gcadd_back(addr);
 	return (addr);
 }
-
-void	ft_gc_clear(void)
-{
-	ft_gc_act(NULL, CLEAR);
-}
-
-void	ft_gc_remove(void *addr)
-{
-	ft_gc_act(addr, REMOVE);
-}
-
-void ft_gc_remove_ft_split(char **list)
-{
-	int	i;
-
-	i = 0;
-	while (list[i])
-	{
-		ft_gc_remove(list[i]);
-		i++;
-	}
-	ft_gc_remove(list);
-}
-
