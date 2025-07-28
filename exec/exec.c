@@ -37,8 +37,7 @@ int	handle_single_command(t_ast *ast)
 			waitpid(pid, &status, 0);
 		return (status_set(WEXITSTATUS(status)), WEXITSTATUS(status));
 	}
-	if (ast_expand(ast) == false
-		|| setup_redirections(ast) != SUCCESS)
+	if (ast_expand(ast) == false || setup_redirections(ast) != SUCCESS)
 		return (status_set(ERR_NULL), ERR_NULL);
 	exec_simple_command(ast);
 	return (status_get());
