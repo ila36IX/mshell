@@ -14,6 +14,10 @@
 # define TYPES_H
 # include "./includes.h"
 
+/**
+ * e_connector - enum for connectors type
+ * Indicates a connector type
+ */
 typedef enum e_connector
 {
 	CONNECTOR_AND,
@@ -21,6 +25,10 @@ typedef enum e_connector
 	CONNECTOR_OR
 }						t_connector;
 
+/**
+ * e_ast_type - enum for connectors type
+ * Holds the type of the ast node
+ */
 typedef enum e_ast_type
 {
 	AST_SUBSHELL,
@@ -29,6 +37,10 @@ typedef enum e_ast_type
 	AST_INVALID,
 }						t_ast_type;
 
+/**
+ * e_redirect_type - enum for connectors type
+ * Indicates a connector type
+ */
 typedef enum e_redirect_type
 {
 	REDIR_TYPE_IN,
@@ -110,7 +122,16 @@ typedef struct s_parse_err
 }	t_parse_err;
 
 /*
- * NOTE: add docs here....
+   s_ast - The complete ast tree
+   @type: Holds the type of the ast node
+   @connector: a connector
+   @simple_command: A simple command args with redirections
+   @invalid_logs: For invalid node
+   @subshell: New ast head for a subshell (parentheses)
+   @redir: Redirections list for the node itself
+   @redir_size: The size of the redirects llist
+   @next: The next node
+   @redir_capacity:  The capacity of the redir llist
  */
 typedef struct s_ast
 {

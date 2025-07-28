@@ -15,6 +15,10 @@
 
 # include "../types.h"
 
+/**
+ * s_act - Enumeration for and action
+ * taken by G-collector module
+ */
 typedef enum s_act
 {
 	CLEAR,

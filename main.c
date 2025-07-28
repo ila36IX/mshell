@@ -15,6 +15,13 @@
 #include "./exec/status.h"
 #define PROMPT "\033[0;33m[User@Debian]$ \033[0m"
 
+/**
+ * main - The entry point of the program
+ * @ac: Args count
+ * @av: Args list
+ * @envp: Environment variables as char ** list
+ * Return: 0 on success or a non-null value otherwise
+ */
 int	main(int ac, const char **av, const char **envp)
 {
 	t_ast	*ast;

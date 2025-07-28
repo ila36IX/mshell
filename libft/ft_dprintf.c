@@ -13,6 +13,13 @@
 #include "./libft.h"
 #include <stdarg.h>
 
+/**
+ * print_format - Prints a format into a file-desc
+ * @buffer: Buffer holding the format type
+ * @args_list: The actual format/value
+ * @fd: File descriptor to print into
+ * Return: New index on the buffer
+ */
 static int	print_format(const char *buffer, va_list args_list, int fd)
 {
 	int		idx;
@@ -41,6 +48,12 @@ static int	print_format(const char *buffer, va_list args_list, int fd)
 	return (idx + 1);
 }
 
+/**
+ * ft_dprintf - prints a formatted string
+ * into a given file or stream
+ * @fd: File or stream to print into
+ * @buffer: Formatted string
+ */
 int	ft_dprintf(int fd, const char *buffer, ...)
 {
 	int		len;

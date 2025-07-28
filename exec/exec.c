@@ -14,6 +14,13 @@
 #include "../libft/libft.h"
 #define PIPE_SIZE 2
 
+/**
+ * handle_single_command - Runs a single command
+ * or a single subshell
+ * @ast: The node containing the metadata
+ * for the command
+ * Return: Status of the executed node
+ */
 int	handle_single_command(t_ast *ast)
 {
 	pid_t	pid;
@@ -43,6 +50,16 @@ int	handle_single_command(t_ast *ast)
 	return (status_get());
 }
 
+/**
+ * handle_single_node - Runs a single node
+ * command or a subshell withing the pipeline
+ * @ast: Node to run
+ * @pipes: pipes to redirect input or output
+ * @count: The command index/count
+ * @number_of_nodes: Number of commands
+ * within the pipeline
+ * Return: The executed node address
+ */
 static t_ast	*handle_single_node(t_ast *ast,
 		int **pipes, int *count, int number_of_nodes)
 {
@@ -71,6 +88,12 @@ static t_ast	*handle_single_node(t_ast *ast,
 	return (ast);
 }
 
+/**
+ * execute_pipeline -  executes a whole pipeline
+ * of commands and subshells
+ * @ast: The head of the pipeline
+ * Return: last executed node in the pipeline
+ */
 t_ast	*execute_pipeline(t_ast *ast)
 {
 	int		number_of_nodes;
@@ -94,6 +117,12 @@ t_ast	*execute_pipeline(t_ast *ast)
 	return (ast);
 }
 
+/**
+ * exec - Main execution function
+ * takes a parsed tree and executes it
+ * @ast: The head of the tree
+ * Return: The status of the execution
+ */
 int	exec(t_ast *ast)
 {
 	if (ast == NULL)
