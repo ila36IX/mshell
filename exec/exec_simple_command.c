@@ -55,7 +55,10 @@ int	exec_simple_command(t_ast *ast)
 	int		status;
 	pid_t	pid;
 
+	printf("Called a simple_command setup\n");
 	if (ast == NULL || ast->simple_cmd.argc == 0)
+		return (status_set(SUCCESS), SUCCESS);
+	if (ft_strlen(ast->simple_cmd.argv[0]) == 0)
 		return (status_set(SUCCESS), SUCCESS);
 	status = 0;
 	if (is_builtin(ast) == true)
