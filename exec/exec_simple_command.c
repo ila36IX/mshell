@@ -39,7 +39,10 @@ static int	set_status_with_signals(int status)
 	if (WIFSIGNALED(status))
 	{
 		if (WTERMSIG(status) == SIGINT)
+		{
+			ft_putstr_fd("\n", 1);
 			status_set(EXIT_STATUS_SIGINT);
+		}
 		else if (WTERMSIG(status) == SIGQUIT)
 			status_set(EXIT_STATUS_SIGQUIT);
 		else

@@ -47,8 +47,6 @@ void	ft_sigint_handler_prompt(int signal)
 		rl_redisplay();
 		status_set(EXIT_STATUS_SIGINT);
 	}
-	else
-		ft_putstr_fd("\n", 1);
 }
 
 /**

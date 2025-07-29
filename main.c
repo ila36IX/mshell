@@ -29,6 +29,7 @@ int	main(int ac, const char **av, const char **envp)
 
 	(void)(ac);
 	(void)(av);
+	sigint_mask_act(SET, true);
 	signal(SIGINT, ft_sigint_handler_prompt);
 	signal(SIGQUIT, SIG_IGN);
 	environ_init(envp);
