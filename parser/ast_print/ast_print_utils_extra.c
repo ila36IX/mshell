@@ -24,7 +24,7 @@ void	print_ast_subshell(t_ast *ast, int indent)
 {
 	if (ast->type != AST_SUBSHELL || !ast)
 	{
-		UNREACHABLE("takes only none-null ast of subshell type!");
+		return ;
 	}
 	print_ast_type(ast, indent++);
 	_tree_line_prefix(indent, true);
@@ -63,7 +63,7 @@ void	print_ast_redirection(t_ast *ast, int indent)
 	(void)indent;
 	if (ast->type == AST_CONNECTOR || !ast)
 	{
-		UNREACHABLE("None-null ast connector node doesn't have redirection!");
+		return ;
 	}
 	i = 0;
 	if (ast->redir_size == 0)

@@ -20,7 +20,7 @@ static const char	*more_token_kind_name(t_token_kind kind)
 		return ("close paren");
 	else if (kind == TOKEN_NULL)
 		return ("EOF");
-	UNREACHABLE("All the cases must have its case handled");
+	return ("UNREACHABLE");
 }
 
 /**

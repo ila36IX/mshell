@@ -45,7 +45,7 @@ void	print_ast_simple_cmd(t_ast *ast, int indent)
 
 	if (ast->type != AST_SIMPLE_COMMAND || !ast)
 	{
-		UNREACHABLE("takes only none-null ast of simple command type!");
+		return ;
 	}
 	i = 0;
 	print_ast_type(ast, indent++);
@@ -73,7 +73,7 @@ void	print_ast_type(t_ast *ast, int indent)
 {
 	if (!ast)
 	{
-		UNREACHABLE("None null ast only!");
+		return ;
 	}
 	_tree_line_prefix(indent, false);
 	printf("%s", TEXT_BGREEN);
@@ -101,7 +101,7 @@ void	print_ast_redir_tokens(t_ast *ast, int indent)
 
 	if (ast->type == AST_CONNECTOR || !ast)
 	{
-		UNREACHABLE("None-null ast connector node doesn't have redirection!");
+		return ;
 	}
 	i = 0;
 	if (ast->redir_size == 0)

@@ -20,7 +20,6 @@
 # include "./prototypes.h"
 # include "./types.h"
 # include "libft/libft.h"
-# include "debug_macroc.h"
 # include "./parser/parser.h"
 # include "./exec/exec.h"
 # include "./signals/signal_handler.h"

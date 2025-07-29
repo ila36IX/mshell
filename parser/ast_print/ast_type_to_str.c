@@ -28,7 +28,7 @@ const char	*ast_type_to_str(t_ast_type type)
 		return ("SIMPLE COMMAND");
 	else
 	{
-		UNREACHABLE("ast type string represenation needed!");
+		return ("UNKNOWN AST TYPE");
 	}
 }
 
@@ -48,7 +48,7 @@ const char	*connector_type_to_str(t_connector type)
 		return ("PIPE");
 	else
 	{
-		UNREACHABLE("Unknown connector type!");
+		return ("UNKNOWN CONNECTOR");
 	}
 }
 
@@ -70,6 +70,6 @@ const char	*redir_type_to_str(t_redirect_type type)
 		return (">>");
 	else
 	{
-		UNREACHABLE("Unknown redirect type!");
+		return ("UNKNOWN REDIRECT");
 	}
 }
