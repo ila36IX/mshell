@@ -35,7 +35,5 @@ t_redirect_type	tok_kind_to_redir_type(t_token_kind kind)
 	else if (kind == TOKEN_HEREDOC)
 		return (REDIR_TYPE_HEREDOC);
 	else
-	{
-		UNREACHABLE("Undefind token kind!");
-	}
+		return (-1);
 }

@@ -92,7 +92,7 @@ void	print_ast_connector(t_ast *ast, int indent)
 {
 	if (ast->type != AST_CONNECTOR)
 	{
-		UNREACHABLE("takes only none-null ast of connector type!");
+		return ;
 	}
 	print_ast_type(ast, indent++);
 	_tree_line_prefix(indent, true);

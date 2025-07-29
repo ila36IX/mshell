@@ -15,8 +15,8 @@
 # include "../includes.h"
 # include "../types.h"
 
-void			words_append(t_words *words, t_word word);
-t_words			words_init(void);
+void	words_append(t_words *words, t_word word);
+t_words	words_init(void);
 void	args_append(t_simple_cmd *scmd, char *arg);
 void	init_argv(t_simple_cmd *scmd);
 

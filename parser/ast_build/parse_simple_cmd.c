@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "ast_parser.h"
-#include <stdio.h>
 
 /**
  * ast_simple_cmd_add_arg
@@ -28,10 +27,7 @@ void	ast_simple_cmd_add_word(t_ast *ast, t_lexer *lexer)
 	t_word	word;
 
 	if (ast->type != AST_SIMPLE_COMMAND)
-	{
-		UNREACHABLE("Wrong ast type!");
 		return ;
-	}
 	token = lexer_next_token(lexer);
 	word.len = token.text_len;
 	word.text = token.text;

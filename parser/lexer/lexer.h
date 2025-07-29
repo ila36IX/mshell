@@ -12,7 +12,6 @@
 
 #ifndef LEXER_H
 # define LEXER_H
-# include "../../debug_macroc.h"
 # include "../../dynamic_array/string.h"
 # include "../../types.h"
 

@@ -75,9 +75,7 @@ bool	ast_expand(t_ast *ast)
 	if (!ast)
 		return (true);
 	if (ast->type == AST_CONNECTOR || ast->type == AST_INVALID)
-	{
-		PANIC("Doesn't make sense to exapnd connector, does it?");
-	}
+		return (true);
 	if (ast->type == AST_SIMPLE_COMMAND)
 		ast_expand_argv(ast);
 	return (ast_expand_redirections(ast));
