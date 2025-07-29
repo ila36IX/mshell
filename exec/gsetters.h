@@ -27,5 +27,6 @@ int		set_pipe_out(int value);
 int		set_pipe_count(int value);
 int		set_current_pipe(int value);
 pid_t	pid_get(void);
+bool	sigint_mask_act(int action, bool hold);
 
 #endif /* GSETTERS_H */
