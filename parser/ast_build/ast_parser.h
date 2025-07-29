@@ -24,6 +24,8 @@
 # define MAX_FILES_IN_DIR 4242
 # define PARSE_ERROR_STATUS_CODE 2
 # define SIGINT_ERR_STATUS_CODE 130
+# define SINGLE_QUOTE_SERIALIZER 2
+# define DOUBLE_QUOTE_SERIALIZER 3
 
 void	skip_nested_parens(t_lexer *lexer);
 t_lexer	subshell_new_lexer(t_lexer *lexer);
@@ -60,5 +62,6 @@ void	sort_filenames(char **arr, int n);
 bool	word_is_file_pattern(char *word);
 bool	ast_expand_redirections(t_ast *ast);
 char	*expand_asterisk_for_redir(char *pattern);
+bool	serialize_and_append(t_string *str, const char *value);
 
 #endif

@@ -10,8 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ast_parser.h"
 #include "../../exec/status.h"
+#include "ast_parser.h"
 
 /**
  * environ_get_ncstr - get environment varaible of string using its size
@@ -61,7 +61,7 @@ static size_t	expand_var(t_string *str, const char *s, size_t curr_idx,
 	if (i == 0)
 		return (0);
 	value = environ_get_ncstr(s_pos, i);
-	string_append_cstr(str, value);
+	serialize_and_append(str, value);
 	return (i);
 }
 
@@ -117,39 +117,4 @@ char	*expand_string(const char *str, size_t size)
 			string_append_char(&s, str[i++]);
 	}
 	return (s.buff);
-}
-
-/**
- * quote_removal - remove quotes from string
- *
- * @str: string in which to remove " or '
- * @size: size of the string, null termination is not expected
- *
- * Return: True if the string has qoutes
- */
-bool	quote_removal(char *str, size_t size)
-{
-	size_t	i;
-	size_t	j;
-	bool	is_quoted;
-	char	quote;
-
-	i = 0;
-	j = 0;
-	is_quoted = false;
-	while (str && i < size)
-	{
-		if (str[i] == '\'' || str[i] == '"')
-		{
-			quote = str[i++];
-			is_quoted = true;
-			while (i < size && str[i] != quote)
-				str[j++] = str[i++];
-			i++;
-		}
-		else
-			str[j++] = str[i++];
-	}
-	str[j] = '\0';
-	return (is_quoted);
 }
