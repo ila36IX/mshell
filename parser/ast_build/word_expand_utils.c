@@ -55,7 +55,6 @@ static void	remove_enclosed_quotes(char *str, size_t *pi, size_t *pj,
 		str[j++] = str[i++];
 	if (i < size)
 		i++;
-	i++;
 	*pi = i;
 	*pj = j;
 }
