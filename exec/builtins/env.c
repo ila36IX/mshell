@@ -14,6 +14,13 @@
 #include "./environ.h"
 #include "../status.h"
 
+/**
+ * ft_env - Mimics the behavior of the
+ * env builtin
+ * @ac: Args count
+ * @av: Args values
+ * Return :Status of the command
+ */
 int	ft_env(int ac, char **av)
 {
 	if (av == NULL)

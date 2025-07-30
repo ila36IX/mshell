@@ -14,6 +14,12 @@
 #include "../libft/libft.h"
 #include "../signals/signal_handler.h"
 
+/**
+ * is_valid_executable - Check if a command
+ * is a valid executable file.
+ * @ast: Command ast node
+ * Return: exeutable or not
+ */
 bool	is_valid_executable(t_ast *ast)
 {
 	char	**av;
@@ -34,6 +40,13 @@ bool	is_valid_executable(t_ast *ast)
 	return (true);
 }
 
+/**
+ * set_status_with_signals - Sets the status
+ * depending on the exit status of the executed
+ * child command, if signaled.
+ * @status: The status exit of the process
+ * Return: SUCCESS if succeeded or -1 otherwise
+ */
 static int	set_status_with_signals(int status)
 {
 	if (WIFSIGNALED(status))
@@ -53,6 +66,13 @@ static int	set_status_with_signals(int status)
 	return (SUCCESS);
 }
 
+/**
+ * exec_simple_command - Executes a simple
+ * command
+ * @ast: Node having the command
+ * information
+ * Return: Status of the executed command
+ */
 int	exec_simple_command(t_ast *ast)
 {
 	int		status;

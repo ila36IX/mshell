@@ -14,6 +14,15 @@
 
 #define MAX_PID_COUNT 1024
 
+/**
+ * last_pid_act - Takes action
+ * on a pid stored variable
+ * @action: Sets or gets the value
+ * of the pid
+ * @value: value to assign in case
+ * of a SET action
+ * Return: The value of the pid
+ */
 static int	last_pid_act(int action, int value)
 {
 	static pid_t	last_pid;
@@ -25,28 +34,33 @@ static int	last_pid_act(int action, int value)
 	return (last_pid);
 }
 
-int	pid_count_act(int action, int hold)
-{
-	static int	pid_count;
-
-	if (action == GET)
-		return (pid_count);
-	if (action == SET)
-		pid_count = hold;
-	return (pid_count);
-}
-
+/**
+ * pid_push -  Sets the value of 
+ * last_pid to a given value
+ * @pid: Value to keep
+ * Return: The pid itself
+ */
 int	pid_push(pid_t pid)
 {
 	last_pid_act(SET, pid);
 	return (pid);
 }
 
+/**
+ * pid_get -  gets_the last pid in pipline
+ * value
+ * Return: The last pid value
+ */
 pid_t	pid_get(void)
 {
 	return (last_pid_act(GET, 0));
 }
 
+/**
+ * pid_wait_all - Waits for all children
+ * processes and stores the exit status of
+ * the last one
+ */
 int	pid_wait_all(void)
 {
 	int	status;

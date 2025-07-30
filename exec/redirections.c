@@ -18,6 +18,11 @@
 #define ERR_NULL 1
 #define PIPE_SIZE 2
 
+/**
+ * setup_redir_in - Sets the redirection for input <
+ * @redir: address of the current redirection to set
+ * @Return: 0 on success of -1 on fail
+ */
 static int	setup_redir_in(t_redirect *redir)
 {
 	int	target;
@@ -40,6 +45,11 @@ static int	setup_redir_in(t_redirect *redir)
 	return (SUCCESS);
 }
 
+/**
+ * setup_redir_out - Sets the redirection for input > and >>
+ * @redir: address of the current redirection to set
+ * @Return: 0 on success of -1 on fail
+ */
 static int	setup_redir_out(t_redirect *redir)
 {
 	int	target;
@@ -59,6 +69,11 @@ static int	setup_redir_out(t_redirect *redir)
 	return (SUCCESS);
 }
 
+/**
+ * setup_redir_heredoc - Sets the redirection for herdoc <<
+ * @redir: address of the current redirection to set
+ * @Return: 0 on success of -1 on fail
+ */
 static int	setup_redir_heredoc(t_redirect *redir)
 {
 	int		fd;
@@ -87,6 +102,12 @@ static int	setup_redir_heredoc(t_redirect *redir)
 	return (SUCCESS);
 }
 
+/**
+ * setup_redirections - Sets up redirections
+ * of a given command
+ * @ast: Command node addres
+ * @Return: 0 on success of -1 on fail
+ */
 int	setup_redirections(t_ast *ast)
 {
 	size_t		i;

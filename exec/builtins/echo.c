@@ -14,13 +14,11 @@
 #include "../status.h"
 
 /**
-	* echo - Mimics the behavior of the echo command
-	* writes the given arguemnt/text to STDOUT
-	* @ac: Number of provided arguments
-	* @av: Args provided
-	* Return: Number of bytes written or EXIT_FAILURE (1) instead
-*/
-
+ * is_option - Checks if
+ * a given string is an option
+ * @opt: String to check on
+ * Return: True it is, false otherwise
+ */
 bool	is_option(const char *opt)
 {
 	int	i;
@@ -39,6 +37,13 @@ bool	is_option(const char *opt)
 	return (true);
 }
 
+/**
+	* ft_echo - Mimics the behavior of the echo command
+	* writes the given arguemnt/text to STDOUT
+	* @ac: Number of provided arguments
+	* @av: Args provided
+	* Return: Number of bytes written or EXIT_FAILURE (1) instead
+*/
 int	ft_echo(int ac, char **av)
 {
 	int		i;

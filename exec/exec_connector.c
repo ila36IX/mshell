@@ -12,6 +12,14 @@
 
 #include "./exec.h"
 
+/**
+ * move_next_pipeline - Moves a ast node
+ * to the next pipeline start node
+ * @ast: Ast node containing the current pipeline
+ * node.
+ * Return: The head of the next pipline
+ * or NULL if none found
+ */
 t_ast	*move_next_pipeline(t_ast *ast)
 {
 	if (ast == NULL)
@@ -22,6 +30,15 @@ t_ast	*move_next_pipeline(t_ast *ast)
 	return (ast);
 }
 
+/**
+ * exec_connector - Handles a connector
+ * to decicde wether to execute the next
+ * command or skip the whole pipeline
+ * towards the next operator.
+ * @ast: The connector node
+ * @return: Head of the next executable
+ * pipeline
+ */
 t_ast	*exec_connector(t_ast *ast)
 {
 	t_connector	connector;
