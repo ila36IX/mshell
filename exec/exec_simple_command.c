@@ -39,7 +39,10 @@ static int	set_status_with_signals(int status)
 	if (WIFSIGNALED(status))
 	{
 		if (WTERMSIG(status) == SIGINT)
+		{
+			ft_putstr_fd("\n", 1);
 			status_set(EXIT_STATUS_SIGINT);
+		}
 		else if (WTERMSIG(status) == SIGQUIT)
 			status_set(EXIT_STATUS_SIGQUIT);
 		else
@@ -55,26 +58,26 @@ int	exec_simple_command(t_ast *ast)
 	int		status;
 	pid_t	pid;
 
-	if (ast == NULL || ast->simple_cmd.argc == 0)
+	if (ast == NULL || ast->simple_cmd.argc == 0
+		|| !ft_strlen(ast->simple_cmd.argv[0]))
 		return (status_set(SUCCESS), SUCCESS);
 	status = 0;
 	if (is_builtin(ast) == true)
-		exec_builtin(ast);
+		return (exec_builtin(ast));
 	else if (is_valid_executable(ast) == false)
 		return (ERR_NULL);
-	else
+	sigint_mask_act(SET, false);
+	pid = fork();
+	if (pid == FAIL)
+		return (status_set(ERR_NULL), ERR_NULL);
+	if (pid == 0)
 	{
-		pid = fork();
-		if (pid == FAIL)
-			return (status_set(ERR_NULL), ERR_NULL);
-		if (pid == 0)
-		{
-			exec_executable(ast);
-			ft_clean();
-			exit(status_get());
-		}
-		waitpid(pid, &status, 0);
-		set_status_with_signals(status);
+		exec_executable(ast);
+		ft_clean();
+		exit(status_get());
 	}
+	waitpid(pid, &status, 0);
+	sigint_mask_act(SET, true);
+	set_status_with_signals(status);
 	return (status_get());
 }

@@ -33,3 +33,12 @@ int	pipe_out_act(int action, int hold)
 		pipe_out = hold;
 	return (pipe_out);
 }
+
+bool	sigint_mask_act(int action, bool hold)
+{
+	static bool	mask;
+
+	if (action == SET)
+		mask = hold;
+	return (mask);
+}

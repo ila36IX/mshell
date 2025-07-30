@@ -77,9 +77,8 @@ static int	setup_redir_heredoc(t_redirect *redir)
 		filename = ft_itoa(file_count);
 	}
 	fd = open(filename, O_WRONLY | O_CREAT, 0644);
-	if (fd == FAIL)
-		return (FAIL);
 	write(fd, redir->target, ft_strlen(redir->target));
+	close(fd);
 	fd = open(filename, O_RDONLY, 0644);
 	if (dup2(fd, STDIN_FILENO) == ERR_OPEN)
 		return (close(fd), FAIL);

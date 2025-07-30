@@ -34,13 +34,19 @@ void	ft_sigint_handler_herdoc(int signal)
  */
 void	ft_sigint_handler_prompt(int signal)
 {
+	bool	mask;
+
 	(void) signal;
 	g_stop_herdoc = true;
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	ft_putstr_fd("\n", 1);
-	rl_redisplay();
-	status_set(EXIT_STATUS_SIGINT);
+	mask = sigint_mask_act(GET, false);
+	if (mask == true)
+	{
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		ft_putstr_fd("\n", 1);
+		rl_redisplay();
+		status_set(EXIT_STATUS_SIGINT);
+	}
 }
 
 /**

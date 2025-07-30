@@ -32,7 +32,7 @@ static int	call_builtins(t_ast *ast)
 		status = ft_cd(ac, av);
 	if (ft_strcmp(av[0], "pwd") == SUCCESS)
 		status = ft_pwd(ac, av);
-	if (ft_strcmp(av[0], "export") == SUCCESS && !is_pipe_next(ast))
+	if (ft_strcmp(av[0], "export") == SUCCESS)
 		status = ft_export(ac, av);
 	if (ft_strcmp(av[0], "unset") == SUCCESS)
 		status = ft_unset(ac, av);

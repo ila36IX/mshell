@@ -29,9 +29,9 @@ static int	export_print(void)
 	while (walk)
 	{
 		if (walk->value)
-			printf("declare -x %s=\"%s\"\n", walk->key, walk->value);
+			printf("[exported] %s=\"%s\"\n", walk->key, walk->value);
 		else if (walk->key)
-			printf("declare -x %s\n", walk->key);
+			printf("[exported] %s\n", walk->key);
 		walk = walk->next;
 	}
 	return (EXIT_SUCCESS);
@@ -57,20 +57,25 @@ static bool	is_valid_token(const char *token)
 
 static int	try_insert(const char *expr)
 {
-	char	**list;
+	char	*key;
+	char	*value;
 
 	if (expr == NULL || ft_strlen(expr) == 0)
 		return (ERR_NULL);
-	list = ft_split(expr, '=');
-	if (list == NULL || !list[0])
-		return (status_set(1), ERR_NULL);
-	if (is_valid_token(list[0]) == false)
+	value = ft_strchr(expr, '=');
+	if (value)
+	{
+		key = ft_substr(expr, 0, value - expr);
+		value += 1;
+	}
+	else
+		key = (char *)expr;
+	if (is_valid_token(key) == false)
 	{
 		status_set(1);
-		ft_gc_remove_ft_split(list);
 		return (EXIT_FAILURE);
 	}
-	environ_set(list[0], list[1]);
+	environ_set(key, value);
 	return (EXIT_SUCCESS);
 }
 

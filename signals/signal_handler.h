@@ -14,6 +14,7 @@
 # include "../includes.h"
 # include "../exec/exec.h"
 # include "../libft/libft.h"
+# include "../exec/gsetters.h"
 # define EXIT_STATUS_SIGINT 130
 # define EXIT_STATUS_SIGQUIT 131
 
