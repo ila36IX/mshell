@@ -63,5 +63,6 @@ bool	word_is_file_pattern(char *word);
 bool	ast_expand_redirections(t_ast *ast);
 char	*expand_asterisk_for_redir(char *pattern);
 bool	serialize_and_append(t_string *str, const char *value);
+void	string_append_nbr(t_string *s, int nb);
 
 #endif

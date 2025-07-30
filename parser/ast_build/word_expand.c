@@ -12,6 +12,7 @@
 
 #include "../../exec/status.h"
 #include "ast_parser.h"
+#include <stddef.h>
 
 /**
  * environ_get_ncstr - get environment varaible of string using its size
@@ -65,20 +66,47 @@ static size_t	expand_var(t_string *str, const char *s, size_t curr_idx,
 	return (i);
 }
 
-void	string_append_nbr(t_string *s, int nb)
+bool	try_expand_key_to_value(const char *str, t_string *s, size_t size,
+		size_t *pi)
 {
-	unsigned int	n;
+	int	i;
 
-	if (nb < 0)
+	i = *pi;
+	if (str[i] == '$' && (ft_isalpha(str[i + 1]) || str[i + 1] == '_'))
 	{
-		n = nb * -1;
-		string_append_char(s, '-');
+		i++;
+		i += (expand_var(s, str, i, size));
+		*pi = i;
+		return (true);
+	}
+	else if (str[i] == '$' && str[i + 1] == '?')
+	{
+		string_append_nbr(s, status_get());
+		i += 2;
+		*pi = i;
+		return (true);
 	}
 	else
-		n = nb;
-	if (n > 9)
-		string_append_nbr(s, n / 10);
-	string_append_char(s, n % 10 + '0');
+		return (false);
+}
+
+static void	expand_double_quoted_helper(const char *str, t_string *s,
+		size_t size, size_t *pi)
+{
+	size_t	i;
+
+	i = *pi;
+	if (str[i] == '"')
+	{
+		string_append_char(s, str[i++]);
+		while (i < size && str[i] != '"')
+		{
+			if (!try_expand_key_to_value(str, s, size, &i))
+				string_append_char(s, str[i++]);
+		}
+		string_append_char(s, str[i++]);
+	}
+	*pi = i;
 }
 
 /**
@@ -99,13 +127,10 @@ char	*expand_string(const char *str, size_t size)
 	i = 0;
 	while (str && i < size)
 	{
-		if (str[i] == '$' && (ft_isalpha(str[i + 1]) || str[i + 1] == '_'))
-		{
-			i++;
-			i += (expand_var(&s, str, i, size));
-		}
-		else if (str[i] == '$' && str[i + 1] == '?')
-			i = (string_append_nbr(&s, status_get()), i + 2);
+		if (try_expand_key_to_value(str, &s, size, &i))
+			continue ;
+		else if (str[i] == '"')
+			expand_double_quoted_helper(str, &s, size, &i);
 		else if (str[i] == '\'')
 		{
 			string_append_char(&s, str[i++]);
