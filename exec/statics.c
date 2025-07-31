@@ -12,6 +12,12 @@
 
 #include "./exec.h"
 
+/**
+ * pipe_in_act - Takes action on a static int
+ * @action: GET or SET
+ * @hold: Value to set in case of SET action
+ * @return: The value of the integer
+ */
 int	pipe_in_act(int action, int hold)
 {
 	static int	pipe_in;
@@ -23,6 +29,12 @@ int	pipe_in_act(int action, int hold)
 	return (pipe_in);
 }
 
+/**
+ * pipe_in_out - Takes action on a static int
+ * @action: GET or SET
+ * @hold: Value to set in case of SET action
+ * @return: The value of the integer
+ */
 int	pipe_out_act(int action, int hold)
 {
 	static int	pipe_out;
@@ -34,6 +46,12 @@ int	pipe_out_act(int action, int hold)
 	return (pipe_out);
 }
 
+/**
+ * sigint_mask_act - Takes action on a static bool
+ * @action: GET or SET
+ * @hold: Value to set in case of SET action
+ * @return: The value of the boolean
+ */
 bool	sigint_mask_act(int action, bool hold)
 {
 	static bool	mask;

@@ -18,6 +18,13 @@
 
 # define ENV_SIZE 1024
 
+/**
+ * s_dict - key value
+ * holding struct
+ * @key: env variable key
+ * @value: its value
+ * next: Next env variable
+ */
 typedef struct s_dict
 {
 	char			*key;

@@ -19,6 +19,15 @@
 #define ERR_NOT_FOUND 127
 #define ERR_IS_NOT_EXECUTABLE 126
 
+/**
+ * get_from_env - Gets an executable
+ * absolute path from the env
+ * using the PATH var.
+ * @name: Comand to get the absolute path
+ * of . Ex: ls --> /bin/ls
+ * Return: the absolute path
+ * or  NULL if none found
+ */
 static char	*get_from_env(char *name)
 {
 	char		**list;
@@ -46,6 +55,14 @@ static char	*get_from_env(char *name)
 	return (NULL);
 }
 
+/**
+ * is_file_or_directory - Checks if a given
+ * string is a file or dir name
+ * and handles it
+ * @name: The name of the file/dir
+ * @return: true if its a file/dir
+ * false otherwise
+ */
 static bool	is_file_or_directory(char *name)
 {
 	DIR	*dir;
@@ -57,7 +74,7 @@ static bool	is_file_or_directory(char *name)
 	dir = opendir(name);
 	if (dir != NULL)
 	{
-		ft_dprintf(STDERR_FILENO, "minishell: is a directory\n", name);
+		ft_dprintf(STDERR_FILENO, "minishell: %s: is a directory\n", name);
 		closedir(dir);
 		return (true);
 	}
@@ -70,6 +87,13 @@ static bool	is_file_or_directory(char *name)
 	return (false);
 }
 
+/*
+ * get_full_name - Gets the exec
+ * command final name
+ * @name: given command to handle
+ * @Return: pathname if found
+ * NULL otherwise
+ */
 char	*get_full_name(char *name)
 {
 	char		*final_path;
@@ -90,6 +114,13 @@ char	*get_full_name(char *name)
 	return (NULL);
 }
 
+/**
+ * exec_executable - Executes an 
+ * executable command
+ * @ast: Node containing the command
+ * data
+ * Return: The exit status of the command
+ */
 int	exec_executable(t_ast *ast)
 {
 	char	**av;

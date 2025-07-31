@@ -12,11 +12,19 @@
 
 #include "./exec.h"
 
+/**
+ * get_pipe_in - Gets the value of the
+ * static pipe_in fd
+ */
 int	get_pipe_in(void)
 {
 	return (pipe_in_act(GET, 0));
 }
 
+/**
+ * get_pipe_out - Gets the value of the
+ * static pipe_out fd
+ */
 int	get_pipe_out(void)
 {
 	return (pipe_out_act(GET, 0));

@@ -15,6 +15,13 @@
 #include "./gsetters.h"
 #include "./builtins/environ.h"
 
+/**
+ * is_builtin - Check if a command
+ * is a builtin
+ * @ast: Command node
+ * Return: true if a builtin
+ * false otherwise
+ */
 bool	is_builtin(t_ast *ast)
 {
 	char	**av;
@@ -41,6 +48,12 @@ bool	is_builtin(t_ast *ast)
 	return (false);
 }
 
+/**
+ * is_pipe_next - Checks if a node
+ * has a pipe next
+ * @ast: node to check
+ * Return: pipe next ? true : false
+ */
 bool	is_pipe_next(t_ast *ast)
 {
 	if (!ast)
@@ -55,6 +68,12 @@ bool	is_pipe_next(t_ast *ast)
 	return (false);
 }
 
+/**
+ * is_pipe - Checks if a node
+ * is a pipe connector
+ * @ast: node to check
+ * Return: pipe ? true : false
+ */
 bool	is_pipe(t_ast *ast)
 {
 	if (!ast)
@@ -65,6 +84,12 @@ bool	is_pipe(t_ast *ast)
 	return (false);
 }
 
+/**
+ * is_logical_connector - Checks if a node
+ * is a logical connector (&& or ||)
+ * @ast: node to check
+ * Return: connector ? true : false
+ */
 bool	is_logical_connector(t_ast *ast)
 {
 	if (ast == NULL)
@@ -79,6 +104,12 @@ bool	is_logical_connector(t_ast *ast)
 	return (false);
 }
 
+/**
+ * count_nodes - Counts number
+ * of nodes or commands in a pipeline
+ * @ast: Head of the pipeline
+ * Return: Number of nodes
+ */
 int	count_nodes(t_ast *ast)
 {
 	int	count;

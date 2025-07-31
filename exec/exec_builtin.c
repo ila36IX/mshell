@@ -15,6 +15,13 @@
 #include "../libft/libft.h"
 #include "./builtins/builtins.h"
 
+/**
+ * call_builtins - Calls the corresponding
+ * function for every builtin command
+ * @ast: Node containing the command metadata
+ * Retun: Exit status of the builtin command
+ * 0 on success or a non null value otherwise
+ */
 static int	call_builtins(t_ast *ast)
 {
 	char	**av;
@@ -43,6 +50,11 @@ static int	call_builtins(t_ast *ast)
 	return (status_set(status), status);
 }
 
+/**
+ * exec_builtin - Executes a builting command
+ * @ast: The node which contains the command info
+ * Return: Exit status of the command
+ */
 int	exec_builtin(t_ast *ast)
 {
 	int		status;

@@ -18,6 +18,11 @@
 #define ERR_NULL 1
 #define PIPE_SIZE 2
 
+/**
+ * setup_redir_in - Sets the redirection for input <
+ * @redir: address of the current redirection to set
+ * @Return: 0 on success of -1 on fail
+ */
 static int	setup_redir_in(t_redirect *redir)
 {
 	int	target;
@@ -25,7 +30,7 @@ static int	setup_redir_in(t_redirect *redir)
 	if (!redir)
 		return (FAIL);
 	target = open(redir->target, O_RDONLY);
-	if (target == ERR_OPEN)
+	if (target == ERR_OPEN && ft_strlen(redir->target))
 	{
 		status_set(ERR_NULL);
 		ft_dprintf(STDERR_FILENO,
@@ -34,12 +39,20 @@ static int	setup_redir_in(t_redirect *redir)
 		dup2(target, STDIN_FILENO);
 		return (close(target), FAIL);
 	}
+	else
+		return (ft_dprintf(STDERR_FILENO,
+				"mshell: ambiguous redirect\n"), FAIL);
 	if (dup2(target, STDIN_FILENO) == ERR_OPEN)
 		return (close(target), FAIL);
 	close(target);
 	return (SUCCESS);
 }
 
+/**
+ * setup_redir_out - Sets the redirection for input > and >>
+ * @redir: address of the current redirection to set
+ * @Return: 0 on success of -1 on fail
+ */
 static int	setup_redir_out(t_redirect *redir)
 {
 	int	target;
@@ -50,15 +63,23 @@ static int	setup_redir_out(t_redirect *redir)
 		target = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else
 		target = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (target == ERR_OPEN)
+	if (target == ERR_OPEN && ft_strlen(redir->target))
 		return (ft_dprintf(STDERR_FILENO,
 				"mshell: %s: %s\n", strerror(errno), redir->target), FAIL);
+	else
+		return (ft_dprintf(STDERR_FILENO,
+				"mshell: ambiguous redirect\n"), FAIL);
 	if (dup2(target, STDOUT_FILENO) == ERR_OPEN)
 		return (close(target), FAIL);
 	close(target);
 	return (SUCCESS);
 }
 
+/**
+ * setup_redir_heredoc - Sets the redirection for herdoc <<
+ * @redir: address of the current redirection to set
+ * @Return: 0 on success of -1 on fail
+ */
 static int	setup_redir_heredoc(t_redirect *redir)
 {
 	int		fd;
@@ -87,6 +108,12 @@ static int	setup_redir_heredoc(t_redirect *redir)
 	return (SUCCESS);
 }
 
+/**
+ * setup_redirections - Sets up redirections
+ * of a given command
+ * @ast: Command node addres
+ * @Return: 0 on success of -1 on fail
+ */
 int	setup_redirections(t_ast *ast)
 {
 	size_t		i;

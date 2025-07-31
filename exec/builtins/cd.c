@@ -16,6 +16,13 @@
 
 #define ERR_NO_PARENT "cd: No such file or directory"
 
+/**
+ * checker - Chesk a given command
+ * args and handles some errors
+ * @ac: Number of arguments
+ * @av: Values of arguments
+ * Return: Status of the check
+ */
 int	checker(int ac, char **av)
 {
 	char	newdir[MAX_WD_SIZE];
