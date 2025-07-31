@@ -38,7 +38,7 @@ static bool	expnad_redir_target(t_ast *ast, t_word word, int i)
 	char	*arg;
 
 	arg = expand_string(word.text, word.len);
-	if (needs_field_splitting(arg))
+	if (needs_field_splitting(arg) || ft_strlen(arg) == 0)
 	{
 		print_ambigous_error(word);
 		return (false);
