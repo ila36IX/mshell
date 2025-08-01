@@ -45,6 +45,8 @@ t_ast	*exec_connector(t_ast *ast)
 
 	if (ast == NULL)
 		return (NULL);
+	dup2(get_pipe_in(), STDIN_FILENO);
+	dup2(get_pipe_out(), STDOUT_FILENO);
 	connector = ast->connector;
 	if (connector == CONNECTOR_AND)
 	{
