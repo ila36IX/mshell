@@ -41,11 +41,6 @@ int	checker(int ac, char **av)
 		status_set(EXIT_FAILURE);
 		return (EXIT_FAILURE);
 	}
-	if (getcwd(newdir, MAX_WD_SIZE) == NULL)
-	{
-		ft_dprintf(STDERR_FILENO, "cd: %s\n", ERR_NO_PARENT);
-		return (EXIT_FAILURE);
-	}
 	environ_set("OLDPWD", newdir);
 	return (SUCCESS);
 }

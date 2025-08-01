@@ -30,7 +30,7 @@ static int	setup_redir_in(t_redirect *redir)
 	if (!redir)
 		return (FAIL);
 	target = open(redir->target, O_RDONLY);
-	if (target == ERR_OPEN && ft_strlen(redir->target))
+	if (target == ERR_OPEN)
 	{
 		status_set(ERR_NULL);
 		ft_dprintf(STDERR_FILENO,
@@ -39,9 +39,6 @@ static int	setup_redir_in(t_redirect *redir)
 		dup2(target, STDIN_FILENO);
 		return (close(target), FAIL);
 	}
-	else
-		return (ft_dprintf(STDERR_FILENO,
-				"mshell: ambiguous redirect\n"), FAIL);
 	if (dup2(target, STDIN_FILENO) == ERR_OPEN)
 		return (close(target), FAIL);
 	close(target);
@@ -63,12 +60,9 @@ static int	setup_redir_out(t_redirect *redir)
 		target = open(redir->target, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	else
 		target = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
-	if (target == ERR_OPEN && ft_strlen(redir->target))
+	if (target == ERR_OPEN)
 		return (ft_dprintf(STDERR_FILENO,
-				"mshell: %s: %s\n", strerror(errno), redir->target), FAIL);
-	else
-		return (ft_dprintf(STDERR_FILENO,
-				"mshell: ambiguous redirect\n"), FAIL);
+				SHELL_NAME ": %s: %s\n", strerror(errno), redir->target), FAIL);
 	if (dup2(target, STDOUT_FILENO) == ERR_OPEN)
 		return (close(target), FAIL);
 	close(target);
