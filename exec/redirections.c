@@ -62,7 +62,7 @@ static int	setup_redir_out(t_redirect *redir)
 		target = open(redir->target, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	if (target == ERR_OPEN)
 		return (ft_dprintf(STDERR_FILENO,
-				"mshell: %s: %s\n", strerror(errno), redir->target), FAIL);
+				SHELL_NAME ": %s: %s\n", strerror(errno), redir->target), FAIL);
 	if (dup2(target, STDOUT_FILENO) == ERR_OPEN)
 		return (close(target), FAIL);
 	close(target);
