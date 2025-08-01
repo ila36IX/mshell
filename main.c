@@ -13,7 +13,28 @@
 #include "./main.h"
 #include "./parser/parser.h"
 #include "./exec/status.h"
-#define PROMPT "\033[0;33m[User@Debian]$ \033[0m"
+
+char	*generate_prompt(void)
+{
+	const char	*temp;
+	t_string	str;
+
+	str = string_init();
+	temp = environ_get("USER");
+	if (temp == NULL)
+		temp = "trizawi";
+	string_append_cstr(&str, TEXT_BCYAN"(");
+	string_append_cstr(&str, temp);
+	string_append_cstr(&str, ")[");
+	temp = environ_get("PWD");
+	if (temp == NULL)
+		temp = "???";
+	string_append_cstr(&str, temp);
+	string_append_cstr(&str, "] (");
+	string_append_cstr(&str, ft_itoa(status_get()));
+	string_append_cstr(&str, ") $ "TEXT_RESET);
+	return (str.buff);
+}
 
 /**
  * main - The entry point of the program
@@ -33,7 +54,7 @@ int	main(int ac, const char **av, const char **envp)
 	signal(SIGINT, ft_sigint_handler_prompt);
 	signal(SIGQUIT, SIG_IGN);
 	environ_init(envp);
-	line = ft_readline(PROMPT);
+	line = ft_readline(generate_prompt());
 	while (line)
 	{
 		set_pipe_in(dup(STDIN_FILENO));
@@ -43,7 +64,7 @@ int	main(int ac, const char **av, const char **envp)
 		ast = ast_create(line);
 		exec(ast);
 		ft_gc_clear();
-		line = ft_readline(PROMPT);
+		line = ft_readline(generate_prompt());
 		close(get_pipe_in());
 		close(get_pipe_out());
 	}
