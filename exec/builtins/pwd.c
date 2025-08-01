@@ -27,11 +27,13 @@ int	ft_pwd(void)
 		printf("%s\n", current_dir_env);
 		return (status_set(status), status);
 	}
-	else if (getcwd(current_working_dir, MAX_WD_SIZE) == SUCCESS)
+	else if (getcwd(current_working_dir, MAX_WD_SIZE) != NULL)
 	{
 		printf("%s\n", current_working_dir);
 		return (status_set(status), status);
 	}
 	status = EXIT_FAILURE;
+	ft_dprintf(STDERR_FILENO,
+		"minishell: pwd: Cannot get the current working directory\n");
 	return (status_set(status), status);
 }
