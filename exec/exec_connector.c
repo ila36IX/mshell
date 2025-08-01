@@ -61,8 +61,7 @@ t_ast	*exec_connector(t_ast *ast)
 		if (status_get() != SUCCESS)
 			return (ast->next);
 		else
-			ast = move_next_pipeline(ast);
-		return (ast);
+			return (move_next_pipeline(ast));
 	}
 	else if (connector == CONNECTOR_PIPE)
 		return (ast);
