@@ -17,7 +17,6 @@
 # include "./exec/exec.h"
 # include "./exec/builtins/builtins.h"
 # include "./exec/builtins/environ.h"
-# include "./prototypes.h"
 # include "./types.h"
 # include "libft/libft.h"
 # include "./parser/parser.h"
