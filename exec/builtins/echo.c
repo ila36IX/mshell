@@ -12,6 +12,7 @@
 
 #include "../../includes.h"
 #include "../status.h"
+#include "../../libft/libft.h"
 
 /**
  * is_option - Checks if
@@ -25,6 +26,8 @@ bool	is_option(const char *opt)
 
 	if (opt == NULL)
 		return (ERR_NULL);
+	if (ft_strlen(opt) == 1)
+		return (false);
 	i = 0;
 	if (opt[i++] != '-')
 		return (false);
