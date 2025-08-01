@@ -1,6 +1,6 @@
 C = cc
-CFLAGS = -Wall -Wextra -Werror -ggdb3 -g3 -fsanitize=address
-LINKERS = -lft -lreadline -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror #-ggdb3 -g3 -fsanitize=address
+LINKERS = -lft -lreadline #-fsanitize=address
 
 SRC_FILES= \
 ./dynamic_array/array_argv.c     ./exec/builtins/unset.c       ./exec/statics.c 								./parser/ast_build/ast_parser.c 				./parser/ast_print/ast_print.c\
@@ -30,6 +30,8 @@ libft_rule:
 $(NAME): $(SRC_OBJ) $(LIBFT)
 	$(CC) $(SRC_OBJ) -L$(LIBFT_DIR) $(LINKERS) -o $(NAME)
 
+bonus: all
+
 clean: 
 	$(RM) $(SRC_OBJ) $(OBJ_BONUS)
 	$(MAKE) -s -C $(LIBFT_DIR) clean
@@ -38,7 +40,6 @@ fclean:
 	$(RM) $(SRC_OBJ) $(OBJ_BONUS)
 	$(RM) $(NAME)
 	$(MAKE) -s -C $(LIBFT_DIR) fclean
-
 
 re: fclean all
 
