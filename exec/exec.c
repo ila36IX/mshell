@@ -125,6 +125,7 @@ t_ast	*execute_pipeline(t_ast *ast)
  */
 int	exec(t_ast *ast)
 {
+	sigint_mask_act(SET, false);
 	if (ast == NULL)
 		return (ERR_NULL);
 	while (ast)
@@ -141,5 +142,6 @@ int	exec(t_ast *ast)
 	dup2(get_pipe_out(), STDOUT_FILENO);
 	close(get_pipe_in());
 	close(get_pipe_out());
+	sigint_mask_act(SET, true);
 	return (status_get());
 }
