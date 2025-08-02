@@ -100,18 +100,27 @@ char	*get_full_name(char *name)
 	DIR			*dir;
 
 	dir = opendir(name);
-	if (access(name, F_OK | X_OK) == 0 && dir == NULL)
+	if (access(name, F_OK | X_OK) == 0 && dir == NULL
+		&& ft_strchr(name, '/'))
 		return (name);
 	closedir(dir);
+	if (ft_strchr(name, '/') != NULL)
+	{
+		ft_dprintf(STDERR_FILENO, "%s: command not found\n", name);
+		return (status_set(ERR_NOT_FOUND), NULL);
+	}
 	final_path = get_from_env(name);
 	if (final_path)
+		dir = opendir(final_path);
+	if (dir == NULL && access(final_path, F_OK | X_OK) == 0)
 		return (final_path);
+	if (dir)
+		closedir(dir);
 	status_set(ERR_NOT_FOUND);
 	if (is_file_or_directory(name) == true)
 		status_set(ERR_IS_NOT_EXECUTABLE);
-	else
-		ft_dprintf(STDERR_FILENO, "%s: command not found\n", name);
-	return (NULL);
+	return (ft_dprintf(STDERR_FILENO,
+			"%s: command not found\n", name), NULL);
 }
 
 /**
