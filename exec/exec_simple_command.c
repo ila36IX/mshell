@@ -86,7 +86,6 @@ int	exec_simple_command(t_ast *ast)
 		return (exec_builtin(ast));
 	else if (is_valid_executable(ast) == false)
 		return (ERR_NULL);
-	sigint_mask_act(SET, false);
 	pid = fork();
 	if (pid == FAIL)
 		return (status_set(ERR_NULL), ERR_NULL);
@@ -97,7 +96,6 @@ int	exec_simple_command(t_ast *ast)
 		exit(status_get());
 	}
 	waitpid(pid, &status, 0);
-	sigint_mask_act(SET, true);
 	set_status_with_signals(status);
 	return (status_get());
 }
